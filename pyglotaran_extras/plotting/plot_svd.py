@@ -2,24 +2,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_svd(res, axes):
-    plot_lsv_residual(res, axes[0, 0])
+def plot_svd(res, axes, linlog=False, linthresh=1):
+    plot_lsv_residual(res, axes[0, 0], linlog=linlog, linthresh=linthresh)
     plot_rsv_residual(res, axes[0, 1])
     plot_sv_residual(res, axes[0, 2])
-    plot_lsv_data(res, axes[1, 0])
+    plot_lsv_data(res, axes[1, 0], linlog=linlog, linthresh=linthresh)
     plot_rsv_data(res, axes[1, 1])
     plot_sv_data(res, axes[1, 2])
     plt.draw()
     plt.pause(0.001)
 
 
-def plot_lsv_data(res, ax, indices=range(4)):
+def plot_lsv_data(res, ax, indices=range(4), linlog=False, linthresh=1):
     """ Plot left singular vectors (time) of the data matrix """
     dLSV = res.data_left_singular_vectors
     dLSV.isel(left_singular_value_index=indices[0 : len(dLSV)]).plot.line(
         x="time", ax=ax
     )
     ax.set_title("data. LSV")
+    if linlog:
+        ax.set_xscale("symlog", linthresh=linthresh)
 
 
 def plot_rsv_data(res, ax, indices=range(4)):
@@ -40,7 +42,7 @@ def plot_sv_data(res, ax, indices=range(10)):
     ax.set_title("data. log(SV)")
 
 
-def plot_lsv_residual(res, ax, indices=range(2), label="residual"):
+def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False, linthresh=1):
     """ Plot left singular vectors (time) of the residual matrix """
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
@@ -50,6 +52,8 @@ def plot_lsv_residual(res, ax, indices=range(2), label="residual"):
         x="time", ax=ax
     )
     ax.set_title("res. LSV")
+    if linlog:
+        ax.set_xscale("symlog", linthresh=linthresh)
 
 
 def plot_rsv_residual(res, ax, indices=range(2)):

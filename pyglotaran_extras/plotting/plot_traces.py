@@ -31,62 +31,18 @@ def calculate_x_ranges(res, linrange):
     pass
 
 
-def plot_traces(res, ax, center_λ, linlog=False, linrange=(-1, 1)):
+def plot_traces(res, ax, center_λ, linlog=False, linthresh=1, linscale=1):
     traces = get_shifted_traces(res, center_λ)
     plot_style = PlotStyle()
     plt.rc("axes", prop_cycle=plot_style.cycler)
 
-    if not linlog:
-        if "spectral" in traces.coords:
+    if "spectral" in traces.coords:
             traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
-        else:
-            traces.plot.line(x="time", ax=ax)
     else:
-        # Setting up code for Linear-Logariuthmic time axis
-        axLin = ax
-        divider = make_axes_locatable(axLin)
-        ncolors = len(plot_style._color_codes)
+        traces.plot.line(x="time", ax=ax)
 
-        # Plotting Linear Part.
-        if "spectral" in traces.coords:
-            traces.sel(spectral=center_λ, method="nearest").plot.line(
-                x="time", ax=axLin
-            )
-        else:
-            traces.plot.line(x="time", ax=axLin)
-        axLin.set_xscale("linear")
-        axLin.set_xlim(linrange)
-        # axLin.xaxis.set_major_locator(MaxNLocator(prune="upper"))
+    if linlog:
+        ax.set_xscale("symlog", linthresh=linthresh,linscale=linscale)
 
-        axLin.spines["right"].set_visible(False)
-        axLin.yaxis.set_ticks_position("left")
-        axLin.yaxis.set_visible(True)
-        axLin.set_prop_cycle(plot_style.cycler)
-
-        # Plotting Logarithmic Part.
-        axLog = divider.append_axes(
-            "right", size="60%", pad=0, sharey=axLin, prop_cycle=plot_style.cycler
-        )
-        axLog.set_xscale("log")
-        xlim_max = 10 ** math.ceil(math.log10(res.time.values.max()))
-        axLog.set_xlim((linrange[1], xlim_max))
-        axLog.xaxis.set_major_locator(MaxNLocator(prune="lower", nbins=2))
-        # axLog.xaxis.set_major_locator(MultipleLocator(linrange[1]))
-        if "spectral" in traces.coords:
-            traces.sel(spectral=center_λ, method="nearest").plot.line(
-                x="time", ax=axLog
-            )
-        else:
-            traces.plot.line(x="time", ax=axLog)
-        axLog.get_yaxis().set_visible(False)
-        axLog.get_legend().remove()
-        axLog.set_title("")
-        axLog.set_ylabel("")
-        axLog.set_xlabel("")
-
-        axLog.yaxis.set_tick_params(which="minor", right="off")
-        axLog.spines["left"].set_visible(False)
-
-        plt.setp(axLog.get_xticklabels(minor=False), visible=True)
     plt.draw()
     plt.pause(0.005)
