@@ -1,15 +1,16 @@
 from pathlib import Path
+from typing import Union
 
 import xarray as xr
 
-import glotaran
+from glotaran.analysis.result import Result
 
 
-def load_data(result):
+def load_data(result: Union[xr.Dataset, Path, Result]):
     if isinstance(result, xr.Dataset):
         res = result
     else:
-        if isinstance(result, glotaran.analysis.result.Result):
+        if isinstance(result, Result):
             keys = list(result.data)
             res = result.data[keys[0]]
         else:

@@ -1,10 +1,4 @@
-import math
-from itertools import islice
-
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from matplotlib.ticker import MultipleLocator, AutoMinorLocator
 
 from .style import PlotStyle
 
@@ -15,7 +9,9 @@ def get_shifted_traces(res, center_λ=None):
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
     if "center_dispersion_1" in res:
-        center_dispersion = res.center_dispersion_1  # why _1?
+        center_dispersion = (
+            res.center_dispersion_1
+        )  # TODO: clarify against pyglotaran API why _1?
         irf_loc = center_dispersion.sel(spectral=center_λ, method="nearest").item()
     elif "irf_center" in res:
         irf_loc = res.irf_center
@@ -23,11 +19,13 @@ def get_shifted_traces(res, center_λ=None):
         irf_loc = min(times)
 
     times_shifted = times - irf_loc
-    traces_shifted = traces.assign_coords(time=times_shifted)
-    return traces_shifted
+    return traces.assign_coords(time=times_shifted)
 
 
 def calculate_x_ranges(res, linrange):
+    print(f"{res=}")
+    print(f"{linrange=}")
+    print("Not yet implemented")
     pass
 
 
@@ -37,12 +35,12 @@ def plot_traces(res, ax, center_λ, linlog=False, linthresh=1, linscale=1):
     plt.rc("axes", prop_cycle=plot_style.cycler)
 
     if "spectral" in traces.coords:
-            traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
+        traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
     else:
         traces.plot.line(x="time", ax=ax)
 
     if linlog:
-        ax.set_xscale("symlog", linthresh=linthresh,linscale=linscale)
+        ax.set_xscale("symlog", linthresh=linthresh, linscale=linscale)
 
     plt.draw()
     plt.pause(0.005)

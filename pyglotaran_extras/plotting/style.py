@@ -40,7 +40,7 @@ class LineStyle(Enum):
     dashdot = "-."
 
 
-class PlotStyle(object):
+class PlotStyle:
     def __init__(self):
         self._line_style = [e.value for e in LineStyle]
         self._color_codes = [e.value for e in ColorCode]

@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 install_requires = [
     "pyglotaran>=0.2.0",
@@ -7,7 +8,7 @@ install_requires = [
 ]
 
 
-with open("README.md", "r") as fh:
+with open("README.md") as fh:
     long_description = fh.read()
 
 setup(
