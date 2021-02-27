@@ -11,7 +11,7 @@ from .plot_traces import plot_traces
 from .style import PlotStyle
 
 
-def plot_overview(result, center_λ=None, linlog=True, linthresh=1):
+def plot_overview(result, center_λ=None, linlog=True, linthresh=1, show_data=False):
 
     res = load_data(result)
 
@@ -30,7 +30,9 @@ def plot_overview(result, center_λ=None, linlog=True, linthresh=1):
     plot_traces(res, ax[0, 0], center_λ, linlog=linlog, linthresh=linthresh)
     plot_spectra(res, ax[0:2, 1:3])
     plot_svd(res, ax[2:4, 0:3], linlog=linlog, linthresh=linthresh)
-    plot_residual(res, ax[1, 0], linlog=linlog, linthresh=linthresh)
+    plot_residual(
+        res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data
+    )
     plot_style.set_default_colors()
     plot_style.set_default_fontsize()
     plt.rc("axes", prop_cycle=plot_style.cycler)
