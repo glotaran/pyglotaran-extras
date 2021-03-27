@@ -1,1 +1,1 @@
-""" pyglotaran_extras plotting package """
+""" pyglotaran-extras plotting package """

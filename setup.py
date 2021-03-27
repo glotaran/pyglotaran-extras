@@ -17,7 +17,7 @@ setup(
     description="Supplementary package for pyglotaran with (example) plotting code.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/glotaran/pyglotaran_extras",
+    url="https://github.com/glotaran/pyglotaran-extras",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
@@ -36,8 +36,8 @@ setup(
     license="MIT",
     project_urls={
         "GloTarAn Ecosystem": "https://glotaran.org",
-        "Source": "https://github.com/glotaran/pyglotaran_extras",
-        "Tracker": "https://github.com/glotaran/pyglotaran_extras/issues",
+        "Source": "https://github.com/glotaran/pyglotaran-extras",
+        "Tracker": "https://github.com/glotaran/pyglotaran-extras/issues",
     },
     python_requires=">=3.8,<3.10",
     packages=find_packages(),

@@ -1,1 +1,1 @@
-""" pyglotaran_extras io package """
+""" pyglotaran-extras io package """
