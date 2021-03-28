@@ -12,28 +12,45 @@ def plot_spectra(res, axes):
 
 
 def plot_sas(res, ax, title="SAS"):
-    sas = res.species_associated_spectra
-    sas.plot.line(x="spectral", ax=ax)
-    ax.set_title(title)
-    ax.get_legend().remove()
+    keys = [v for v in res.data_vars if v.startswith("species_associated_spectra")]
+    for key in keys:
+        sas = res[key]
+        sas.plot.line(x="spectral", ax=ax)
+        ax.set_title(title)
+        ax.get_legend().remove()
+        plt.draw()
+        plt.pause(0.001)
 
 
 def plot_norm_sas(res, ax, title="norm SAS"):
-    sas = res.species_associated_spectra
-    (sas / np.abs(sas).max(dim="spectral")).plot.line(x="spectral", ax=ax)
-    ax.set_title(title)
-    ax.get_legend().remove()
+    keys = [v for v in res.data_vars if v.startswith("species_associated_spectra")]
+    for key in keys:
+        sas = res[key]
+        sas = res.species_associated_spectra
+        (sas / np.abs(sas).max(dim="spectral")).plot.line(x="spectral", ax=ax)
+        ax.set_title(title)
+        ax.get_legend().remove()
+        plt.draw()
+        plt.pause(0.001)
 
 
 def plot_das(res, ax, title="DAS"):
-    das = res.decay_associated_spectra
-    das.plot.line(x="spectral", ax=ax)
-    ax.set_title(title)
-    ax.get_legend().remove()
+    keys = [v for v in res.data_vars if v.startswith("decay_associated_spectra")]
+    for key in keys:
+        das = res[key]
+        das.plot.line(x="spectral", ax=ax)
+        ax.set_title(title)
+        ax.get_legend().remove()
+        plt.draw()
+        plt.pause(0.001)
 
 
 def plot_norm_das(res, ax, title="norm DAS"):
-    das = res.decay_associated_spectra
-    (das / np.abs(das).max(dim="spectral")).plot.line(x="spectral", ax=ax)
-    ax.set_title(title)
-    ax.get_legend().remove()
+    keys = [v for v in res.data_vars if v.startswith("decay_associated_spectra")]
+    for key in keys:
+        das = res[key]
+        (das / np.abs(das).max(dim="spectral")).plot.line(x="spectral", ax=ax)
+        ax.set_title(title)
+        ax.get_legend().remove()
+        plt.draw()
+        plt.pause(0.001)
