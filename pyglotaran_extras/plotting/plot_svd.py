@@ -8,16 +8,14 @@ def plot_svd(res, axes, linlog=False, linthresh=1):
     plot_lsv_data(res, axes[1, 0], linlog=linlog, linthresh=linthresh)
     plot_rsv_data(res, axes[1, 1])
     plot_sv_data(res, axes[1, 2])
-    plt.draw()
-    plt.pause(0.001)
 
 
 def plot_lsv_data(res, ax, indices=range(4), linlog=False, linthresh=1):
     """ Plot left singular vectors (time) of the data matrix """
     dLSV = res.data_left_singular_vectors
-    dLSV.isel(
-        left_singular_value_index=indices[: len(dLSV.left_singular_value_index)]
-    ).plot.line(x="time", ax=ax)
+    dLSV.isel(left_singular_value_index=indices[: len(dLSV.left_singular_value_index)]).plot.line(
+        x="time", ax=ax
+    )
     ax.set_title("data. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -41,17 +39,15 @@ def plot_sv_data(res, ax, indices=range(10)):
     ax.set_title("data. log(SV)")
 
 
-def plot_lsv_residual(
-    res, ax, indices=range(2), label="residual", linlog=False, linthresh=1
-):
+def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False, linthresh=1):
     """ Plot left singular vectors (time) of the residual matrix """
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
     else:
         rLSV = res.residual_left_singular_vectors
-    rLSV.isel(
-        left_singular_value_index=indices[: len(rLSV.left_singular_value_index)]
-    ).plot.line(x="time", ax=ax)
+    rLSV.isel(left_singular_value_index=indices[: len(rLSV.left_singular_value_index)]).plot.line(
+        x="time", ax=ax
+    )
     ax.set_title("res. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)

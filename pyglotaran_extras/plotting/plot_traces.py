@@ -9,9 +9,7 @@ def get_shifted_traces(res, center_λ=None):
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
     if "center_dispersion_1" in res:
-        center_dispersion = (
-            res.center_dispersion_1
-        )  # TODO: clarify against pyglotaran API why _1?
+        center_dispersion = res.center_dispersion_1  # TODO: clarify against pyglotaran API why _1?
         irf_loc = center_dispersion.sel(spectral=center_λ, method="nearest").item()
     elif "irf_center" in res:
         irf_loc = res.irf_center
@@ -41,6 +39,3 @@ def plot_traces(res, ax, center_λ, linlog=False, linthresh=1, linscale=1):
 
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh, linscale=linscale)
-
-    plt.draw()
-    plt.pause(0.005)

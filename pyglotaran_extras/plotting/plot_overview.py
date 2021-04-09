@@ -30,15 +30,11 @@ def plot_overview(result, center_λ=None, linlog=True, linthresh=1, show_data=Fa
     plot_traces(res, ax[0, 0], center_λ, linlog=linlog, linthresh=linthresh)
     plot_spectra(res, ax[0:2, 1:3])
     plot_svd(res, ax[2:4, 0:3], linlog=linlog, linthresh=linthresh)
-    plot_residual(
-        res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data
-    )
+    plot_residual(res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data)
     plot_style.set_default_colors()
     plot_style.set_default_fontsize()
     plt.rc("axes", prop_cycle=plot_style.cycler)
     # plt.tight_layout(pad=3, w_pad=4.0, h_pad=4.0)
-    plt.draw()
-    plt.show(block=False)
     return fig
 
 
