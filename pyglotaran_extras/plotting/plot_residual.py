@@ -4,6 +4,7 @@ import numpy as np
 
 def plot_residual(res, ax, linlog=False, linthresh=1, show_data=False):
     data = res.data if show_data else res.residual
+    title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)
     dims = data.coords.dims
     if min(shape) == 1:
@@ -16,5 +17,4 @@ def plot_residual(res, ax, linlog=False, linthresh=1, show_data=False):
         data.plot(x="time", ax=ax, add_colorbar=False)
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
-    plt.draw()
-    plt.pause(0.001)
+    ax.set_title(title)
