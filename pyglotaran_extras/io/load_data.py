@@ -3,7 +3,7 @@ from typing import Union
 
 import xarray as xr
 
-from glotaran.analysis.result import Result
+from glotaran.project.result import Result
 
 
 def load_data(result: Union[xr.Dataset, Path, Result]):
