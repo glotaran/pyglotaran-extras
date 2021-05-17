@@ -1,6 +1,3 @@
-import matplotlib.pyplot as plt
-
-
 def plot_svd(res, axes, linlog=False, linthresh=1):
     plot_lsv_residual(res, axes[0, 0], linlog=linlog, linthresh=linthresh)
     plot_rsv_residual(res, axes[0, 1])

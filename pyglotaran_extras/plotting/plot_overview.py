@@ -2,13 +2,12 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import xarray as xr
-
-from ..io.load_data import load_data
-from .plot_residual import plot_residual
-from .plot_spectra import plot_spectra
-from .plot_svd import plot_svd
-from .plot_traces import plot_traces
-from .style import PlotStyle
+from pyglotaran_extras.io.load_data import load_data
+from pyglotaran_extras.plotting.plot_residual import plot_residual
+from pyglotaran_extras.plotting.plot_spectra import plot_spectra
+from pyglotaran_extras.plotting.plot_svd import plot_svd
+from pyglotaran_extras.plotting.plot_traces import plot_traces
+from pyglotaran_extras.plotting.style import PlotStyle
 
 
 def plot_overview(result, center_λ=None, linlog=True, linthresh=1, show_data=False):
