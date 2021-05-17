@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-
-from .style import PlotStyle
+from pyglotaran_extras.plotting.style import PlotStyle
 
 
 def get_shifted_traces(res, center_λ=None):

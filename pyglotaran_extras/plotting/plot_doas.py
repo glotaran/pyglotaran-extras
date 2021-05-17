@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-
-from ..io.load_data import load_data
+from pyglotaran_extras.io.load_data import load_data
 
 
 def plot_doas(path):
@@ -23,21 +22,15 @@ def plot_doas(path):
     ax[1, 0].set_xscale("symlog", linthreshx=1)
 
     if "dampened_oscillation_associated_spectra" in dataset:
-        dataset.dampened_oscillation_cos.isel(spectral=0).sel(
-            time=slice(-1, 10)
-        ).plot.line(x="time", ax=ax[1, 1])
-        dataset.dampened_oscillation_associated_spectra.plot.line(
-            x="spectral", ax=ax[2, 0]
+        dataset.dampened_oscillation_cos.isel(spectral=0).sel(time=slice(-1, 10)).plot.line(
+            x="time", ax=ax[1, 1]
         )
+        dataset.dampened_oscillation_associated_spectra.plot.line(x="spectral", ax=ax[2, 0])
         dataset.dampened_oscillation_phase.plot.line(x="spectral", ax=ax[2, 1])
 
-    dataset.residual_left_singular_vectors.isel(left_singular_value_index=0).plot(
-        ax=ax[0, 2]
-    )
+    dataset.residual_left_singular_vectors.isel(left_singular_value_index=0).plot(ax=ax[0, 2])
     dataset.residual_singular_values.plot.line("ro-", yscale="log", ax=ax[1, 2])
-    dataset.residual_right_singular_vectors.isel(right_singular_value_index=0).plot(
-        ax=ax[2, 2]
-    )
+    dataset.residual_right_singular_vectors.isel(right_singular_value_index=0).plot(ax=ax[2, 2])
 
     interval = int(dataset.spectral.size / 11)
     for i in range(0):
