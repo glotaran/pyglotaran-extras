@@ -26,7 +26,7 @@ class ColorCode(Enum):
     @staticmethod
     def hex_to_rgb(hex_string):
         rgb = colors.hex2color(hex_string)
-        return tuple([int(255 * x) for x in rgb])
+        return tuple(int(255 * x) for x in rgb)
 
     @staticmethod
     def rgb_to_hex(rgb_tuple):
