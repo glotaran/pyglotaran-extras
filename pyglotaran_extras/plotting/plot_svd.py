@@ -8,7 +8,7 @@ def plot_svd(res, axes, linlog=False, linthresh=1):
 
 
 def plot_lsv_data(res, ax, indices=range(4), linlog=False, linthresh=1):
-    """ Plot left singular vectors (time) of the data matrix """
+    """Plot left singular vectors (time) of the data matrix"""
     dLSV = res.data_left_singular_vectors
     dLSV.isel(left_singular_value_index=indices[: len(dLSV.left_singular_value_index)]).plot.line(
         x="time", ax=ax
@@ -19,7 +19,7 @@ def plot_lsv_data(res, ax, indices=range(4), linlog=False, linthresh=1):
 
 
 def plot_rsv_data(res, ax, indices=range(4)):
-    """ Plot right singular vectors (spectra) of the data matrix """
+    """Plot right singular vectors (spectra) of the data matrix"""
     dRSV = res.data_right_singular_vectors
     dRSV.isel(
         right_singular_value_index=indices[: len(dRSV.right_singular_value_index)]
@@ -28,7 +28,7 @@ def plot_rsv_data(res, ax, indices=range(4)):
 
 
 def plot_sv_data(res, ax, indices=range(10)):
-    """ Plot singular values of the data matrix """
+    """Plot singular values of the data matrix"""
     dSV = res.data_singular_values
     dSV.sel(singular_value_index=indices[: len(dSV.singular_value_index)]).plot.line(
         "ro-", yscale="log", ax=ax
@@ -37,7 +37,7 @@ def plot_sv_data(res, ax, indices=range(10)):
 
 
 def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False, linthresh=1):
-    """ Plot left singular vectors (time) of the residual matrix """
+    """Plot left singular vectors (time) of the residual matrix"""
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
     else:
@@ -51,7 +51,7 @@ def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False,
 
 
 def plot_rsv_residual(res, ax, indices=range(2)):
-    """ Plot right singular vectors (spectra) of the residual matrix """
+    """Plot right singular vectors (spectra) of the residual matrix"""
     if "weighted_residual_right_singular_vectors" in res:
         rRSV = res.weighted_residual_right_singular_vectors
     else:
@@ -63,7 +63,7 @@ def plot_rsv_residual(res, ax, indices=range(2)):
 
 
 def plot_sv_residual(res, ax, indices=range(10)):
-    """ Plot singular values of the residual matrix """
+    """Plot singular values of the residual matrix"""
     if "weighted_residual_singular_values" in res:
         rSV = res.weighted_residual_singular_values
     else:
