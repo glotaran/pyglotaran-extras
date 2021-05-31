@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.0.1
     hooks:
       - id: check-ast
       - id: check-builtin-literals
@@ -17,19 +17,19 @@ repos:
       - id: absolufy-imports
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.4
+    rev: v2.19.0
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
 
-  - repo: https://github.com/python/black
-    rev: 20.8b1
+  - repo: https://github.com/psf/black
+    rev: 21.5b2
     hooks:
       - id: black
         language_version: python3
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.7.0
+    rev: 5.8.0
     hooks:
       - id: isort
         minimum_pre_commit_version: 2.9.0
@@ -40,12 +40,12 @@ repos:
   #       args: [-vv, --config=pyproject.toml]
   #       pass_filenames: false
   - repo: https://github.com/asottile/yesqa
-    rev: v1.2.2
+    rev: v1.2.3
     hooks:
       - id: yesqa
         additional_dependencies: [flake8-docstrings]
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
     hooks:
       - id: flake8
         args:
@@ -56,7 +56,7 @@ repos:
       - id: rstcheck
         additional_dependencies: [rstcheck, sphinx]
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.7.0
+    rev: v1.8.0
     hooks:
       - id: rst-backticks
   - repo: https://github.com/codespell-project/codespell
