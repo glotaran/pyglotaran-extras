@@ -3,7 +3,12 @@ from pyglotaran_extras.plotting.style import PlotStyle
 
 
 def get_shifted_traces(res, center_λ=None):
-    traces = res.species_concentration
+    if "species_concentration" in res:
+        traces = res.species_concentration
+    elif "species_associated_concentrations" in res:
+        traces = res.species_associated_concentrations
+    else:
+        raise ValueError(f"No concentrations in result:\n{res}")
     times = traces.coords["time"]
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
