@@ -1,4 +1,5 @@
 repos:
+  # Formatters
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
@@ -33,32 +34,79 @@ repos:
     hooks:
       - id: isort
         minimum_pre_commit_version: 2.9.0
+
+  - repo: https://github.com/asottile/yesqa
+    rev: v1.2.3
+    hooks:
+      - id: yesqa
+        additional_dependencies: [flake8-docstrings]
+
+  - repo: https://github.com/asottile/setup-cfg-fmt
+    rev: v1.17.0
+    hooks:
+      - id: setup-cfg-fmt
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.3.1 # Use the sha or tag you want to point at
+    hooks:
+      - id: prettier
+
+  # Notebook tools
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.4.0
+    hooks:
+      - id: nbstripout
+        args: [--strip-empty-cells]
+
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 0.13.0
+    hooks:
+      - id: nbqa-black
+        additional_dependencies: [black==21.6b0]
+        args: [--nbqa-mutate]
+      - id: nbqa-pyupgrade
+        additional_dependencies: [pyupgrade==2.19.4]
+        args: [--nbqa-mutate, --py38-plus]
+      - id: nbqa-flake8
+      - id: nbqa-check-ast
+      - id: nbqa-isort
+        additional_dependencies: [isort==5.8.0]
+        args: [--nbqa-mutate]
+
+  # Linters
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.902
+    hooks:
+      - id: mypy
+        exclude: ^docs
+        additional_dependencies: [types-all]
+
   # - repo: https://github.com/econchick/interrogate
   #   rev: 1.3.2
   #   hooks:
   #     - id: interrogate
   #       args: [-vv, --config=pyproject.toml]
   #       pass_filenames: false
-  - repo: https://github.com/asottile/yesqa
-    rev: v1.2.3
-    hooks:
-      - id: yesqa
-        additional_dependencies: [flake8-docstrings]
+
   - repo: https://github.com/PyCQA/flake8
     rev: 3.9.2
     hooks:
       - id: flake8
         args:
           - "--max-line-length=99"
+
   - repo: https://github.com/myint/rstcheck
     rev: "3f92957478422df87bd730abde66f089cc1ee19b"
     hooks:
       - id: rstcheck
-        additional_dependencies: [rstcheck, sphinx]
+        additional_dependencies: [sphinx]
+
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.9.0
     hooks:
       - id: rst-backticks
+
   - repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
     hooks:
