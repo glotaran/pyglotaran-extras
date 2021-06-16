@@ -2,6 +2,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import xarray as xr
+
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_residual import plot_residual
 from pyglotaran_extras.plotting.plot_spectra import plot_spectra

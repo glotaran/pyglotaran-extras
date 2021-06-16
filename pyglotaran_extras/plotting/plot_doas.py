@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+
 from pyglotaran_extras.io.load_data import load_data
 
 
