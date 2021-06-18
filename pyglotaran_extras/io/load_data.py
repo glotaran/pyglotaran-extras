@@ -2,17 +2,14 @@ from pathlib import Path
 from typing import Union
 
 import xarray as xr
-
 from glotaran.project.result import Result
 
 
-def load_data(result: Union[xr.Dataset, Path, Result]):
+def load_data(result: Union[xr.Dataset, Path, Result]) -> xr.Dataset:
     if isinstance(result, xr.Dataset):
-        res = result
+        return result
+    elif isinstance(result, Result):
+        keys = list(result.data)
+        return result.data[keys[0]]
     else:
-        if isinstance(result, Result):
-            keys = list(result.data)
-            res = result.data[keys[0]]
-        else:
-            res = xr.open_dataset(result)
-    return res
+        return xr.open_dataset(result)

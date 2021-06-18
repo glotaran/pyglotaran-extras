@@ -1,0 +1,23 @@
+# Runtime dependencies
+
+matplotlib==3.4.2
+pyglotaran==0.3.3
+
+# Documentation dependencies
+-r docs/requirements.txt
+
+
+# Testing dependencies
+tox>=3.0.0
+# tox-direct>=0.4
+# Temporarily use the fix branch on my fork
+git+https://github.com/s-weigand/tox-direct.git@fix-6
+pytest>=3.7.1
+pluggy>=0.7
+coverage[toml]
+pytest-cov>=2.5.1
+nbval>=0.9.6
+# Ref https://github.com/mhammond/pywin32/issues/1709
+pywin32==300 ; sys_platform == 'win32'
+# Code quality assurance
+pre-commit>=2.9.0
