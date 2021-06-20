@@ -40,7 +40,7 @@ def test_get_script_dir_tmp_path(tmp_path: Path):
     )
     tmp_file.write_text(content)
     printed_result = subprocess.run(
-        [sys.executable, tmp_file.resolve().as_posix()], capture_output=True, shell=True
+        " ".join([sys.executable, tmp_file.resolve().as_posix()]), capture_output=True, shell=True
     )
     result = printed_result.stdout.decode().rstrip("\n\r")
 
