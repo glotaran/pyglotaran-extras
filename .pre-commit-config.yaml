@@ -18,7 +18,7 @@ repos:
       - id: absolufy-imports
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.21.2
+    rev: v2.23.0
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
@@ -59,7 +59,7 @@ repos:
         args: [--strip-empty-cells]
 
   - repo: https://github.com/nbQA-dev/nbQA
-    rev: 0.13.1
+    rev: 1.0.0
     hooks:
       - id: nbqa-black
         additional_dependencies: [black==21.6b0]
