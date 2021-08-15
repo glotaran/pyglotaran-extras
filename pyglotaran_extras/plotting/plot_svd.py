@@ -43,7 +43,7 @@ def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False,
     else:
         rLSV = res.residual_left_singular_vectors
     rLSV.isel(left_singular_value_index=indices[: len(rLSV.left_singular_value_index)]).plot.line(
-        x="time", ax=ax
+        x=rLSV.dims[0], ax=ax
     )
     ax.set_title("res. LSV")
     if linlog:
@@ -58,7 +58,7 @@ def plot_rsv_residual(res, ax, indices=range(2)):
         rRSV = res.residual_right_singular_vectors
     rRSV.isel(
         right_singular_value_index=indices[: len(rRSV.right_singular_value_index)]
-    ).plot.line(x="spectral", ax=ax)
+    ).plot.line(x=rRSV.dims[1], ax=ax)
     ax.set_title("res. RSV")
 
 
