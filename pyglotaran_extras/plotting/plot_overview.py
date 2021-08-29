@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import xarray as xr
@@ -10,8 +13,51 @@ from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.plot_traces import plot_traces
 from pyglotaran_extras.plotting.style import PlotStyle
 
+if TYPE_CHECKING:
+    from glotaran.project import Result
+    from matplotlib.figure import Figure
 
-def plot_overview(result, center_λ=None, linlog=True, linthresh=1, show_data=False):
+
+def plot_overview(
+    result: xr.Dataset | Path | Result,
+    center_λ: float | None = None,
+    linlog: bool = True,
+    linthresh: float = 1,
+    linscale: float = 1,
+    show_data: bool = False,
+    main_irf_nr: int = 0,
+) -> Figure:
+    """Plot overview of the optimization result.
+
+    Parameters
+    ----------
+    result : xr.Dataset | Path | Result
+        Result from a pyglotaran optimization as dataset, Path or Result object.
+    center_λ: float | None
+        Center wavelength (λ in nm)
+    linlog: bool
+        Whether to use 'symlog' scale or not, by default False
+    linthresh: int
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    linscale: int
+        This allows the linear range (-linthresh to linthresh) to be stretched
+        relative to the logarithmic range.
+        Its value is the number of decades to use for each half of the linear range.
+        For example, when linscale == 1.0 (the default), the space used for the
+        positive and negative halves of the linear range will be equal to one
+        decade in the logarithmic range., by default 1
+    show_data : bool
+        Whether to show the input data or residual, by default False
+    main_irf_nr: int
+        Index of the main ``irf`` component when using an ``irf``
+        parametrized with multiple peaks , by default 0
+
+    Returns
+    -------
+    Figure
+        Figure object which contains the plots.
+    """
 
     res = load_data(result)
 
@@ -27,7 +73,15 @@ def plot_overview(result, center_λ=None, linlog=True, linthresh=1, show_data=Fa
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
 
     # First and second row: concentrations - SAS/EAS - DAS
-    plot_traces(res, ax[0, 0], center_λ, linlog=linlog, linthresh=linthresh)
+    plot_traces(
+        res,
+        ax[0, 0],
+        center_λ,
+        linlog=linlog,
+        linthresh=linthresh,
+        linscale=linscale,
+        main_irf_nr=main_irf_nr,
+    )
     plot_spectra(res, ax[0:2, 1:3])
     plot_svd(res, ax[2:4, 0:3], linlog=linlog, linthresh=linthresh)
     plot_residual(res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data)
