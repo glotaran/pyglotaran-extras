@@ -13,9 +13,8 @@ def get_shifted_traces(res, center_λ=None):
     times = traces.coords["time"]
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
-    # preparation for https://github.com/glotaran/pyglotaran/pull/786
-    # might need to be adjusted when "center_dispersion" gets renamed
-    if "center_dispersion" in res:
+
+    if "irf_center_location" in res:
         center_dispersion = res.center_dispersion
         irf_loc = center_dispersion.sel(spectral=center_λ, method="nearest").item()
     elif "center_dispersion_1" in res:
