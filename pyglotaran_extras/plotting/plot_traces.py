@@ -57,7 +57,7 @@ def get_shifted_traces(
     else:
         irf_loc = min(times)
 
-    if hasattr(irf_loc, "shape"):
+    if hasattr(irf_loc, "shape") and len(irf_loc.shape) > 0:
         irf_loc = irf_loc[main_irf_nr]
 
     times_shifted = times - irf_loc
