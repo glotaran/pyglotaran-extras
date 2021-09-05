@@ -46,8 +46,8 @@ def get_shifted_traces(
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
 
     if "irf_center_location" in res:
-        center_dispersion = res.center_dispersion
-        irf_loc = center_dispersion.sel(spectral=center_λ, method="nearest").item()
+        irf_center_location = res.irf_center_location
+        irf_loc = irf_center_location.sel(spectral=center_λ, method="nearest").item()
     elif "center_dispersion_1" in res:
         # legacy compatibility pyglotaran<0.5.0
         center_dispersion = res.center_dispersion_1
