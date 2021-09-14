@@ -47,7 +47,7 @@ def get_shifted_traces(
 
     if "irf_center_location" in res:
         irf_center_location = res.irf_center_location
-        irf_loc = irf_center_location.sel(spectral=center_λ, method="nearest").item()
+        irf_loc = irf_center_location.sel(spectral=center_λ, method="nearest")
     elif "center_dispersion_1" in res:
         # legacy compatibility pyglotaran<0.5.0
         center_dispersion = res.center_dispersion_1
@@ -58,7 +58,7 @@ def get_shifted_traces(
         irf_loc = min(times)
 
     if hasattr(irf_loc, "shape") and len(irf_loc.shape) > 0:
-        irf_loc = irf_loc[main_irf_nr]
+        irf_loc = irf_loc[main_irf_nr].item()
 
     times_shifted = times - irf_loc
     return traces.assign_coords(time=times_shifted)
