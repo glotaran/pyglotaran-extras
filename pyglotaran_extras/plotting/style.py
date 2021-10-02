@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import Enum
 
 import matplotlib.colors as colors
@@ -24,12 +26,12 @@ class ColorCode(Enum):
     indigo = "#4b0082"
 
     @staticmethod
-    def hex_to_rgb(hex_string):
+    def hex_to_rgb(hex_string: str):
         rgb = colors.hex2color(hex_string)
         return tuple(int(255 * x) for x in rgb)
 
     @staticmethod
-    def rgb_to_hex(rgb_tuple):
+    def rgb_to_hex(rgb_tuple: tuple[float, float, float]):
         return colors.rgb2hex([1.0 * x / 255 for x in rgb_tuple])
 
 
@@ -40,10 +42,37 @@ class LineStyle(Enum):
     dashdot = "-."
 
 
+class DataColorCode(Enum):
+    # Name	#Hex
+    grey = "#808080"
+    black = "#000000"
+    orange = "#ff8c00"
+    red = "#ff0000"
+    cyan = "#00ffff"
+    blue = "#0000ff"
+    green = "#00ff00"
+    green4 = "#008b00"
+    magenta = "#ff00ff"
+    indigo = "#4b0082"
+    brown = "#964b00"
+    maroon = "#800000"
+    yellow = "#ffff00"
+    # orange = "#ff8c00"
+
+
+class DataLineStyle(Enum):
+    solid = "-"
+    dashed = "--"
+
+
 class PlotStyle:
     def __init__(self):
         self._line_style = [e.value for e in LineStyle]
         self._color_codes = [e.value for e in ColorCode]
+        self._data_color_codes = [e.value for e in DataColorCode] + [DataColorCode.orange.value]
+        self._data_line_style = [e.value for e in DataLineStyle] * (
+            len(self._data_color_codes) // 2
+        )
         self.SMALL_SIZE = 12
         self.MEDIUM_SIZE = 14
         self.BIGGER_SIZE = 18
@@ -63,6 +92,14 @@ class PlotStyle:
     @property
     def cycler(self):
         return cycler("color", self._color_codes)
+
+    @property
+    def data_cycler(self):
+        return cycler(color=self._data_color_codes, linestyle=self._data_line_style)
+
+    @property
+    def data_cycler_solid(self):
+        return cycler(color=self._data_color_codes)
 
     @property
     def line_cycler(self):
