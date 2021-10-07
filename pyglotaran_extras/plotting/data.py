@@ -150,6 +150,7 @@ def maximum_coordinate_range(
 def plot_fit_overview(
     result: ResultLike,
     axes_shape: tuple[int, int] = (4, 4),
+    wavelength_range: tuple[float, float] | None = None,
     linlog: bool = False,
     linthresh: float = 1,
     per_axis_legend: bool = False,
@@ -165,6 +166,10 @@ def plot_fit_overview(
         Data structure which can be converted to a mapping.
     axes_shape : tuple[int, int]
         Shape of the plot grid (N, M), by default (4, 4)
+    wavelength_range: tuple[float,float] | None
+        Minimum and maximum wavelengths to generate plots in between.
+        If not provided the maximum range over all datasets will be used.
+        , by default None
     linlog : bool
         Whether to use 'symlog' scale or not, by default False
     linthresh : float
@@ -194,7 +199,9 @@ def plot_fit_overview(
 
     result_map = result_dataset_mapping(result)
     fig, axes = plt.subplots(*axes_shape, figsize=figsize)
-    wavelengths = np.linspace(*maximum_coordinate_range(result_map), num=len(axes.flatten()))
+    if wavelength_range is None:
+        wavelength_range = maximum_coordinate_range(result_map)
+    wavelengths = np.linspace(*wavelength_range, num=len(axes.flatten()))
     max_spectral_values = max(
         len(result_map[dataset_name].coords["spectral"]) for dataset_name in result_map.keys()
     )
