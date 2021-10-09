@@ -13,7 +13,7 @@ from pyglotaran_extras.types import DatasetConvertible
 from pyglotaran_extras.types import ResultLike
 
 
-def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset | DataArray]:
+def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset]:
     """Convert a ``ResultLike`` object to a per dataset mapping of result like data.
 
     Parameters
@@ -23,7 +23,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset | DataArr
 
     Returns
     -------
-    Mapping[str, Dataset | DataArray]
+    Mapping[str, Dataset]
         Per dataset mapping of result like data.
 
     Raises
@@ -38,7 +38,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset | DataArr
 
     if isinstance(result, Result):
         return result.data
-    if isinstance(result, (Dataset, DataArray)):
+    if isinstance(result, Dataset):
         return {"dataset": result}
     if isinstance(result, Sequence):
         result_mapping = {}

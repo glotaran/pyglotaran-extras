@@ -6,10 +6,9 @@ from typing import Sequence
 from typing import Union
 
 from glotaran.project.result import Result
-from xarray import DataArray
 from xarray import Dataset
 
-DatasetConvertible = Union[Dataset, DataArray, str, Path]
+DatasetConvertible = Union[Dataset, str, Path]
 """Types of data which can be converted to a dataset."""
 ResultLike = Union[
     Result, DatasetConvertible, Mapping[str, DatasetConvertible], Sequence[DatasetConvertible]
