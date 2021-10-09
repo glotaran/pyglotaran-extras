@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import matplotlib.pyplot as plt
 
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import extract_irf_location
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -41,26 +42,9 @@ def get_shifted_traces(
         traces = res.species_associated_concentrations
     else:
         raise ValueError(f"No concentrations in result:\n{res}")
-    times = traces.coords["time"]
-    if center_λ is None:  # center wavelength (λ in nm)
-        center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
+    irf_loc = extract_irf_location(res, center_λ, main_irf_nr)
 
-    if "irf_center_location" in res:
-        irf_center_location = res.irf_center_location
-        irf_loc = irf_center_location.sel(spectral=center_λ, method="nearest")
-    elif "center_dispersion_1" in res:
-        # legacy compatibility pyglotaran<0.5.0
-        center_dispersion = res.center_dispersion_1
-        irf_loc = center_dispersion.sel(spectral=center_λ, method="nearest").item()
-    elif "irf_center" in res:
-        irf_loc = res.irf_center
-    else:
-        irf_loc = min(times)
-
-    if hasattr(irf_loc, "shape") and len(irf_loc.shape) > 0:
-        irf_loc = irf_loc[main_irf_nr].item()
-
-    times_shifted = times - irf_loc
+    times_shifted = traces.coords["time"] - irf_loc
     return traces.assign_coords(time=times_shifted)
 
 
