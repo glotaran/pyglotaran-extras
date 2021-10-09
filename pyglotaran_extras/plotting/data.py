@@ -11,6 +11,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_sv_data
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import extract_irf_location
 
 if TYPE_CHECKING:
     from cycler import Cycler
@@ -68,6 +69,8 @@ def plot_data_and_fits(
     result: ResultLike,
     wavelength: float,
     axis: Axes,
+    center_λ: float | None = None,
+    main_irf_nr: int = 0,
     linlog: bool = False,
     linthresh: float = 1,
     per_axis_legend: bool = False,
@@ -85,6 +88,11 @@ def plot_data_and_fits(
         Wavelength to plot data and fits for.
     axis : Axes
         Axis to plot the data and fits on.
+    center_λ: float | None
+        Center wavelength (λ in nm)
+    main_irf_nr : int
+        Index of the main ``irf`` component when using an ``irf``
+        parametrized with multiple peaks , by default 0
     linlog : bool
         Whether to use 'symlog' scale or not, by default False
     linthresh : float
@@ -105,6 +113,8 @@ def plot_data_and_fits(
         spectral_coords = result_map[dataset_name].coords["spectral"].values
         if spectral_coords.min() <= wavelength <= spectral_coords.max():
             result_data = result_map[dataset_name].sel(spectral=[wavelength], method="nearest")
+            irf_loc = extract_irf_location(result_data, center_λ, main_irf_nr)
+            result_data = result_data.assign_coords(time=result_data.coords["time"] - irf_loc)
             result_data.data.plot(x="time", ax=axis, label=f"{dataset_name}_data")
             result_data.fitted_data.plot(x="time", ax=axis, label=f"{dataset_name}_fit")
         else:
@@ -151,6 +161,8 @@ def plot_fit_overview(
     result: ResultLike,
     axes_shape: tuple[int, int] = (4, 4),
     wavelength_range: tuple[float, float] | None = None,
+    center_λ: float | None = None,
+    main_irf_nr: int = 0,
     linlog: bool = False,
     linthresh: float = 1,
     per_axis_legend: bool = False,
@@ -170,6 +182,11 @@ def plot_fit_overview(
         Minimum and maximum wavelengths to generate plots in between.
         If not provided the maximum range over all datasets will be used.
         , by default None
+    center_λ: float | None
+        Center wavelength (λ in nm)
+    main_irf_nr : int
+        Index of the main ``irf`` component when using an ``irf``
+        parametrized with multiple peaks , by default 0
     linlog : bool
         Whether to use 'symlog' scale or not, by default False
     linthresh : float
@@ -219,6 +236,8 @@ def plot_fit_overview(
             result=result_map,
             wavelength=wavelength,
             axis=axis,
+            center_λ=center_λ,
+            main_irf_nr=main_irf_nr,
             linlog=linlog,
             linthresh=linthresh,
             per_axis_legend=per_axis_legend,
