@@ -4,16 +4,15 @@ from collections.abc import Mapping
 from collections.abc import Sequence
 from pathlib import Path
 
+import xarray as xr
 from glotaran.io import load_dataset
 from glotaran.project.result import Result
-from xarray import DataArray
-from xarray import Dataset
 
 from pyglotaran_extras.types import DatasetConvertible
 from pyglotaran_extras.types import ResultLike
 
 
-def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset]:
+def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
     """Convert a ``ResultLike`` object to a per dataset mapping of result like data.
 
     Parameters
@@ -38,7 +37,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset]:
 
     if isinstance(result, Result):
         return result.data
-    if isinstance(result, Dataset):
+    if isinstance(result, xr.Dataset):
         return {"dataset": result}
     if isinstance(result, Sequence):
         result_mapping = {}
@@ -46,7 +45,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset]:
             if isinstance(element, (Path, str)):
                 element = load_dataset(element)
             result_mapping[f"dataset{index}"] = element
-            if not isinstance(element, (Dataset, DataArray)):
+            if not isinstance(element, xr.Dataset):
                 raise TypeError(
                     f"Elements of result need to be of type {DatasetConvertible!r}."
                     f", but were {result!r}."
@@ -58,7 +57,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, Dataset]:
             if isinstance(element, (Path, str)):
                 element = load_dataset(element)
             result_mapping[key] = element
-            if not isinstance(element, (Dataset, DataArray)):
+            if not isinstance(element, xr.Dataset):
                 raise TypeError(
                     f"Elements of result need to be of type {DatasetConvertible!r}."
                     f", but were {result!r}."
