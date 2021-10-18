@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 
 from tests.conftest import wrapped_get_script_dir
 
-from pyglotaran_extras.io.boilerplate import get_script_dir
-from pyglotaran_extras.io.boilerplate import setup_case_study
+from pyglotaran_extras.io.setup_case_study import get_script_dir
+from pyglotaran_extras.io.setup_case_study import setup_case_study
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
@@ -34,7 +34,7 @@ def test_get_script_dir_tmp_path(tmp_path: Path):
     tmp_file = tmp_path / "foo.py"
     content = dedent(
         """
-        from pyglotaran_extras.io.boilerplate import get_script_dir
+        from pyglotaran_extras.io.setup_case_study import get_script_dir
         print(get_script_dir())
         """
     )
@@ -44,6 +44,7 @@ def test_get_script_dir_tmp_path(tmp_path: Path):
     )
     result = printed_result.stdout.decode().rstrip("\n\r")
 
+    assert printed_result.returncode == 0
     assert Path(result) == tmp_path.resolve()
 
 
