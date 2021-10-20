@@ -8,7 +8,7 @@ from typing import Union
 import xarray as xr
 from glotaran.project.result import Result
 
-DatasetConvertible = Union[xr.Dataset, str, Path]
+DatasetConvertible = Union[xr.Dataset, xr.DataArray, str, Path]
 """Types of data which can be converted to a dataset."""
 ResultLike = Union[
     Result, DatasetConvertible, Mapping[str, DatasetConvertible], Sequence[DatasetConvertible]

@@ -5,10 +5,9 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import xarray as xr
-from glotaran.io import load_dataset
 from glotaran.project.result import Result
 
-from pyglotaran_extras.types import DatasetConvertible
+from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.types import ResultLike
 
 
@@ -28,39 +27,22 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
     Raises
     ------
     TypeError
-        If any element of a ``result`` sequence isn't :class:`DatasetConvertible`.
-    TypeError
-        If any element of a ``result`` mapping isn't :class:`DatasetConvertible`.
+        If any value of a ``result`` isn't of :class:`DatasetConvertible`.
     TypeError
         If ``result`` isn't a :class:`ResultLike` object.
     """
 
+    result_mapping = {}
     if isinstance(result, Result):
         return result.data
-    if isinstance(result, xr.Dataset):
-        return {"dataset": result}
+    if isinstance(result, (xr.Dataset, xr.DataArray, Path, str)):
+        return {"dataset": load_data(result)}
     if isinstance(result, Sequence):
-        result_mapping = {}
-        for index, element in enumerate(result):
-            if isinstance(element, (Path, str)):
-                element = load_dataset(element)
-            result_mapping[f"dataset{index}"] = element
-            if not isinstance(element, xr.Dataset):
-                raise TypeError(
-                    f"Elements of result need to be of type {DatasetConvertible!r}."
-                    f", but were {result!r}."
-                )
+        for index, value in enumerate(result):
+            result_mapping[f"dataset{index}"] = load_data(value)
         return result_mapping
     if isinstance(result, Mapping):
-        result_mapping = {}
-        for key, element in result.items():
-            if isinstance(element, (Path, str)):
-                element = load_dataset(element)
-            result_mapping[key] = element
-            if not isinstance(element, xr.Dataset):
-                raise TypeError(
-                    f"Elements of result need to be of type {DatasetConvertible!r}."
-                    f", but were {result!r}."
-                )
+        for key, value in result.items():
+            result_mapping[key] = load_data(value)
         return result_mapping
     raise TypeError(f"Result needs to be of type {ResultLike!r}, but was {result!r}.")

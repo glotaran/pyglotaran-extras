@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import xarray as xr
 from glotaran.io import load_dataset
 from glotaran.project.result import Result
@@ -22,17 +24,21 @@ def load_data(result: DatasetConvertible, dataset_name: str | None = None) -> xr
     -------
     xr.Dataset
         Extracted dataset.
+
+    Raises
+    ------
+    TypeError
+        If ``result`` isn't a :class:`DatasetConvertible` object.
     """
     if isinstance(result, xr.Dataset):
         return result
-    elif isinstance(result, Result):
+    if isinstance(result, xr.DataArray):
+        return result.to_dataset(name="data")
+    if isinstance(result, Result):
         if dataset_name is not None:
             return result.data[dataset_name]
         keys = list(result.data)
         return result.data[keys[0]]
-    else:
-        result_data = load_dataset(result)
-        if isinstance(result_data, xr.Dataset):
-            return result_data
-        else:
-            return result_data.to_dataset(name="data")
+    if isinstance(result, (str, Path)):
+        return load_data(load_dataset(result))
+    raise TypeError(f"Result needs to be of type {DatasetConvertible!r}, but was {result!r}.")
