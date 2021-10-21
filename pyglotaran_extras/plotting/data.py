@@ -13,6 +13,9 @@ from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import PlotDuplicationWarning
 from pyglotaran_extras.plotting.utils import add_unique_figure_legend
 from pyglotaran_extras.plotting.utils import extract_irf_location
+from pyglotaran_extras.plotting.utils import select_plot_wavelengths
+
+__all__ = ["select_plot_wavelengths", "plot_data_overview", "plot_fit_overview"]
 
 if TYPE_CHECKING:
     from typing import Iterable
