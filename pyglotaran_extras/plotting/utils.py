@@ -1,9 +1,20 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from warnings import warn
+
+import numpy as np
+
+from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
     import xarray as xr
+    from matplotlib.figure import Figure
+    from matplotlib.pyplot import Axes
+
+from typing import Iterable
+
+from pyglotaran_extras.types import ResultLike
 
 
 class PlotDuplicationWarning(UserWarning):
@@ -50,3 +61,121 @@ def extract_irf_location(
         irf_loc = irf_loc[main_irf_nr].item()
 
     return irf_loc
+
+
+def maximum_coordinate_range(
+    result: ResultLike, coord_name: str = "spectral"
+) -> tuple[float, float]:
+    """Calculate the minimal and maximal values of a coordinate across datasets.
+
+    Parameters
+    ----------
+    result : ResultLike
+        Data structure which can be converted to a mapping.
+    coord_name : str
+        Name of the coordinate to calculate the maximal range for.
+
+    Returns
+    -------
+    tuple[float, float]
+        Minimal and maximal values across datasets
+
+    See Also
+    --------
+    plot_fit_overview
+    """
+    result_map = result_dataset_mapping(result)
+    minima = []
+    maxima = []
+    for dataset in result_map.values():
+        coord = dataset.coords[coord_name].values
+        minima.append(coord.min())
+        maxima.append(coord.max())
+    return min(minima), max(maxima)
+
+
+def add_unique_figure_legend(fig: Figure, axes: Axes) -> None:
+    """Add a legend with unique elements sorted by label to a figure.
+
+    The handles and labels are extracted from the ``axes``
+
+    Parameters
+    ----------
+    fig : Figure
+        Figure to add the legend to.
+    axes : Axes
+        Axes plotted on the figure.
+
+    See Also
+    --------
+    plot_fit_overview
+    """
+    handles = []
+    labels = []
+    for ax in axes.flatten():
+        ax_handles, ax_labels = ax.get_legend_handles_labels()
+        handles += ax_handles
+        labels += ax_labels
+    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    unique.sort(key=lambda entry: entry[1])
+    fig.legend(*zip(*unique))
+
+
+def select_plot_wavelengths(
+    result: ResultLike,
+    axes_shape: tuple[int, int] = (4, 4),
+    wavelength_range: tuple[float, float] | None = None,
+    equidistant_wavelengths: bool = True,
+) -> Iterable[float]:
+    """Select wavelengths to be used in ``plot_fit_overview`` from a result.
+
+    Parameters
+    ----------
+    result: ResultLike
+        Data structure which can be converted to a mapping of datasets.
+    axes_shape: tuple[int, int]
+        Shape of the plot grid (N, M), by default (4, 4)
+    wavelength_range: tuple[float, float]
+        Tuple of minimum and maximum values to calculate the the wavelengths
+        used for plotting. If not provided the values will be tetermined over all datasets.
+        , by default None
+    equidistant_wavelengths: bool
+        Whether or not wavelengths should be selected based on equidistant values
+        or equidistant indices (only supported for a single dataset).
+        Since in general multiple datasets will have , by default True
+
+    Returns
+    -------
+    Iterable[float]
+        Wavelength which should be used for each subplot by ``plot_fit_overview``.
+
+    See Also
+    --------
+    maximum_coordinate_range
+    """
+    result_map = result_dataset_mapping(result)
+    nr_of_plots = np.prod(axes_shape)
+
+    if wavelength_range is None:
+        wavelength_range = maximum_coordinate_range(result_map)
+
+    if equidistant_wavelengths:
+        return np.linspace(*wavelength_range, num=nr_of_plots)
+
+    first_dataset = next(iter(result_map.keys()))
+    if len(result_map) > 1:
+        warn(
+            UserWarning(
+                "Calculating plot wavelengths is only supported, for a single dataset."
+                f"The dataset {first_dataset!r}, will be used to calculate the selected "
+                "wavelengths."
+                "To mute this warning call 'select_plot_wavelengths' with only one dataset."
+            ),
+            stacklevel=2,
+        )
+    spectral_coords = result_map[first_dataset].coords["spectral"]
+    spectral_coords = spectral_coords[
+        (wavelength_range[0] <= spectral_coords) & (spectral_coords <= wavelength_range[1])
+    ]
+    spectral_indices = np.linspace(0, len(spectral_coords) - 1, num=nr_of_plots, dtype=np.int64)
+    return spectral_coords[spectral_indices].values
