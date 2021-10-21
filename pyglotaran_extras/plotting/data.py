@@ -26,7 +26,11 @@ if TYPE_CHECKING:
 
 
 def plot_data_overview(
-    dataset: Dataset, title="Data overview", linlog: bool = False, linthresh: float = 1
+    dataset: Dataset,
+    title="Data overview",
+    linlog: bool = False,
+    linthresh: float = 1,
+    figsize: tuple[int, int] = (30, 15),
 ) -> tuple[Figure, Axes]:
     """Plot data as filled contour plot and SVD components.
 
@@ -47,7 +51,7 @@ def plot_data_overview(
     tuple[Figure, Axes]
         Figure and axes which can then be refined by the user.
     """
-    fig = plt.figure()
+    fig = plt.figure(figsize=figsize)
     data_ax = plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig)
     lsv_ax = plt.subplot2grid((4, 3), (3, 0), fig=fig)
     sv_ax = plt.subplot2grid((4, 3), (3, 1), fig=fig)
