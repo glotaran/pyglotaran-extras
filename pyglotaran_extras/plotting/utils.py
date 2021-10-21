@@ -6,6 +6,10 @@ if TYPE_CHECKING:
     import xarray as xr
 
 
+class PlotDuplicationWarning(UserWarning):
+    """Warning given when there are more subplots than datapoints."""
+
+
 def extract_irf_location(
     res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int = 0
 ) -> float:
