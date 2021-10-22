@@ -179,3 +179,34 @@ def select_plot_wavelengths(
     ]
     spectral_indices = np.linspace(0, len(spectral_coords) - 1, num=nr_of_plots, dtype=np.int64)
     return spectral_coords[spectral_indices].values
+
+
+def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> float:
+    """Extract 'dataset_scale' attribute from optimization result dataset.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset from a pyglotaran optimization.
+    divide_by_scale : bool
+        Whether or not to divide the data by the dataset scale used for optimization.
+        , by default True
+
+    Returns
+    -------
+    float
+        Dataset scale extracted from ``res`` falls back to 1 if not present.
+    """
+    scale = 1
+    if divide_by_scale is True:
+        if "dataset_scale" in res.attrs:
+            scale = res.attrs["dataset_scale"]
+        else:
+            warn(
+                UserWarning(
+                    "Diving data by dataset scales is only supported by results from "
+                    "'pyglotaran>=0.5.0'. Please upgrade pyglotaran and recreate the "
+                    "result to plot."
+                )
+            )
+    return scale

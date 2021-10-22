@@ -12,6 +12,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_sv_data
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import PlotDuplicationWarning
 from pyglotaran_extras.plotting.utils import add_unique_figure_legend
+from pyglotaran_extras.plotting.utils import extract_dataset_scale
 from pyglotaran_extras.plotting.utils import extract_irf_location
 from pyglotaran_extras.plotting.utils import select_plot_wavelengths
 
@@ -83,6 +84,7 @@ def plot_data_and_fits(
     main_irf_nr: int = 0,
     linlog: bool = False,
     linthresh: float = 1,
+    divide_by_scale: bool = True,
     per_axis_legend: bool = False,
     cycler: Cycler = PlotStyle().data_cycler_solid,
 ) -> None:
@@ -108,6 +110,9 @@ def plot_data_and_fits(
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero., by default 1
+    divide_by_scale : bool
+        Whether or not to divide the data by the dataset scale used for optimization.
+        , by default True
     per_axis_legend: bool
         Whether to use a legend per plot or for the whole figure., by default False
     cycler : Cycler
@@ -123,10 +128,11 @@ def plot_data_and_fits(
         spectral_coords = result_map[dataset_name].coords["spectral"].values
         if spectral_coords.min() <= wavelength <= spectral_coords.max():
             result_data = result_map[dataset_name].sel(spectral=[wavelength], method="nearest")
+            scale = extract_dataset_scale(result_data, divide_by_scale)
             irf_loc = extract_irf_location(result_data, center_λ, main_irf_nr)
             result_data = result_data.assign_coords(time=result_data.coords["time"] - irf_loc)
-            result_data.data.plot(x="time", ax=axis, label=f"{dataset_name}_data")
-            result_data.fitted_data.plot(x="time", ax=axis, label=f"{dataset_name}_fit")
+            (result_data.data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_data")
+            (result_data.fitted_data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_fit")
         else:
             [next(axis._get_lines.prop_cycler) for _ in range(2)]
     if linlog:
@@ -144,6 +150,7 @@ def plot_fit_overview(
     main_irf_nr: int = 0,
     linlog: bool = False,
     linthresh: float = 1,
+    divide_by_scale: bool = True,
     per_axis_legend: bool = False,
     figsize: tuple[int, int] = (30, 15),
     title: str = "Fit overview",
@@ -170,6 +177,9 @@ def plot_fit_overview(
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero., by default 1
+    divide_by_scale : bool
+        Whether or not to divide the data by the dataset scale used for optimization.
+        , by default True
     per_axis_legend : bool
         Whether to use a legend per plot or for the whole figure., by default False
     figsize : tuple[int, int]
@@ -216,6 +226,7 @@ def plot_fit_overview(
             main_irf_nr=main_irf_nr,
             linlog=linlog,
             linthresh=linthresh,
+            divide_by_scale=divide_by_scale,
             per_axis_legend=per_axis_legend,
             cycler=cycler,
         )
