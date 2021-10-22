@@ -1,15 +1,49 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
-import xarray as xr
 
 from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_sv_data
+from pyglotaran_extras.plotting.utils import select_plot_wavelengths
+
+__all__ = ["select_plot_wavelengths", "plot_data_overview"]
+
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
+    from matplotlib.pyplot import Axes
+    from xarray import Dataset
 
 
 def plot_data_overview(
-    dataset: xr.Dataset, title="Data overview", linlog: bool = False, linthresh: float = 1
-):
-    fig = plt.figure()
+    dataset: Dataset,
+    title="Data overview",
+    linlog: bool = False,
+    linthresh: float = 1,
+    figsize: tuple[int, int] = (30, 15),
+) -> tuple[Figure, Axes]:
+    """Plot data as filled contour plot and SVD components.
+
+    Parameters
+    ----------
+    dataset : Dataset
+        Dataset containing data and SVD of the data.
+    title : str, optional
+        Title to add to the figure., by default "Data overview"
+    linlog : bool, optional
+        Whether to use 'symlog' scale or not, by default False
+    linthresh : float, optional
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+
+    Returns
+    -------
+    tuple[Figure, Axes]
+        Figure and axes which can then be refined by the user.
+    """
+    fig = plt.figure(figsize=figsize)
     data_ax = plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig)
     lsv_ax = plt.subplot2grid((4, 3), (3, 0), fig=fig)
     sv_ax = plt.subplot2grid((4, 3), (3, 1), fig=fig)
