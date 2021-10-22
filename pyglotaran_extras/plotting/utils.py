@@ -168,8 +168,8 @@ def select_plot_wavelengths(
             UserWarning(
                 "Calculating plot wavelengths is only supported, for a single dataset."
                 f"The dataset {first_dataset!r}, will be used to calculate the selected "
-                "wavelengths."
-                "To mute this warning call 'select_plot_wavelengths' with only one dataset."
+                "wavelengths.To mute this warning call "
+                f"'{select_plot_wavelengths.__name__}' with only one dataset."
             ),
             stacklevel=2,
         )
