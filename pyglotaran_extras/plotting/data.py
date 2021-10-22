@@ -86,6 +86,7 @@ def plot_data_and_fits(
     linthresh: float = 1,
     divide_by_scale: bool = True,
     per_axis_legend: bool = False,
+    y_label: str = "a.u.",
     cycler: Cycler = PlotStyle().data_cycler_solid,
 ) -> None:
     """Plot data and fits for a given ``wavelength`` on a given ``axis``.
@@ -115,6 +116,8 @@ def plot_data_and_fits(
         , by default True
     per_axis_legend: bool
         Whether to use a legend per plot or for the whole figure., by default False
+    y_label: str
+        Label used for the y-axis of each subplot.
     cycler : Cycler
         Plot style cycler to use., by default PlotStyle().data_cycler_solid
 
@@ -137,7 +140,7 @@ def plot_data_and_fits(
             [next(axis._get_lines.prop_cycler) for _ in range(2)]
     if linlog:
         axis.set_xscale("symlog", linthresh=linthresh)
-    axis.set_ylabel("Intensity")
+    axis.set_ylabel(y_label)
     if per_axis_legend is True:
         axis.legend()
 
@@ -154,6 +157,7 @@ def plot_fit_overview(
     per_axis_legend: bool = False,
     figsize: tuple[int, int] = (30, 15),
     title: str = "Fit overview",
+    y_label: str = "a.u.",
     cycler: Cycler = PlotStyle().data_cycler_solid,
 ) -> tuple[Figure, Axes]:
     """Plot data and their fit in per wavelength plot grid.
@@ -186,6 +190,8 @@ def plot_fit_overview(
         Size of the figure (N, M) in inches., by default (30, 15)
     title : str
         Title to add to the figure., by default "Fit overview"
+    y_label: str
+        Label used for the y-axis of each subplot.
     cycler : Cycler
         Plot style cycler to use., by default PlotStyle().data_cycler_solid
 
@@ -228,6 +234,7 @@ def plot_fit_overview(
             linthresh=linthresh,
             divide_by_scale=divide_by_scale,
             per_axis_legend=per_axis_legend,
+            y_label=y_label,
             cycler=cycler,
         )
     if per_axis_legend is False:
