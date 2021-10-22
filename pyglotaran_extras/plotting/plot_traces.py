@@ -1,107 +1,193 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from warnings import warn
 
 import matplotlib.pyplot as plt
 
+from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import PlotDuplicationWarning
+from pyglotaran_extras.plotting.utils import add_unique_figure_legend
+from pyglotaran_extras.plotting.utils import extract_dataset_scale
 from pyglotaran_extras.plotting.utils import extract_irf_location
+from pyglotaran_extras.plotting.utils import select_plot_wavelengths
+
+__all__ = ["select_plot_wavelengths", "plot_fitted_traces"]
 
 if TYPE_CHECKING:
-    import xarray as xr
+    from typing import Iterable
+
+    from cycler import Cycler
+    from matplotlib.figure import Figure
+    from matplotlib.pyplot import Axes
+
+    from pyglotaran_extras.types import ResultLike
 
 
-def get_shifted_traces(
-    res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int = 0
-) -> xr.DataArray:
-    """Shift traces by the position of the main ``irf``.
-
-    Parameters
-    ----------
-    res: xr.Dataset
-        Result dataset from a pyglotaran optimization.
-    center_λ: float|None
-        Center wavelength (λ in nm), by default None
-    main_irf_nr: int
-        Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks , by default 0
-
-    Returns
-    -------
-    xr.DataArray
-        Traces shifted by the ``irf``s location, to align the at 0.
-
-    Raises
-    ------
-    ValueError
-        If no known concentration was found in the result.
-    """
-    if "species_concentration" in res:
-        traces = res.species_concentration
-    elif "species_associated_concentrations" in res:
-        traces = res.species_associated_concentrations
-    else:
-        raise ValueError(f"No concentrations in result:\n{res}")
-    irf_loc = extract_irf_location(res, center_λ, main_irf_nr)
-
-    times_shifted = traces.coords["time"] - irf_loc
-    return traces.assign_coords(time=times_shifted)
-
-
-def calculate_x_ranges(res, linrange):
-    print(f"{res=}")
-    print(f"{linrange=}")
-    print("Not yet implemented")
-    pass
-
-
-def plot_traces(
-    res: xr.Dataset,
-    ax: plt.Axes,
-    center_λ: float | None,
+def plot_data_and_fits(
+    result: ResultLike,
+    wavelength: float,
+    axis: Axes,
+    center_λ: float | None = None,
+    main_irf_nr: int = 0,
     linlog: bool = False,
     linthresh: float = 1,
-    linscale: float = 1,
-    main_irf_nr: int = 0,
+    divide_by_scale: bool = True,
+    per_axis_legend: bool = False,
+    y_label: str = "a.u.",
+    cycler: Cycler = PlotStyle().data_cycler_solid,
 ) -> None:
-    """Plot traces on the given axis ``ax``
+    """Plot data and fits for a given ``wavelength`` on a given ``axis``.
+
+    If the wavelength isn't part of a dataset, that dataset will be skipped.
 
     Parameters
     ----------
-    res: xr.Dataset
-        Result dataset from a pyglotaran optimization.
-    ax: plt.Axes
-        Axes to plot the traces on
+    result : ResultLike
+        Data structure which can be converted to a mapping.
+    wavelength : float
+        Wavelength to plot data and fits for.
+    axis : Axes
+        Axis to plot the data and fits on.
     center_λ: float | None
         Center wavelength (λ in nm)
-    linlog: bool
-        Whether to use 'symlog' scale or not, by default False
-    linthresh: int
-        A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
-    linscale: int
-        This allows the linear range (-linthresh to linthresh) to be stretched
-        relative to the logarithmic range.
-        Its value is the number of decades to use for each half of the linear range.
-        For example, when linscale == 1.0 (the default), the space used for the
-        positive and negative halves of the linear range will be equal to one
-        decade in the logarithmic range., by default 1
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks , by default 0
+    linlog : bool
+        Whether to use 'symlog' scale or not, by default False
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    divide_by_scale : bool
+        Whether or not to divide the data by the dataset scale used for optimization.
+        , by default True
+    per_axis_legend: bool
+        Whether to use a legend per plot or for the whole figure., by default False
+    y_label: str
+        Label used for the y-axis of each subplot.
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().data_cycler_solid
 
     See Also
     --------
-    get_shifted_traces
+    plot_fit_overview
     """
-    traces = get_shifted_traces(res, center_λ, main_irf_nr)
-    plot_style = PlotStyle()
-    plt.rc("axes", prop_cycle=plot_style.cycler)
-
-    if "spectral" in traces.coords:
-        traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
-    else:
-        traces.plot.line(x="time", ax=ax)
-
+    result_map = result_dataset_mapping(result)
+    axis.set_prop_cycle(cycler)
+    for dataset_name in result_map.keys():
+        spectral_coords = result_map[dataset_name].coords["spectral"].values
+        if spectral_coords.min() <= wavelength <= spectral_coords.max():
+            result_data = result_map[dataset_name].sel(spectral=[wavelength], method="nearest")
+            scale = extract_dataset_scale(result_data, divide_by_scale)
+            irf_loc = extract_irf_location(result_data, center_λ, main_irf_nr)
+            result_data = result_data.assign_coords(time=result_data.coords["time"] - irf_loc)
+            (result_data.data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_data")
+            (result_data.fitted_data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_fit")
+        else:
+            [next(axis._get_lines.prop_cycler) for _ in range(2)]
     if linlog:
-        ax.set_xscale("symlog", linthresh=linthresh, linscale=linscale)
+        axis.set_xscale("symlog", linthresh=linthresh)
+    axis.set_ylabel(y_label)
+    if per_axis_legend is True:
+        axis.legend()
+
+
+def plot_fitted_traces(
+    result: ResultLike,
+    wavelengths: Iterable[float],
+    axes_shape: tuple[int, int] = (4, 4),
+    center_λ: float | None = None,
+    main_irf_nr: int = 0,
+    linlog: bool = False,
+    linthresh: float = 1,
+    divide_by_scale: bool = True,
+    per_axis_legend: bool = False,
+    figsize: tuple[int, int] = (30, 15),
+    title: str = "Fit overview",
+    y_label: str = "a.u.",
+    cycler: Cycler = PlotStyle().data_cycler_solid,
+) -> tuple[Figure, Axes]:
+    """Plot data and their fit in per wavelength plot grid.
+
+    Parameters
+    ----------
+    result : ResultLike
+        Data structure which can be converted to a mapping of datasets.
+    axes_shape : tuple[int, int]
+        Shape of the plot grid (N, M), by default (4, 4)
+    wavelengths: Iterable[float]
+        Wavelength which should be used for each subplot, should to be of length N*M
+        with ``axes_shape`` being of shape (N, M), else it will result in missing plots.
+    center_λ: float | None
+        Center wavelength of the IRF (λ in nm).
+    main_irf_nr : int
+        Index of the main ``irf`` component when using an ``irf``
+        parametrized with multiple peaks , by default 0
+    linlog : bool
+        Whether to use 'symlog' scale or not, by default False
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    divide_by_scale : bool
+        Whether or not to divide the data by the dataset scale used for optimization.
+        , by default True
+    per_axis_legend : bool
+        Whether to use a legend per plot or for the whole figure., by default False
+    figsize : tuple[int, int]
+        Size of the figure (N, M) in inches., by default (30, 15)
+    title : str
+        Title to add to the figure., by default "Fit overview"
+    y_label: str
+        Label used for the y-axis of each subplot.
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().data_cycler_solid
+
+    Returns
+    -------
+    tuple[Figure, Axes]
+        Figure and axes which can then be refined by the user.
+
+    See Also
+    --------
+    maximum_coordinate_range
+    add_unique_figure_legend
+    plot_data_and_fits
+    calculate_wavelengths
+    """
+
+    result_map = result_dataset_mapping(result)
+    fig, axes = plt.subplots(*axes_shape, figsize=figsize)
+    nr_of_plots = len(axes.flatten())
+    max_spectral_values = max(
+        len(result_map[dataset_name].coords["spectral"]) for dataset_name in result_map.keys()
+    )
+    if nr_of_plots > max_spectral_values:
+        warn(
+            PlotDuplicationWarning(
+                f"The number of plots ({nr_of_plots}) exceeds the maximum number of "
+                f"spectral data points ({max_spectral_values}), "
+                "which will lead in duplicated plots."
+            ),
+            stacklevel=2,
+        )
+    for wavelength, axis in zip(wavelengths, axes.flatten()):
+        plot_data_and_fits(
+            result=result_map,
+            wavelength=wavelength,
+            axis=axis,
+            center_λ=center_λ,
+            main_irf_nr=main_irf_nr,
+            linlog=linlog,
+            linthresh=linthresh,
+            divide_by_scale=divide_by_scale,
+            per_axis_legend=per_axis_legend,
+            y_label=y_label,
+            cycler=cycler,
+        )
+    if per_axis_legend is False:
+        add_unique_figure_legend(fig, axes)
+    fig.suptitle(title, fontsize=28)
+    fig.tight_layout()
+    return fig, axes

@@ -10,8 +10,8 @@ from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_residual import plot_residual
 from pyglotaran_extras.plotting.plot_spectra import plot_spectra
 from pyglotaran_extras.plotting.plot_svd import plot_svd
-from pyglotaran_extras.plotting.plot_traces import plot_traces
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import plot_concentrations
 
 if TYPE_CHECKING:
     from glotaran.project import Result
@@ -73,7 +73,7 @@ def plot_overview(
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
 
     # First and second row: concentrations - SAS/EAS - DAS
-    plot_traces(
+    plot_concentrations(
         res,
         ax[0, 0],
         center_λ,
