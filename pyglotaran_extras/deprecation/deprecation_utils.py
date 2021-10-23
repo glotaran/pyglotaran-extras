@@ -3,6 +3,12 @@ from __future__ import annotations
 from importlib.metadata import distribution
 from warnings import warn
 
+FIG_ONLY_WARNING = (
+    "In the future plot functions which create figures, will return a tuple "
+    "of Figure AND the Axes. Please set ``figure_only=False`` and adjust your code.\n"
+    "This usage will be an error in version: 0.7.0."
+)
+
 
 class OverDueDeprecation(Exception):
     """Error thrown when a deprecation should have been removed.

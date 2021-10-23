@@ -111,5 +111,6 @@ repos:
     rev: v2.1.0
     hooks:
       - id: codespell
-        files: ".py|.rst"
-        args: [-L pyglotaran]
+        types: [file]
+        types_or: [python, pyi, markdown, rst, jupyter]
+        args: ["--ignore-words-list=doas"]

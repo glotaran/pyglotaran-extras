@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING
+from warnings import warn
 
 import matplotlib.pyplot as plt
 
+from pyglotaran_extras.deprecation.deprecation_utils import FIG_ONLY_WARNING
+from pyglotaran_extras.deprecation.deprecation_utils import PyglotaranExtrasApiDeprecationWarning
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_concentrations import plot_concentrations
 from pyglotaran_extras.plotting.plot_residual import plot_residual
@@ -15,6 +18,7 @@ from pyglotaran_extras.plotting.style import PlotStyle
 if TYPE_CHECKING:
     from cycler import Cycler
     from matplotlib.figure import Figure
+    from matplotlib.pyplot import Axes
 
     from pyglotaran_extras.types import DatasetConvertible
 
@@ -29,7 +33,8 @@ def plot_overview(
     main_irf_nr: int = 0,
     figsize: tuple[int, int] = (18, 16),
     cycler: Cycler = PlotStyle().cycler,
-) -> Figure:
+    figure_only: bool = True,
+) -> Figure | tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
     Parameters
@@ -59,11 +64,16 @@ def plot_overview(
         Size of the figure (N, M) in inches., by default (18, 16)
     cycler : Cycler
         Plot style cycler to use., by default PlotStyle().cycler
+    figure_only: bool
+        Whether or not to only return the figure.
+        This is a deprecation helper argument to transition to a consistent return value
+        consisting of the :class:`Figure` and the :class:`Axes`, by default True
 
     Returns
     -------
-    Figure
-        Figure object which contains the plots.
+    Figure|tuple[Figure, Axes]
+        If ``figure_only`` is True, Figure object which contains the plots (deprecated).
+        If ``figure_only`` is False, Figure object which contains the plots and the Axes.
     """
 
     res = load_data(result)
@@ -71,7 +81,7 @@ def plot_overview(
     # Plot dimensions
     M = 4
     N = 3
-    fig, ax = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
+    fig, axes = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
 
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
@@ -79,7 +89,7 @@ def plot_overview(
     # First and second row: concentrations - SAS/EAS - DAS
     plot_concentrations(
         res,
-        ax[0, 0],
+        axes[0, 0],
         center_λ,
         linlog=linlog,
         linthresh=linthresh,
@@ -87,13 +97,17 @@ def plot_overview(
         main_irf_nr=main_irf_nr,
         cycler=cycler,
     )
-    plot_spectra(res, ax[0:2, 1:3], cycler=cycler)
-    plot_svd(res, ax[2:4, 0:3], linlog=linlog, linthresh=linthresh, cycler=cycler)
+    plot_spectra(res, axes[0:2, 1:3], cycler=cycler)
+    plot_svd(res, axes[2:4, 0:3], linlog=linlog, linthresh=linthresh, cycler=cycler)
     plot_residual(
-        res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
+        res, axes[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
     )
     # plt.tight_layout(pad=3, w_pad=4.0, h_pad=4.0)
-    return fig
+    if figure_only is True:
+        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+        return fig
+    else:
+        return fig, axes
 
 
 def plot_simple_overview(
@@ -101,8 +115,31 @@ def plot_simple_overview(
     title: str | None = None,
     figsize: tuple[int, int] = (12, 6),
     cycler: Cycler = PlotStyle().cycler,
-) -> Figure:
-    """simple plotting function derived from code from pyglotaran_extras"""
+    figure_only: bool = True,
+) -> Figure | tuple[Figure, Axes]:
+    """Simple plotting function .
+
+    Parameters
+    ----------
+    result: DatasetConvertible
+        Result from a pyglotaran optimization as dataset, Path or Result object.
+    title: str | None
+        Title of the figure., by default None
+    figsize : tuple[int, int]
+        Size of the figure (N, M) in inches., by default (18, 16)
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    figure_only: bool
+        Whether or not to only return the figure.
+        This is a deprecation helper argument to transition to a consistent return value
+        consisting of the :class:`Figure` and the :class:`Axes`, by default True
+
+    Returns
+    -------
+    Figure|tuple[Figure, Axes]
+        If ``figure_only`` is True, Figure object which contains the plots (deprecated).
+        If ``figure_only`` is False, Figure object which contains the plots and the Axes.
+    """
     res = load_data(result)
 
     fig, axes = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
@@ -135,7 +172,11 @@ def plot_simple_overview(
     axes[0, 2].set_title("data")
     res.residual.plot(x="time", ax=axes[1, 2])
     axes[1, 2].set_title("residual")
-    return fig
+    if figure_only is True:
+        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+        return fig
+    else:
+        return fig, axes
 
 
 if __name__ == "__main__":
@@ -145,7 +186,7 @@ if __name__ == "__main__":
     res = load_data(result_path)
     print(res)
 
-    fig = plot_overview(res)
+    fig, plt.axes = plot_overview(res, figure_only=False)
     if len(sys.argv) > 2:
         fig.savefig(sys.argv[2], bbox_inches="tight")
         print(f"Saved figure to: {sys.argv[2]}")
