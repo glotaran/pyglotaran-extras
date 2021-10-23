@@ -13,6 +13,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
 
 if TYPE_CHECKING:
+    from cycler import Cycler
     from matplotlib.figure import Figure
 
     from pyglotaran_extras.types import DatasetConvertible
@@ -27,6 +28,7 @@ def plot_overview(
     show_data: bool = False,
     main_irf_nr: int = 0,
     figsize: tuple[int, int] = (18, 16),
+    cycler: Cycler = PlotStyle().cycler,
 ) -> Figure:
     """Plot overview of the optimization result.
 
@@ -55,6 +57,8 @@ def plot_overview(
         parametrized with multiple peaks , by default 0
     figsize : tuple[int, int]
         Size of the figure (N, M) in inches., by default (18, 16)
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
 
     Returns
     -------
@@ -69,9 +73,6 @@ def plot_overview(
     N = 3
     fig, ax = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
 
-    plot_style = PlotStyle()
-    plt.rc("axes", prop_cycle=plot_style.cycler)
-
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
 
@@ -84,50 +85,56 @@ def plot_overview(
         linthresh=linthresh,
         linscale=linscale,
         main_irf_nr=main_irf_nr,
+        cycler=cycler,
     )
-    plot_spectra(res, ax[0:2, 1:3])
-    plot_svd(res, ax[2:4, 0:3], linlog=linlog, linthresh=linthresh)
-    plot_residual(res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data)
-    plot_style.set_default_colors()
-    plot_style.set_default_fontsize()
-    plt.rc("axes", prop_cycle=plot_style.cycler)
+    plot_spectra(res, ax[0:2, 1:3], cycler=cycler)
+    plot_svd(res, ax[2:4, 0:3], linlog=linlog, linthresh=linthresh, cycler=cycler)
+    plot_residual(
+        res, ax[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
+    )
     # plt.tight_layout(pad=3, w_pad=4.0, h_pad=4.0)
     return fig
 
 
 def plot_simple_overview(
-    result: DatasetConvertible, title: str | None = None, figsize: tuple[int, int] = (12, 6)
+    result: DatasetConvertible,
+    title: str | None = None,
+    figsize: tuple[int, int] = (12, 6),
+    cycler: Cycler = PlotStyle().cycler,
 ) -> Figure:
     """simple plotting function derived from code from pyglotaran_extras"""
     res = load_data(result)
 
-    fig, ax = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
+    fig, axes = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
+    for ax in axes.flatten():
+        ax.set_prop_cycle(cycler)
     if title:
         fig.suptitle(title, fontsize=16)
     sas = res.species_associated_spectra
     traces = res.species_concentration
     if "spectral" in traces.coords:
         traces.sel(spectral=res.spectral.values[0], method="nearest").plot.line(
-            x="time", ax=ax[0, 0]
+            x="time", ax=axes[0, 0]
         )
     else:
-        traces.plot.line(x="time", ax=ax[0, 0])
-    sas.plot.line(x="spectral", ax=ax[0, 1])
+        traces.plot.line(x="time", ax=axes[0, 0])
+    sas.plot.line(x="spectral", ax=axes[0, 1])
     rLSV = res.residual_left_singular_vectors
-    rLSV.isel(left_singular_value_index=range(min(2, len(rLSV)))).plot.line(x="time", ax=ax[1, 0])
-
-    ax[1, 0].set_title("res. LSV")
-    rRSV = res.residual_right_singular_vectors
-    rRSV.isel(right_singular_value_index=range(min(2, len(rRSV)))).plot.line(
-        x="spectral", ax=ax[1, 1]
+    rLSV.isel(left_singular_value_index=range(min(2, len(rLSV)))).plot.line(
+        x="time", ax=axes[1, 0]
     )
 
-    ax[1, 1].set_title("res. RSV")
-    res.data.plot(x="time", ax=ax[0, 2])
-    ax[0, 2].set_title("data")
-    res.residual.plot(x="time", ax=ax[1, 2])
-    ax[1, 2].set_title("residual")
-    plt.show(block=False)
+    axes[1, 0].set_title("res. LSV")
+    rRSV = res.residual_right_singular_vectors
+    rRSV.isel(right_singular_value_index=range(min(2, len(rRSV)))).plot.line(
+        x="spectral", ax=axes[1, 1]
+    )
+
+    axes[1, 1].set_title("res. RSV")
+    res.data.plot(x="time", ax=axes[0, 2])
+    axes[0, 2].set_title("data")
+    res.residual.plot(x="time", ax=axes[1, 2])
+    axes[1, 2].set_title("residual")
     return fig
 
 
