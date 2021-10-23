@@ -1,4 +1,16 @@
-def plot_svd(res, axes, linlog=False, linthresh=1):
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Sequence
+
+    import xarray as xr
+    from matplotlib.axis import Axis
+    from matplotlib.pyplot import Axes
+
+
+def plot_svd(res: xr.Dataset, axes: Axes, linlog: bool = False, linthresh: float = 1) -> None:
     plot_lsv_residual(res, axes[0, 0], linlog=linlog, linthresh=linthresh)
     plot_rsv_residual(res, axes[0, 1])
     plot_sv_residual(res, axes[0, 2])
@@ -7,7 +19,13 @@ def plot_svd(res, axes, linlog=False, linthresh=1):
     plot_sv_data(res, axes[1, 2])
 
 
-def plot_lsv_data(res, ax, indices=range(4), linlog=False, linthresh=1):
+def plot_lsv_data(
+    res: xr.Dataset,
+    ax: Axis,
+    indices: Sequence[int] = range(4),
+    linlog: bool = False,
+    linthresh: float = 1,
+) -> None:
     """Plot left singular vectors (time) of the data matrix"""
     dLSV = res.data_left_singular_vectors
     dLSV.isel(left_singular_value_index=indices[: len(dLSV.left_singular_value_index)]).plot.line(
@@ -18,7 +36,7 @@ def plot_lsv_data(res, ax, indices=range(4), linlog=False, linthresh=1):
         ax.set_xscale("symlog", linthresh=linthresh)
 
 
-def plot_rsv_data(res, ax, indices=range(4)):
+def plot_rsv_data(res: xr.Dataset, ax: Axis, indices: Sequence[int] = range(4)) -> None:
     """Plot right singular vectors (spectra) of the data matrix"""
     dRSV = res.data_right_singular_vectors
     dRSV.isel(
@@ -27,7 +45,7 @@ def plot_rsv_data(res, ax, indices=range(4)):
     ax.set_title("data. RSV")
 
 
-def plot_sv_data(res, ax, indices=range(10)):
+def plot_sv_data(res: xr.Dataset, ax: Axis, indices: Sequence[int] = range(10)) -> None:
     """Plot singular values of the data matrix"""
     dSV = res.data_singular_values
     dSV.sel(singular_value_index=indices[: len(dSV.singular_value_index)]).plot.line(
@@ -36,7 +54,13 @@ def plot_sv_data(res, ax, indices=range(10)):
     ax.set_title("data. log(SV)")
 
 
-def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False, linthresh=1):
+def plot_lsv_residual(
+    res: xr.Dataset,
+    ax: Axis,
+    indices: Sequence[int] = range(2),
+    linlog: bool = False,
+    linthresh: float = 1,
+) -> None:
     """Plot left singular vectors (time) of the residual matrix"""
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
@@ -50,7 +74,7 @@ def plot_lsv_residual(res, ax, indices=range(2), label="residual", linlog=False,
         ax.set_xscale("symlog", linthresh=linthresh)
 
 
-def plot_rsv_residual(res, ax, indices=range(2)):
+def plot_rsv_residual(res: xr.Dataset, ax: Axis, indices: Sequence[int] = range(2)) -> None:
     """Plot right singular vectors (spectra) of the residual matrix"""
     if "weighted_residual_right_singular_vectors" in res:
         rRSV = res.weighted_residual_right_singular_vectors
@@ -62,7 +86,7 @@ def plot_rsv_residual(res, ax, indices=range(2)):
     ax.set_title("res. RSV")
 
 
-def plot_sv_residual(res, ax, indices=range(10)):
+def plot_sv_residual(res: xr.Dataset, ax: Axis, indices: Sequence[int] = range(10)) -> None:
     """Plot singular values of the residual matrix"""
     if "weighted_residual_singular_values" in res:
         rSV = res.weighted_residual_singular_values

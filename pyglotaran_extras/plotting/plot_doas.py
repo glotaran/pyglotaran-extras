@@ -1,10 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import matplotlib.pyplot as plt
 
 from pyglotaran_extras.io.load_data import load_data
 
+if TYPE_CHECKING:
+    from matplotlib.figure import Figure
 
-def plot_doas(path):
-    dataset = load_data(path)
+    from pyglotaran_extras.types import DatasetConvertible
+
+
+def plot_doas(result: DatasetConvertible) -> Figure:
+    dataset = load_data(result)
 
     # Create M x N plotting grid
     M = 6

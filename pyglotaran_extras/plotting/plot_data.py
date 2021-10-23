@@ -11,14 +11,17 @@ from pyglotaran_extras.plotting.plot_svd import plot_sv_data
 __all__ = ["plot_data_overview"]
 
 if TYPE_CHECKING:
+    from typing import cast
+
+    import xarray as xr
+    from matplotlib.axis import Axis
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
-    from xarray import Dataset
 
 
 def plot_data_overview(
-    dataset: Dataset,
-    title="Data overview",
+    dataset: xr.Dataset,
+    title: str = "Data overview",
     linlog: bool = False,
     linthresh: float = 1,
     figsize: tuple[int, int] = (30, 15),
@@ -43,10 +46,10 @@ def plot_data_overview(
         Figure and axes which can then be refined by the user.
     """
     fig = plt.figure(figsize=figsize)
-    data_ax = plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig)
-    lsv_ax = plt.subplot2grid((4, 3), (3, 0), fig=fig)
-    sv_ax = plt.subplot2grid((4, 3), (3, 1), fig=fig)
-    rsv_ax = plt.subplot2grid((4, 3), (3, 2), fig=fig)
+    data_ax = cast(Axis, plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig))
+    lsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 0), fig=fig))
+    sv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 1), fig=fig))
+    rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
 
     if len(dataset.data.time) > 1:
         dataset.data.plot(x="time", ax=data_ax, center=False)

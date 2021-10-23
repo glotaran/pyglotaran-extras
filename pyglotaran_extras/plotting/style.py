@@ -26,12 +26,12 @@ class ColorCode(Enum):
     indigo = "#4b0082"
 
     @staticmethod
-    def hex_to_rgb(hex_string: str):
+    def hex_to_rgb(hex_string: str) -> tuple[int, ...]:
         rgb = colors.hex2color(hex_string)
         return tuple(int(255 * x) for x in rgb)
 
     @staticmethod
-    def rgb_to_hex(rgb_tuple: tuple[float, float, float]):
+    def rgb_to_hex(rgb_tuple: tuple[float, ...]) -> str:
         return colors.rgb2hex([1.0 * x / 255 for x in rgb_tuple])
 
 

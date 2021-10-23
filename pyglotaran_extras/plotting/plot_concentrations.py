@@ -9,26 +9,26 @@ from pyglotaran_extras.plotting.utils import get_shifted_traces
 
 if TYPE_CHECKING:
     import xarray as xr
-    from matplotlib.pyplot import Axes
+    from matplotlib.axis import Axis
 
 
 def plot_concentrations(
     res: xr.Dataset,
-    ax: Axes,
+    ax: Axis,
     center_λ: float | None,
     linlog: bool = False,
     linthresh: float = 1,
     linscale: float = 1,
     main_irf_nr: int = 0,
 ) -> None:
-    """Plot traces on the given axis ``ax``
+    """Plot traces on the given axis ``ax``.
 
     Parameters
     ----------
     res: xr.Dataset
         Result dataset from a pyglotaran optimization.
-    ax: Axes
-        Axes to plot the traces on
+    ax: Axis
+        Axis to plot the traces on
     center_λ: float | None
         Center wavelength (λ in nm)
     linlog: bool

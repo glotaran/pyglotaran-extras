@@ -40,7 +40,7 @@ DEPRECATION_WARN_MESSAGE = (
 def pyglotaran_extras_0_3_0(monkeypatch: MonkeyPatch):
     """Mock pyglotaran_extras version to always be 0.3.0 for the test."""
     monkeypatch.setattr(
-        pyglotaran_extras.deprecation.deprecation_utils,
+        pyglotaran_extras.deprecation.deprecation_utils,  # type:ignore[attr-defined]
         "pyglotaran_extras_version",
         lambda: "0.3.0",
     )
@@ -51,7 +51,7 @@ def pyglotaran_extras_0_3_0(monkeypatch: MonkeyPatch):
 def pyglotaran_extras_1_0_0(monkeypatch: MonkeyPatch):
     """Mock pyglotaran_extras version to always be 1.0.0 for the test."""
     monkeypatch.setattr(
-        pyglotaran_extras.deprecation.deprecation_utils,
+        pyglotaran_extras.deprecation.deprecation_utils,  # type:ignore[attr-defined]
         "pyglotaran_extras_version",
         lambda: "1.0.0",
     )
@@ -141,7 +141,9 @@ def test_warn_deprecated_overdue_deprecation(monkeypatch: MonkeyPatch):
 def test_warn_deprecated_no_overdue_deprecation_on_dev(monkeypatch: MonkeyPatch):
     """Current version is equal or bigger than drop_version but it's a dev version."""
     monkeypatch.setattr(
-        pyglotaran_extras.deprecation.deprecation_utils, "glotaran_version", lambda: "0.6.0-dev"
+        pyglotaran_extras.deprecation.deprecation_utils,  # type:ignore[attr-defined]
+        "glotaran_version",
+        lambda: "0.6.0-dev",
     )
 
     with pytest.raises(OverDueDeprecation):

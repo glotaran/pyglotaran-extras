@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
-import xarray as xr
 
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_concentrations import plot_concentrations
@@ -14,12 +13,14 @@ from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
 
 if TYPE_CHECKING:
-    from glotaran.project import Result
+    import xarray as xr
     from matplotlib.figure import Figure
+
+    from pyglotaran_extras.types import DatasetConvertible
 
 
 def plot_overview(
-    result: xr.Dataset | Path | Result,
+    result: DatasetConvertible,
     center_λ: float | None = None,
     linlog: bool = True,
     linthresh: float = 1,
@@ -31,7 +32,7 @@ def plot_overview(
 
     Parameters
     ----------
-    result : xr.Dataset | Path | Result
+    result: DatasetConvertible
         Result from a pyglotaran optimization as dataset, Path or Result object.
     center_λ: float | None
         Center wavelength (λ in nm)
@@ -47,7 +48,7 @@ def plot_overview(
         For example, when linscale == 1.0 (the default), the space used for the
         positive and negative halves of the linear range will be equal to one
         decade in the logarithmic range., by default 1
-    show_data : bool
+    show_data: bool
         Whether to show the input data or residual, by default False
     main_irf_nr: int
         Index of the main ``irf`` component when using an ``irf``
@@ -92,7 +93,7 @@ def plot_overview(
     return fig
 
 
-def plot_simple_overview(res, title=None):
+def plot_simple_overview(res: xr.Dataset, title: str | None = None) -> Figure:
     """simple plotting function derived from code from pyglotaran_extras"""
     fig, ax = plt.subplots(2, 3, figsize=(12, 6), constrained_layout=True)
     if title:
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     import sys
 
     result_path = Path(sys.argv[1])
-    res = xr.open_dataset(result_path)
+    res = load_data(result_path)
     print(res)
 
     fig = plot_overview(res)
