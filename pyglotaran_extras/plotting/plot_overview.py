@@ -13,7 +13,6 @@ from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
 
 if TYPE_CHECKING:
-    import xarray as xr
     from matplotlib.figure import Figure
 
     from pyglotaran_extras.types import DatasetConvertible
@@ -27,6 +26,7 @@ def plot_overview(
     linscale: float = 1,
     show_data: bool = False,
     main_irf_nr: int = 0,
+    figsize: tuple[int, int] = (18, 16),
 ) -> Figure:
     """Plot overview of the optimization result.
 
@@ -53,6 +53,8 @@ def plot_overview(
     main_irf_nr: int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks , by default 0
+    figsize : tuple[int, int]
+        Size of the figure (N, M) in inches., by default (18, 16)
 
     Returns
     -------
@@ -65,7 +67,7 @@ def plot_overview(
     # Plot dimensions
     M = 4
     N = 3
-    fig, ax = plt.subplots(M, N, figsize=(18, 16), constrained_layout=True)
+    fig, ax = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
 
     plot_style = PlotStyle()
     plt.rc("axes", prop_cycle=plot_style.cycler)
@@ -93,9 +95,13 @@ def plot_overview(
     return fig
 
 
-def plot_simple_overview(res: xr.Dataset, title: str | None = None) -> Figure:
+def plot_simple_overview(
+    result: DatasetConvertible, title: str | None = None, figsize: tuple[int, int] = (12, 6)
+) -> Figure:
     """simple plotting function derived from code from pyglotaran_extras"""
-    fig, ax = plt.subplots(2, 3, figsize=(12, 6), constrained_layout=True)
+    res = load_data(result)
+
+    fig, ax = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
     if title:
         fig.suptitle(title, fontsize=16)
     sas = res.species_associated_spectra

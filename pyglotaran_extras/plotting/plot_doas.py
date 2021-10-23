@@ -12,14 +12,14 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
-def plot_doas(result: DatasetConvertible) -> Figure:
+def plot_doas(result: DatasetConvertible, figsize: tuple[int, int] = (25, 25)) -> Figure:
     dataset = load_data(result)
 
     # Create M x N plotting grid
     M = 6
     N = 3
 
-    fig, ax = plt.subplots(M, N, figsize=(25, 25))
+    fig, ax = plt.subplots(M, N, figsize=figsize)
 
     # Plot data
     dataset.species_associated_spectra.plot.line(x="spectral", ax=ax[0, 0])
