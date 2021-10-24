@@ -23,7 +23,7 @@ def plot_data_overview(
     title: str = "Data overview",
     linlog: bool = False,
     linthresh: float = 1,
-    figsize: tuple[int, int] = (30, 15),
+    figsize: tuple[int, int] = (15, 10),
 ) -> tuple[Figure, Axes]:
     """Plot data as filled contour plot and SVD components.
 
