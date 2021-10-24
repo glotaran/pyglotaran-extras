@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import cast
 
 import matplotlib.pyplot as plt
+from matplotlib.axis import Axis
 
 from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
@@ -11,10 +13,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_sv_data
 __all__ = ["plot_data_overview"]
 
 if TYPE_CHECKING:
-    from typing import cast
-
     import xarray as xr
-    from matplotlib.axis import Axis
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
