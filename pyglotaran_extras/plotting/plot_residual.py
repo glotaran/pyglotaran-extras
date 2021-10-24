@@ -1,7 +1,26 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy as np
 
+from pyglotaran_extras.plotting.style import PlotStyle
 
-def plot_residual(res, ax, linlog=False, linthresh=1, show_data=False):
+if TYPE_CHECKING:
+    import xarray as xr
+    from cycler import Cycler
+    from matplotlib.axis import Axis
+
+
+def plot_residual(
+    res: xr.Dataset,
+    ax: Axis,
+    linlog: bool = False,
+    linthresh: float = 1,
+    show_data: bool = False,
+    cycler: Cycler = PlotStyle().cycler,
+) -> None:
+    ax.set_prop_cycle(cycler)
     data = res.data if show_data else res.residual
     title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)
