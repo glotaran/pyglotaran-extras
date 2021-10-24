@@ -41,7 +41,7 @@ def setup_case_study(
     if results_folder_root is None:
         results_folder_root = Path.home() / output_folder_name
     else:
-        results_folder_root = Path(str(results_folder_root))
+        results_folder_root = Path(str(results_folder_root)) / output_folder_name
     script_folder_rel = analysis_folder.relative_to(analysis_folder.parent)
     results_folder = (results_folder_root / script_folder_rel).resolve()
     results_folder.mkdir(parents=True, exist_ok=True)

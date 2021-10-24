@@ -66,7 +66,7 @@ def test_setup_case_study_custom(tmp_path: Path):
     results_folder_root = tmp_path / "foo"
 
     results_folder, script_folder = setup_case_study(
-        output_folder_name="foo", results_folder_root=results_folder_root
+        output_folder_name="foo", results_folder_root=tmp_path
     )
 
     assert results_folder_root.exists()
