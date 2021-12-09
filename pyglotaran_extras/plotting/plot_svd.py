@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from glotaran.io.prepare_dataset import add_svd_to_dataset
+
 from pyglotaran_extras.plotting.style import PlotStyle
 
 if TYPE_CHECKING:
@@ -20,9 +22,14 @@ def plot_svd(
     linthresh: float = 1,
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
+    if "weighted_residual" in res:
+        add_svd_to_dataset(dataset=res, name="weighted_residual")
+    else:
+        add_svd_to_dataset(dataset=res, name="residual")
     plot_lsv_residual(res, axes[0, 0], linlog=linlog, linthresh=linthresh, cycler=cycler)
     plot_rsv_residual(res, axes[0, 1], cycler=cycler)
     plot_sv_residual(res, axes[0, 2], cycler=cycler)
+    add_svd_to_dataset(dataset=res, name="data")
     plot_lsv_data(res, axes[1, 0], linlog=linlog, linthresh=linthresh, cycler=cycler)
     plot_rsv_data(res, axes[1, 1], cycler=cycler)
     plot_sv_data(res, axes[1, 2], cycler=cycler)

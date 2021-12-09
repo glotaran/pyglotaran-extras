@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from typing import cast
 
 import matplotlib.pyplot as plt
+from glotaran.io.prepare_dataset import add_svd_to_dataset
 from matplotlib.axis import Axis
 
 from pyglotaran_extras.io.load_data import load_data
@@ -58,6 +59,8 @@ def plot_data_overview(
         dataset.data.plot(x="time", ax=data_ax, center=False)
     else:
         dataset.data.plot(ax=data_ax)
+
+    add_svd_to_dataset(dataset=dataset, name="data")
     plot_lsv_data(dataset, lsv_ax)
     plot_sv_data(dataset, sv_ax)
     plot_rsv_data(dataset, rsv_ax)
