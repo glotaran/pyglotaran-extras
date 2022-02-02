@@ -1,3 +1,4 @@
+"""Module containing spectra plotting functionality."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -14,15 +15,39 @@ if TYPE_CHECKING:
 
 
 def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler = PlotStyle().cycler) -> None:
-    plot_sas(res, axes[0, 0])
-    plot_das(res, axes[0, 1])
-    plot_norm_sas(res, axes[1, 0])
-    plot_norm_das(res, axes[1, 1])
+    """Plot spectra such as SAS and DAS as well as their normalize version on ``axes``.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    axes : Axes
+        Axes to plot the spectra on (needs to be at least 2x2).
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
+    plot_sas(res, axes[0, 0], cycler=cycler)
+    plot_das(res, axes[0, 1], cycler=cycler)
+    plot_norm_sas(res, axes[1, 0], cycler=cycler)
+    plot_norm_das(res, axes[1, 1], cycler=cycler)
 
 
 def plot_sas(
     res: xr.Dataset, ax: Axis, title: str = "SAS", cycler: Cycler = PlotStyle().cycler
 ) -> None:
+    """Plot SAS (Species Associated Spectra) on ``ax``.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    title : str
+        Title of the plot, by default "SAS"
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
@@ -37,6 +62,19 @@ def plot_sas(
 def plot_norm_sas(
     res: xr.Dataset, ax: Axis, title: str = "norm SAS", cycler: Cycler = PlotStyle().cycler
 ) -> None:
+    """Plot normalized SAS (Species Associated Spectra) on ``ax``.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    title : str
+        Title of the plot, by default "norm SAS"
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
@@ -52,6 +90,19 @@ def plot_norm_sas(
 def plot_das(
     res: xr.Dataset, ax: Axis, title: str = "DAS", cycler: Cycler = PlotStyle().cycler
 ) -> None:
+    """Plot DAS (Decay Associated Spectra) on ``ax``.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    title : str
+        Title of the plot, by default "DAS"
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("decay_associated_spectra", "species_spectra"))
@@ -66,6 +117,19 @@ def plot_das(
 def plot_norm_das(
     res: xr.Dataset, ax: Axis, title: str = "norm DAS", cycler: Cycler = PlotStyle().cycler
 ) -> None:
+    """Plot normalized DAS (Decay Associated Spectra) on ``ax``.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    title : str
+        Title of the plot, by default "norm DAS"
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("decay_associated_spectra", "species_spectra"))

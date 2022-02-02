@@ -1,4 +1,4 @@
-"""Deprecated module."""
+"""Deprecated module use ``pyglotaran_extras.io.setup_case_study`` instead."""
 from pyglotaran_extras.deprecation import warn_deprecated
 from pyglotaran_extras.io.setup_case_study import setup_case_study
 

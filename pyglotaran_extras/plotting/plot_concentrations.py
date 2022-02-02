@@ -1,3 +1,4 @@
+"""Module containing concentration plot functionality."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -33,10 +34,10 @@ def plot_concentrations(
         Center wavelength (λ in nm)
     linlog: bool
         Whether to use 'symlog' scale or not, by default False
-    linthresh: int
+    linthresh: float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero., by default 1
-    linscale: int
+    linscale: float
         This allows the linear range (-linthresh to linthresh) to be stretched
         relative to the logarithmic range.
         Its value is the number of decades to use for each half of the linear range.

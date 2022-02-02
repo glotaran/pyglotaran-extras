@@ -1,3 +1,4 @@
+"""Module containing functionality to plot fitted traces."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -57,7 +58,7 @@ def plot_data_and_fits(
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks , by default 0
     linlog : bool
-        Whether to use 'symlog' scale or not, by default False
+        Weather to use 'symlog' scale or not, by default False
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero., by default 1
@@ -157,7 +158,6 @@ def plot_fitted_traces(
     plot_data_and_fits
     calculate_wavelengths
     """
-
     result_map = result_dataset_mapping(result)
     fig, axes = plt.subplots(*axes_shape, figsize=figsize)
     nr_of_plots = len(axes.flatten())

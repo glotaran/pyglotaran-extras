@@ -83,10 +83,10 @@ repos:
         additional_dependencies: [types-all]
 
   - repo: https://github.com/econchick/interrogate
-    rev: 1.3.2
+    rev: 1.5.0
     hooks:
       - id: interrogate
-        args: [-vv, --config=pyproject.toml]
+        args: [-vv, --config=pyproject.toml, pyglotaran_extras]
         pass_filenames: false
 
   - repo: https://github.com/PyCQA/flake8
@@ -104,7 +104,7 @@ repos:
         args:
           - "--select=D,DAR"
         name: "flake8 lint docstrings"
-        exclude: "docs|tests?/"
+        exclude: "^(docs/|setup.py$|tests?/)"
         additional_dependencies: [flake8-docstrings, darglint==1.8.0]
 
   - repo: https://github.com/myint/rstcheck

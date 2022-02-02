@@ -1,3 +1,4 @@
+"""Module containing data plotting functionality."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -34,13 +35,15 @@ def plot_data_overview(
     ----------
     dataset : DatasetConvertible
         Dataset containing data and SVD of the data.
-    title : str, optional
+    title : str
         Title to add to the figure., by default "Data overview"
-    linlog : bool, optional
+    linlog : bool
         Whether to use 'symlog' scale or not, by default False
-    linthresh : float, optional
+    linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero., by default 1
+    figsize : tuple[int, int]
+        Size of the figure (N, M) in inches., by default (15, 10)
 
     Returns
     -------

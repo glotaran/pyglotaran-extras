@@ -1,3 +1,4 @@
+"""Module containing type definitions."""
 from __future__ import annotations
 
 from pathlib import Path

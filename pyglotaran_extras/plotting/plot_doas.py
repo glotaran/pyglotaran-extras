@@ -1,3 +1,4 @@
+"""Module containing plot functionality for damped oscillations (DOAS)."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

@@ -1,4 +1,4 @@
-"""Module contain function to initialize a case study."""
+"""Module contain functionality to initialize a case study."""
 from __future__ import annotations
 
 import inspect
@@ -10,7 +10,7 @@ def setup_case_study(
     output_folder_name: str = "pyglotaran_results",
     results_folder_root: None | str | PathLike[str] = None,
 ) -> tuple[Path, Path]:
-    """Convenience function to to quickly get folders for a case study.
+    """Quickly get folders for a case study.
 
     This is an execution environment independent (works in python script files
     and notebooks, independent of where the python runtime was called from)
@@ -50,7 +50,7 @@ def setup_case_study(
 
 
 def get_script_dir(*, nesting: int = 0) -> Path:
-    """Gets parent folder a script is executed in.
+    """Get parent folder a script/Notebook is executed in.
 
     This is a helper function for cross compatibility with jupyter notebooks.
     In notebooks the global ``__file__`` variable isn't set, thus we need different

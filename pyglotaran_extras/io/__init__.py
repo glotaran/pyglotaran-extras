@@ -1,4 +1,4 @@
-""" pyglotaran-extras io package """
+"""Package containing io convenience functionality."""
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.io.setup_case_study import setup_case_study
 

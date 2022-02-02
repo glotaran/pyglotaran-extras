@@ -1,3 +1,4 @@
+"""Module containing residual plot functionality."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -20,6 +21,24 @@ def plot_residual(
     show_data: bool = False,
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
+    """Plot data ro residual and 2D contour plot.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    linlog : bool
+        Weather to use 'symlog' scale or not, by default False
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    show_data : bool
+        Weather to show the data or the residual., by default False
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     data = res.data if show_data else res.residual
     title = "dataset" if show_data else "residual"

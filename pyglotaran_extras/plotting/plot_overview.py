@@ -1,3 +1,4 @@
+"""Module containing overview plotting functionality."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -45,10 +46,10 @@ def plot_overview(
         Center wavelength (λ in nm)
     linlog: bool
         Whether to use 'symlog' scale or not, by default False
-    linthresh: int
+    linthresh: float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero., by default 1
-    linscale: int
+    linscale: float
         This allows the linear range (-linthresh to linthresh) to be stretched
         relative to the logarithmic range.
         Its value is the number of decades to use for each half of the linear range.
@@ -75,7 +76,6 @@ def plot_overview(
         If ``figure_only`` is True, Figure object which contains the plots (deprecated).
         If ``figure_only`` is False, Figure object which contains the plots and the Axes.
     """
-
     res = load_data(result)
 
     # Plot dimensions
@@ -117,7 +117,7 @@ def plot_simple_overview(
     cycler: Cycler = PlotStyle().cycler,
     figure_only: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
-    """Simple plotting function .
+    """Plot simple overview.
 
     Parameters
     ----------

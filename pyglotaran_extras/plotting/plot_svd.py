@@ -1,3 +1,4 @@
+"""Module containing SVD plotting functionality."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -22,6 +23,22 @@ def plot_svd(
     linthresh: float = 1,
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
+    """Plot SVD (Singular Value Decomposition) of data and residual.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    axes : Axes
+        Axes to plot the SVDs on (needs to be at least 2x3).
+    linlog : bool
+        Weather to use 'symlog' scale or not, by default False
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
     else:
@@ -43,7 +60,24 @@ def plot_lsv_data(
     linthresh: float = 1,
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
-    """Plot left singular vectors (time) of the data matrix"""
+    """Plot left singular vectors (time) of the data matrix.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    indices : Sequence[int]
+        Indices of the singular vector to plot, by default range(4)
+    linlog : bool
+        Weather to use 'symlog' scale or not, by default False
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     dLSV = res.data_left_singular_vectors
     dLSV.isel(left_singular_value_index=indices[: len(dLSV.left_singular_value_index)]).plot.line(
@@ -60,7 +94,19 @@ def plot_rsv_data(
     indices: Sequence[int] = range(4),
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
-    """Plot right singular vectors (spectra) of the data matrix"""
+    """Plot right singular vectors (spectra) of the data matrix.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    indices : Sequence[int]
+        Indices of the singular vector to plot, by default range(4)
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     dRSV = res.data_right_singular_vectors
     dRSV.isel(
@@ -75,7 +121,19 @@ def plot_sv_data(
     indices: Sequence[int] = range(10),
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
-    """Plot singular values of the data matrix"""
+    """Plot singular values of the data matrix.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    indices : Sequence[int]
+        Indices of the singular vector to plot, by default range(4)
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     dSV = res.data_singular_values
     dSV.sel(singular_value_index=indices[: len(dSV.singular_value_index)]).plot.line(
@@ -92,7 +150,24 @@ def plot_lsv_residual(
     linthresh: float = 1,
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
-    """Plot left singular vectors (time) of the residual matrix"""
+    """Plot left singular vectors (time) of the residual matrix.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    indices : Sequence[int]
+        Indices of the singular vector to plot, by default range(4)
+    linlog : bool
+        Weather to use 'symlog' scale or not, by default False
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero., by default 1
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
@@ -112,7 +187,19 @@ def plot_rsv_residual(
     indices: Sequence[int] = range(2),
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
-    """Plot right singular vectors (spectra) of the residual matrix"""
+    """Plot right singular vectors (spectra) of the residual matrix.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    indices : Sequence[int]
+        Indices of the singular vector to plot, by default range(4)
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     if "weighted_residual_right_singular_vectors" in res:
         rRSV = res.weighted_residual_right_singular_vectors
@@ -130,7 +217,19 @@ def plot_sv_residual(
     indices: Sequence[int] = range(10),
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
-    """Plot singular values of the residual matrix"""
+    """Plot singular values of the residual matrix.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    indices : Sequence[int]
+        Indices of the singular vector to plot, by default range(4)
+    cycler : Cycler
+        Plot style cycler to use., by default PlotStyle().cycler
+    """
     ax.set_prop_cycle(cycler)
     if "weighted_residual_singular_values" in res:
         rSV = res.weighted_residual_singular_values
