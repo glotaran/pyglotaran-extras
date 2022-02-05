@@ -14,6 +14,14 @@ Note for Windows Users: The easiest way to get python for Windows is via [Anacon
 
 ### Stable Release
 
+To install pyglotaran-extras from [pypi](https://pypi.org/), run this command in your terminal:
+
+```shell
+pip install pyglotaran-extras
+```
+
+### From Source
+
 To install pyglotaran-extras from sources, either clone this repository or download the latest release, then run this command in your terminal:
 
 ```shell
