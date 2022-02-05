@@ -1,3 +1,4 @@
+"""Io utility module."""
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -31,7 +32,6 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
     TypeError
         If ``result`` isn't a :class:`ResultLike` object.
     """
-
     result_mapping = {}
     if isinstance(result, Result):
         return result.data

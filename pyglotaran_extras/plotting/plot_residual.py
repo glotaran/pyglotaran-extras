@@ -1,3 +1,4 @@
+"""Module containing residual plot functionality."""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -20,14 +21,31 @@ def plot_residual(
     show_data: bool = False,
     cycler: Cycler = PlotStyle().cycler,
 ) -> None:
+    """Plot data or residual on a 2D contour plot.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    ax : Axis
+        Axis to plot on.
+    linlog : bool
+        Whether to use 'symlog' scale or not. Defaults to False.
+    linthresh : float
+        A single float which defines the range (-x, x), within which the plot is linear.
+        This avoids having the plot go to infinity around zero. Defaults to 1.
+    show_data : bool
+        Whether to show the data or the residual. Defaults to False.
+    cycler : Cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
+    """
     ax.set_prop_cycle(cycler)
     data = res.data if show_data else res.residual
     title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)
     dims = data.coords.dims
+    # Handle different dimensionality of data
     if min(shape) == 1:
-        # res.data.plot.line(x=dims[shape.argmax()], ax=ax)
-        # res.fitted_data.plot.line(x=dims[shape.argmax()], ax=ax)
         data.plot.line(x=dims[shape.argmax()], ax=ax)
     elif min(shape) < 5:
         data.plot(x="time", ax=ax)

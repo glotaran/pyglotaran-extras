@@ -1,3 +1,4 @@
+"""Data loading utility module."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,7 +19,7 @@ def load_data(result: DatasetConvertible, dataset_name: str | None = None) -> xr
         Result class instance, xarray Dataset or path to a dataset file.
     dataset_name : str, optional
         Name of a specific dataset contained in ``result``, if not provided
-        the first dataset will be extracted., by default None
+        the first dataset will be extracted. Defaults to None.
 
     Returns
     -------
