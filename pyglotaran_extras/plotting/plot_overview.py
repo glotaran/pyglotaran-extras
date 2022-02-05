@@ -15,6 +15,7 @@ from pyglotaran_extras.plotting.plot_residual import plot_residual
 from pyglotaran_extras.plotting.plot_spectra import plot_spectra
 from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     from cycler import Cycler
@@ -33,7 +34,7 @@ def plot_overview(
     show_data: bool = False,
     main_irf_nr: int = 0,
     figsize: tuple[int, int] = (18, 16),
-    cycler: Cycler = PlotStyle().cycler,
+    cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot overview of the optimization result.
@@ -63,7 +64,7 @@ def plot_overview(
         parametrized with multiple peaks. Defaults to 0.
     figsize : tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     figure_only: bool
         Whether or not to only return the figure.
@@ -114,7 +115,7 @@ def plot_simple_overview(
     result: DatasetConvertible,
     title: str | None = None,
     figsize: tuple[int, int] = (12, 6),
-    cycler: Cycler = PlotStyle().cycler,
+    cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot simple overview.
@@ -127,7 +128,7 @@ def plot_simple_overview(
         Title of the figure. Defaults to None.
     figsize : tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     figure_only: bool
         Whether or not to only return the figure.
@@ -144,7 +145,7 @@ def plot_simple_overview(
 
     fig, axes = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
     for ax in axes.flatten():
-        ax.set_prop_cycle(cycler)
+        add_cycler_if_not_none(ax, cycler)
     if title:
         fig.suptitle(title, fontsize=16)
     sas = res.species_associated_spectra

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -19,7 +20,7 @@ def plot_residual(
     linlog: bool = False,
     linthresh: float = 1,
     show_data: bool = False,
-    cycler: Cycler = PlotStyle().cycler,
+    cycler: Cycler | None = PlotStyle().cycler,
 ) -> None:
     """Plot data or residual on a 2D contour plot.
 
@@ -36,10 +37,10 @@ def plot_residual(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     show_data : bool
         Whether to show the data or the residual. Defaults to False.
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
-    ax.set_prop_cycle(cycler)
+    add_cycler_if_not_none(ax, cycler)
     data = res.data if show_data else res.residual
     title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)

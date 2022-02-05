@@ -9,13 +9,15 @@ import numpy as np
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
+    from typing import Iterable
+
     import xarray as xr
+    from cycler import Cycler
+    from matplotlib.axis import Axis
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
-from typing import Iterable
-
-from pyglotaran_extras.types import ResultLike
+    from pyglotaran_extras.types import ResultLike
 
 
 class PlotDuplicationWarning(UserWarning):
@@ -248,3 +250,22 @@ def get_shifted_traces(
 
     times_shifted = traces.coords["time"] - irf_loc
     return traces.assign_coords(time=times_shifted)
+
+
+def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
+    """Add cycler to and axis if it is not None.
+
+    This is a convenience function that allow to opt out of using
+    a cycler, which is needed to run a plotting function in a loop
+    where the cycler is controlled from the outside.
+
+
+    Parameters
+    ----------
+    axis: Axis
+        Axis to plot the data and fits on.
+    cycler: Cycler | None
+        Plot style cycler to use.
+    """
+    if cycler is not None:
+        axis.set_prop_cycle(cycler)
