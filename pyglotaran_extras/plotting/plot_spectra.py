@@ -24,7 +24,7 @@ def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler = PlotStyle().cycle
     axes : Axes
         Axes to plot the spectra on (needs to be at least 2x2).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     plot_sas(res, axes[0, 0], cycler=cycler)
     plot_das(res, axes[0, 1], cycler=cycler)
@@ -44,9 +44,9 @@ def plot_sas(
     ax : Axis
         Axis to plot on.
     title : str
-        Title of the plot, by default "SAS"
+        Title of the plot. Defaults to "SAS".
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     keys = [
@@ -71,9 +71,9 @@ def plot_norm_sas(
     ax : Axis
         Axis to plot on.
     title : str
-        Title of the plot, by default "norm SAS"
+        Title of the plot. Defaults to "norm SAS".
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     keys = [
@@ -99,9 +99,9 @@ def plot_das(
     ax : Axis
         Axis to plot on.
     title : str
-        Title of the plot, by default "DAS"
+        Title of the plot. Defaults to "DAS".
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     keys = [
@@ -126,9 +126,9 @@ def plot_norm_das(
     ax : Axis
         Axis to plot on.
     title : str
-        Title of the plot, by default "norm DAS"
+        Title of the plot. Defaults to "norm DAS".
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     keys = [

@@ -45,30 +45,30 @@ def plot_overview(
     center_λ: float | None
         Center wavelength (λ in nm)
     linlog: bool
-        Whether to use 'symlog' scale or not, by default False
+        Whether to use 'symlog' scale or not. Defaults to False.
     linthresh: float
         A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
+        This avoids having the plot go to infinity around zero. Defaults to 1.
     linscale: float
         This allows the linear range (-linthresh to linthresh) to be stretched
         relative to the logarithmic range.
         Its value is the number of decades to use for each half of the linear range.
         For example, when linscale == 1.0 (the default), the space used for the
         positive and negative halves of the linear range will be equal to one
-        decade in the logarithmic range., by default 1
+        decade in the logarithmic range. Defaults to 1.
     show_data: bool
-        Whether to show the input data or residual, by default False
+        Whether to show the input data or residual. Defaults to False.
     main_irf_nr: int
         Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks , by default 0
+        parametrized with multiple peaks. Defaults to 0.
     figsize : tuple[int, int]
-        Size of the figure (N, M) in inches., by default (18, 16)
+        Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     figure_only: bool
         Whether or not to only return the figure.
         This is a deprecation helper argument to transition to a consistent return value
-        consisting of the :class:`Figure` and the :class:`Axes`, by default True
+        consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
 
     Returns
     -------
@@ -124,15 +124,15 @@ def plot_simple_overview(
     result: DatasetConvertible
         Result from a pyglotaran optimization as dataset, Path or Result object.
     title: str | None
-        Title of the figure., by default None
+        Title of the figure. Defaults to None.
     figsize : tuple[int, int]
-        Size of the figure (N, M) in inches., by default (18, 16)
+        Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     figure_only: bool
         Whether or not to only return the figure.
         This is a deprecation helper argument to transition to a consistent return value
-        consisting of the :class:`Figure` and the :class:`Axes`, by default True
+        consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
 
     Returns
     -------

@@ -32,12 +32,12 @@ def plot_svd(
     axes : Axes
         Axes to plot the SVDs on (needs to be at least 2x3).
     linlog : bool
-        Weather to use 'symlog' scale or not, by default False
+        Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
+        This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
@@ -69,14 +69,14 @@ def plot_lsv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot, by default range(4)
+        Indices of the singular vector to plot. Defaults to range(4).
     linlog : bool
-        Weather to use 'symlog' scale or not, by default False
+        Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
+        This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     dLSV = res.data_left_singular_vectors
@@ -103,9 +103,9 @@ def plot_rsv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot, by default range(4)
+        Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     dRSV = res.data_right_singular_vectors
@@ -130,9 +130,9 @@ def plot_sv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot, by default range(4)
+        Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     dSV = res.data_singular_values
@@ -159,14 +159,14 @@ def plot_lsv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot, by default range(4)
+        Indices of the singular vector to plot. Defaults to range(4).
     linlog : bool
-        Weather to use 'symlog' scale or not, by default False
+        Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
+        This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     if "weighted_residual_left_singular_vectors" in res:
@@ -196,9 +196,9 @@ def plot_rsv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot, by default range(4)
+        Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     if "weighted_residual_right_singular_vectors" in res:
@@ -226,9 +226,9 @@ def plot_sv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot, by default range(4)
+        Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     ax.set_prop_cycle(cycler)
     if "weighted_residual_singular_values" in res:

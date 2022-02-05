@@ -1,4 +1,4 @@
-"""Module contain functionality to initialize a case study."""
+"""Module containing functionality to initialize a case study."""
 from __future__ import annotations
 
 import inspect
@@ -20,10 +20,10 @@ def setup_case_study(
     Parameters
     ----------
     output_folder_name : str
-        Name of the base folder for the results., by default "pyglotaran_results"
+        Name of the base folder for the results. Defaults to "pyglotaran_results".
     results_folder_root : None
-        Parent folder the ``output_folder_name`` should be put in
-        , by default None which results in the users Home folder being used
+        The folder where the results named ``output_folder_name`` should be saved to.
+        Defaults to None, which results in the users Home folder being used.
 
     Returns
     -------
@@ -61,13 +61,12 @@ def get_script_dir(*, nesting: int = 0) -> Path:
     ----------
     nesting : int
         Number to go up in the call stack to get to the initially calling function.
-        This is only needed for library code and not for user code.
-        , by default 0 (direct call)
+        This is only needed for library code and not for user code. Defaults to 0 (direct call).
 
     Returns
     -------
     Path
-        Path to the folder the script was resides in.
+        Path to the folder the script is located in.
 
     See Also
     --------

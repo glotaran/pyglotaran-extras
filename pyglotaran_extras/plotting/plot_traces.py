@@ -56,21 +56,21 @@ def plot_data_and_fits(
         Center wavelength (λ in nm)
     main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks , by default 0
+        parametrized with multiple peaks. Defaults to 0.
     linlog : bool
-        Weather to use 'symlog' scale or not, by default False
+        Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
+        This avoids having the plot go to infinity around zero. Defaults to 1.
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
-        , by default True
+        Defaults to True.
     per_axis_legend: bool
-        Whether to use a legend per plot or for the whole figure., by default False
+        Whether to use a legend per plot or for the whole figure. Defaults to False.
     y_label: str
         Label used for the y-axis of each subplot.
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().data_cycler_solid
+        Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
 
     See Also
     --------
@@ -118,7 +118,7 @@ def plot_fitted_traces(
     result : ResultLike
         Data structure which can be converted to a mapping of datasets.
     axes_shape : tuple[int, int]
-        Shape of the plot grid (N, M), by default (4, 4)
+        Shape of the plot grid (N, M). Defaults to (4, 4).
     wavelengths: Iterable[float]
         Wavelength which should be used for each subplot, should to be of length N*M
         with ``axes_shape`` being of shape (N, M), else it will result in missing plots.
@@ -126,25 +126,25 @@ def plot_fitted_traces(
         Center wavelength of the IRF (λ in nm).
     main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks , by default 0
+        parametrized with multiple peaks. Defaults to 0.
     linlog : bool
-        Whether to use 'symlog' scale or not, by default False
+        Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
-        This avoids having the plot go to infinity around zero., by default 1
+        This avoids having the plot go to infinity around zero. Defaults to 1.
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
-        , by default True
+       . Defaults to True.
     per_axis_legend : bool
-        Whether to use a legend per plot or for the whole figure., by default False
+        Whether to use a legend per plot or for the whole figure. Defaults to False.
     figsize : tuple[int, int]
-        Size of the figure (N, M) in inches., by default (30, 15)
+        Size of the figure (N, M) in inches. Defaults to (30, 15).
     title : str
-        Title to add to the figure., by default "Fit overview"
+        Title to add to the figure. Defaults to "Fit overview".
     y_label: str
         Label used for the y-axis of each subplot.
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().data_cycler_solid
+        Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
 
     Returns
     -------

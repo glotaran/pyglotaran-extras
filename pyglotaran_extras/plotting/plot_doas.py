@@ -25,20 +25,20 @@ def plot_doas(
     cycler: Cycler = PlotStyle().cycler,
     figure_only: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
-    """Plot damped oscillations (DOAS).
+    """Plot Damped oscillation associated spectra (DOAS).
 
     Parameters
     ----------
     result: DatasetConvertible
         Result from a pyglotaran optimization as dataset, Path or Result object.
     figsize : tuple[int, int]
-        Size of the figure (N, M) in inches., by default (18, 16)
+        Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler
-        Plot style cycler to use., by default PlotStyle().cycler
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     figure_only: bool
         Whether or not to only return the figure.
         This is a deprecation helper argument to transition to a consistent return value
-        consisting of the :class:`Figure` and the :class:`Axes`, by default True
+        consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
 
     Returns
     -------

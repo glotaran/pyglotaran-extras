@@ -35,7 +35,7 @@ def extract_irf_location(
         Center wavelength (λ in nm)
     main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks , by default 0
+        parametrized with multiple peaks. Defaults to 0.
 
     Returns
     -------
@@ -135,15 +135,15 @@ def select_plot_wavelengths(
     result: ResultLike
         Data structure which can be converted to a mapping of datasets.
     axes_shape: tuple[int, int]
-        Shape of the plot grid (N, M), by default (4, 4)
+        Shape of the plot grid (N, M). Defaults to (4, 4).
     wavelength_range: tuple[float, float]
         Tuple of minimum and maximum values to calculate the the wavelengths
         used for plotting. If not provided the values will be tetermined over all datasets.
-        , by default None
+        Defaults to None.
     equidistant_wavelengths: bool
         Whether or not wavelengths should be selected based on equidistant values
         or equidistant indices (only supported for a single dataset).
-        Since in general multiple datasets will have , by default True
+        Since in general multiple datasets will have. Defaults to True.
 
     Returns
     -------
@@ -191,7 +191,7 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
         Result dataset from a pyglotaran optimization.
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
-        , by default True
+        Defaults to True.
 
     Returns
     -------
@@ -223,10 +223,10 @@ def get_shifted_traces(
     res: xr.Dataset
         Result dataset from a pyglotaran optimization.
     center_λ: float|None
-        Center wavelength (λ in nm), by default None
+        Center wavelength (λ in nm). Defaults to None.
     main_irf_nr: int
         Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks , by default 0
+        parametrized with multiple peaks. Defaults to 0.
 
     Returns
     -------
