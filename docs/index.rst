@@ -11,7 +11,7 @@ Welcome to pyglotaran_extras's documentation!
    usage
    api_docs
    contributing
-   history
+   changelog
 
 Indices and tables
 ==================
