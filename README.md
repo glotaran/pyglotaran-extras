@@ -8,11 +8,19 @@ Can be installed as a python package from sources, but is not (yet) released on 
 Prerequisites:
 
 - Python 3.8 or 3.9
-- Python package `pyglotaran` v0.3.0 (or later)
+- Python package `pyglotaran` v0.5.0 (or later)
 
 Note for Windows Users: The easiest way to get python for Windows is via [Anaconda](https://www.anaconda.com/)
 
 ### Stable Release
+
+To install pyglotaran-extras from [pypi](https://pypi.org/), run this command in your terminal:
+
+```shell
+pip install pyglotaran-extras
+```
+
+### From Source
 
 To install pyglotaran-extras from sources, either clone this repository or download the latest release, then run this command in your terminal:
 
