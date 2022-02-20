@@ -10,6 +10,7 @@ from pyglotaran_extras.deprecation.deprecation_utils import FIG_ONLY_WARNING
 from pyglotaran_extras.deprecation.deprecation_utils import PyglotaranExtrasApiDeprecationWarning
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     from cycler import Cycler
@@ -22,7 +23,7 @@ if TYPE_CHECKING:
 def plot_doas(
     result: DatasetConvertible,
     figsize: tuple[int, int] = (25, 25),
-    cycler: Cycler = PlotStyle().cycler,
+    cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot Damped oscillation associated spectra (DOAS).
@@ -33,7 +34,7 @@ def plot_doas(
         Result from a pyglotaran optimization as dataset, Path or Result object.
     figsize : tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     figure_only: bool
         Whether or not to only return the figure.
@@ -55,7 +56,7 @@ def plot_doas(
     fig, axes = plt.subplots(M, N, figsize=figsize)
 
     for ax in axes.flatten():
-        ax.set_prop_cycle(cycler)
+        add_cycler_if_not_none(ax, cycler)
 
     # Plot data
     dataset.species_associated_spectra.plot.line(x="spectral", ax=axes[0, 0])

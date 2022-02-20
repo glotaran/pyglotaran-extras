@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import get_shifted_traces
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ def plot_concentrations(
     linthresh: float = 1,
     linscale: float = 1,
     main_irf_nr: int = 0,
-    cycler: Cycler = PlotStyle().cycler,
+    cycler: Cycler | None = PlotStyle().cycler,
 ) -> None:
     """Plot traces on the given axis ``ax``.
 
@@ -47,14 +48,14 @@ def plot_concentrations(
     main_irf_nr: int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
 
     See Also
     --------
     get_shifted_traces
     """
-    ax.set_prop_cycle(cycler)
+    add_cycler_if_not_none(ax, cycler)
     traces = get_shifted_traces(res, center_λ, main_irf_nr)
 
     if "spectral" in traces.coords:

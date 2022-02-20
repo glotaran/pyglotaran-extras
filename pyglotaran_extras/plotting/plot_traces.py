@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import PlotDuplicationWarning
+from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import add_unique_figure_legend
 from pyglotaran_extras.plotting.utils import extract_dataset_scale
 from pyglotaran_extras.plotting.utils import extract_irf_location
@@ -38,7 +39,7 @@ def plot_data_and_fits(
     divide_by_scale: bool = True,
     per_axis_legend: bool = False,
     y_label: str = "a.u.",
-    cycler: Cycler = PlotStyle().data_cycler_solid,
+    cycler: Cycler | None = PlotStyle().data_cycler_solid,
 ) -> None:
     """Plot data and fits for a given ``wavelength`` on a given ``axis``.
 
@@ -69,7 +70,7 @@ def plot_data_and_fits(
         Whether to use a legend per plot or for the whole figure. Defaults to False.
     y_label: str
         Label used for the y-axis of each subplot.
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
 
     See Also
@@ -77,7 +78,7 @@ def plot_data_and_fits(
     plot_fit_overview
     """
     result_map = result_dataset_mapping(result)
-    axis.set_prop_cycle(cycler)
+    add_cycler_if_not_none(axis, cycler)
     for dataset_name in result_map.keys():
         spectral_coords = result_map[dataset_name].coords["spectral"].values
         if spectral_coords.min() <= wavelength <= spectral_coords.max():
@@ -109,7 +110,7 @@ def plot_fitted_traces(
     figsize: tuple[int, int] = (30, 15),
     title: str = "Fit overview",
     y_label: str = "a.u.",
-    cycler: Cycler = PlotStyle().data_cycler_solid,
+    cycler: Cycler | None = PlotStyle().data_cycler_solid,
 ) -> tuple[Figure, Axes]:
     """Plot data and their fit in per wavelength plot grid.
 
@@ -143,7 +144,7 @@ def plot_fitted_traces(
         Title to add to the figure. Defaults to "Fit overview".
     y_label: str
         Label used for the y-axis of each subplot.
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
 
     Returns

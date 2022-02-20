@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
 
-def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler = PlotStyle().cycler) -> None:
+def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler | None = PlotStyle().cycler) -> None:
     """Plot spectra such as SAS and DAS as well as their normalize version on ``axes``.
 
     Parameters
@@ -23,7 +24,7 @@ def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler = PlotStyle().cycle
         Result dataset
     axes : Axes
         Axes to plot the spectra on (needs to be at least 2x2).
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     plot_sas(res, axes[0, 0], cycler=cycler)
@@ -33,7 +34,7 @@ def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler = PlotStyle().cycle
 
 
 def plot_sas(
-    res: xr.Dataset, ax: Axis, title: str = "SAS", cycler: Cycler = PlotStyle().cycler
+    res: xr.Dataset, ax: Axis, title: str = "SAS", cycler: Cycler | None = PlotStyle().cycler
 ) -> None:
     """Plot SAS (Species Associated Spectra) on ``ax``.
 
@@ -45,10 +46,10 @@ def plot_sas(
         Axis to plot on.
     title : str
         Title of the plot. Defaults to "SAS".
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
-    ax.set_prop_cycle(cycler)
+    add_cycler_if_not_none(ax, cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
     ]
@@ -60,7 +61,7 @@ def plot_sas(
 
 
 def plot_norm_sas(
-    res: xr.Dataset, ax: Axis, title: str = "norm SAS", cycler: Cycler = PlotStyle().cycler
+    res: xr.Dataset, ax: Axis, title: str = "norm SAS", cycler: Cycler | None = PlotStyle().cycler
 ) -> None:
     """Plot normalized SAS (Species Associated Spectra) on ``ax``.
 
@@ -72,10 +73,10 @@ def plot_norm_sas(
         Axis to plot on.
     title : str
         Title of the plot. Defaults to "norm SAS".
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
-    ax.set_prop_cycle(cycler)
+    add_cycler_if_not_none(ax, cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
     ]
@@ -88,7 +89,7 @@ def plot_norm_sas(
 
 
 def plot_das(
-    res: xr.Dataset, ax: Axis, title: str = "DAS", cycler: Cycler = PlotStyle().cycler
+    res: xr.Dataset, ax: Axis, title: str = "DAS", cycler: Cycler | None = PlotStyle().cycler
 ) -> None:
     """Plot DAS (Decay Associated Spectra) on ``ax``.
 
@@ -100,10 +101,10 @@ def plot_das(
         Axis to plot on.
     title : str
         Title of the plot. Defaults to "DAS".
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
-    ax.set_prop_cycle(cycler)
+    add_cycler_if_not_none(ax, cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("decay_associated_spectra", "species_spectra"))
     ]
@@ -115,7 +116,7 @@ def plot_das(
 
 
 def plot_norm_das(
-    res: xr.Dataset, ax: Axis, title: str = "norm DAS", cycler: Cycler = PlotStyle().cycler
+    res: xr.Dataset, ax: Axis, title: str = "norm DAS", cycler: Cycler | None = PlotStyle().cycler
 ) -> None:
     """Plot normalized DAS (Decay Associated Spectra) on ``ax``.
 
@@ -127,10 +128,10 @@ def plot_norm_das(
         Axis to plot on.
     title : str
         Title of the plot. Defaults to "norm DAS".
-    cycler : Cycler
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
-    ax.set_prop_cycle(cycler)
+    add_cycler_if_not_none(ax, cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("decay_associated_spectra", "species_spectra"))
     ]
