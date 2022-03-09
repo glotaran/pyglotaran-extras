@@ -22,6 +22,7 @@ def plot_concentrations(
     linscale: float = 1,
     main_irf_nr: int = 0,
     cycler: Cycler | None = PlotStyle().cycler,
+    title: str = "Concentrations",
 ) -> None:
     """Plot traces on the given axis ``ax``.
 
@@ -50,6 +51,8 @@ def plot_concentrations(
         parametrized with multiple peaks. Defaults to 0.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
+    title: str
+        Title used for the plot axis. Defaults to "Concentrations".
 
     See Also
     --------
@@ -62,6 +65,7 @@ def plot_concentrations(
         traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
     else:
         traces.plot.line(x="time", ax=ax)
+    ax.set_title(title)
 
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh, linscale=linscale)
