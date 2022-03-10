@@ -36,6 +36,8 @@ def plot_overview(
     figsize: tuple[int, int] = (18, 16),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
+    nr_of_data_svd_vectors: int = 2,
+    nr_of_residual_svd_vectors: int = 2,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
@@ -70,6 +72,10 @@ def plot_overview(
         Whether or not to only return the figure.
         This is a deprecation helper argument to transition to a consistent return value
         consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
+    nr_of_data_svd_vectors: int
+        Number of data SVD vector to plot. Defaults to 2.
+    nr_of_residual_svd_vectors: int
+        Number of residual SVD vector to plot. Defaults to 2.
 
     Returns
     -------
@@ -99,7 +105,15 @@ def plot_overview(
         cycler=cycler,
     )
     plot_spectra(res, axes[0:2, 1:3], cycler=cycler)
-    plot_svd(res, axes[2:4, 0:3], linlog=linlog, linthresh=linthresh, cycler=cycler)
+    plot_svd(
+        res,
+        axes[2:4, 0:3],
+        linlog=linlog,
+        linthresh=linthresh,
+        cycler=cycler,
+        nr_of_data_svd_vectors=nr_of_data_svd_vectors,
+        nr_of_residual_svd_vectors=nr_of_residual_svd_vectors,
+    )
     plot_residual(
         res, axes[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
     )

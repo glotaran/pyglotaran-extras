@@ -23,6 +23,8 @@ def plot_svd(
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
+    nr_of_data_svd_vectors: int = 2,
+    nr_of_residual_svd_vectors: int = 2,
 ) -> None:
     """Plot SVD (Singular Value Decomposition) of data and residual.
 
@@ -39,17 +41,35 @@ def plot_svd(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    nr_of_data_svd_vectors: int
+        Number of data SVD vector to plot. Defaults to 2.
+    nr_of_residual_svd_vectors: int
+        Number of residual SVD vector to plot. Defaults to 2.
     """
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
     else:
         add_svd_to_dataset(dataset=res, name="residual")
-    plot_lsv_residual(res, axes[0, 0], linlog=linlog, linthresh=linthresh, cycler=cycler)
-    plot_rsv_residual(res, axes[0, 1], cycler=cycler)
+    plot_lsv_residual(
+        res,
+        axes[0, 0],
+        linlog=linlog,
+        linthresh=linthresh,
+        cycler=cycler,
+        indices=range(nr_of_residual_svd_vectors),
+    )
+    plot_rsv_residual(res, axes[0, 1], cycler=cycler, indices=range(nr_of_residual_svd_vectors))
     plot_sv_residual(res, axes[0, 2], cycler=cycler)
     add_svd_to_dataset(dataset=res, name="data")
-    plot_lsv_data(res, axes[1, 0], linlog=linlog, linthresh=linthresh, cycler=cycler)
-    plot_rsv_data(res, axes[1, 1], cycler=cycler)
+    plot_lsv_data(
+        res,
+        axes[1, 0],
+        linlog=linlog,
+        linthresh=linthresh,
+        cycler=cycler,
+        indices=range(nr_of_data_svd_vectors),
+    )
+    plot_rsv_data(res, axes[1, 1], cycler=cycler, indices=range(nr_of_data_svd_vectors))
     plot_sv_data(res, axes[1, 2], cycler=cycler)
 
 

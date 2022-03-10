@@ -28,6 +28,7 @@ def plot_data_overview(
     linlog: bool = False,
     linthresh: float = 1,
     figsize: tuple[int, int] = (15, 10),
+    nr_of_data_svd_vectors: int = 4,
 ) -> tuple[Figure, Axes]:
     """Plot data as filled contour plot and SVD components.
 
@@ -44,6 +45,8 @@ def plot_data_overview(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     figsize : tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (15, 10).
+    nr_of_data_svd_vectors: int
+        Number of data SVD vector to plot. Defaults to 4.
 
     Returns
     -------
@@ -64,9 +67,9 @@ def plot_data_overview(
         dataset.data.plot(ax=data_ax)
 
     add_svd_to_dataset(dataset=dataset, name="data")
-    plot_lsv_data(dataset, lsv_ax)
+    plot_lsv_data(dataset, lsv_ax, indices=range(nr_of_data_svd_vectors))
     plot_sv_data(dataset, sv_ax)
-    plot_rsv_data(dataset, rsv_ax)
+    plot_rsv_data(dataset, rsv_ax, indices=range(nr_of_data_svd_vectors))
     fig.suptitle(title, fontsize=16)
     fig.tight_layout()
 
