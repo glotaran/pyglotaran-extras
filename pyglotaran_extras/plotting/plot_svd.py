@@ -81,9 +81,7 @@ def plot_lsv_data(
     """
     add_cycler_if_not_none(ax, cycler)
     dLSV = res.data_left_singular_vectors
-    dLSV.isel(left_singular_value_index=indices[: len(dLSV.left_singular_value_index)]).plot.line(
-        x="time", ax=ax
-    )
+    _plot_svd_vetors(dLSV, indices, "left_singular_value_index", ax)
     ax.set_title("data. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -110,9 +108,7 @@ def plot_rsv_data(
     """
     add_cycler_if_not_none(ax, cycler)
     dRSV = res.data_right_singular_vectors
-    dRSV.isel(
-        right_singular_value_index=indices[: len(dRSV.right_singular_value_index)]
-    ).plot.line(x="spectral", ax=ax)
+    _plot_svd_vetors(dRSV, indices, "right_singular_value_index", ax)
     ax.set_title("data. RSV")
 
 
@@ -174,9 +170,7 @@ def plot_lsv_residual(
         rLSV = res.weighted_residual_left_singular_vectors
     else:
         rLSV = res.residual_left_singular_vectors
-    rLSV.isel(left_singular_value_index=indices[: len(rLSV.left_singular_value_index)]).plot.line(
-        x=rLSV.dims[0], ax=ax
-    )
+    _plot_svd_vetors(rLSV, indices, "left_singular_value_index", ax)
     ax.set_title("res. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -206,9 +200,7 @@ def plot_rsv_residual(
         rRSV = res.weighted_residual_right_singular_vectors
     else:
         rRSV = res.residual_right_singular_vectors
-    rRSV.isel(
-        right_singular_value_index=indices[: len(rRSV.right_singular_value_index)]
-    ).plot.line(x=rRSV.dims[1], ax=ax)
+    _plot_svd_vetors(rRSV, indices, "right_singular_value_index", ax)
     ax.set_title("res. RSV")
 
 
@@ -240,3 +232,36 @@ def plot_sv_residual(
         "ro-", yscale="log", ax=ax
     )
     ax.set_title("res. log(SV)")
+
+
+def _plot_svd_vetors(
+    vector_data: xr.DataArray, indices: Sequence[int], sv_index_dim: str, ax: Axis
+) -> None:
+    """Plot SVD vectors with decreasing zorder on axis ``ax``.
+
+    Parameters
+    ----------
+    vector_data: xr.DataArray
+        DataArray containing the SVD vector data.
+    indices: Sequence[int]
+        Indices of the singular vector to plot.
+    sv_index_dim: str
+        Name of the singular value index dimension.
+    ax: Axis
+        Axis to plot on.
+
+    See Also
+    --------
+    plot_lsv_data
+    plot_rsv_data
+    plot_lsv_residual
+    plot_rsv_residual
+    """
+    max_index = len(getattr(vector_data, sv_index_dim))
+    values = vector_data.isel(**{sv_index_dim: indices[:max_index]})
+    x_dim = vector_data.dims[1]
+    if x_dim == sv_index_dim:
+        values = values.T
+        x_dim = vector_data.dims[0]
+    for zorder, value in zip(range(100)[::-1], values):
+        value.plot.line(x=x_dim, ax=ax, zorder=zorder)
