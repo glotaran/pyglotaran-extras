@@ -23,7 +23,7 @@ def plot_svd(
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
-    nr_of_data_svd_vectors: int = 2,
+    nr_of_data_svd_vectors: int = 4,
     nr_of_residual_svd_vectors: int = 2,
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
@@ -44,7 +44,7 @@ def plot_svd(
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     nr_of_data_svd_vectors: int
-        Number of data SVD vector to plot. Defaults to 2.
+        Number of data SVD vector to plot. Defaults to 4.
     nr_of_residual_svd_vectors: int
         Number of residual SVD vector to plot. Defaults to 2.
     show_data_svd_legend: bool

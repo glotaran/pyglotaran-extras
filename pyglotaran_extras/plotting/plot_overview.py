@@ -36,7 +36,7 @@ def plot_overview(
     figsize: tuple[int, int] = (18, 16),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
-    nr_of_data_svd_vectors: int = 2,
+    nr_of_data_svd_vectors: int = 4,
     nr_of_residual_svd_vectors: int = 2,
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
@@ -75,7 +75,7 @@ def plot_overview(
         This is a deprecation helper argument to transition to a consistent return value
         consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
     nr_of_data_svd_vectors: int
-        Number of data SVD vector to plot. Defaults to 2.
+        Number of data SVD vector to plot. Defaults to 4.
     nr_of_residual_svd_vectors: int
         Number of residual SVD vector to plot. Defaults to 2.
     show_data_svd_legend: bool
