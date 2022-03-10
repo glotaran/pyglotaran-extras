@@ -25,6 +25,8 @@ def plot_svd(
     cycler: Cycler | None = PlotStyle().cycler,
     nr_of_data_svd_vectors: int = 2,
     nr_of_residual_svd_vectors: int = 2,
+    show_data_svd_legend: bool = True,
+    show_residual_svd_legend: bool = True,
 ) -> None:
     """Plot SVD (Singular Value Decomposition) of data and residual.
 
@@ -45,6 +47,10 @@ def plot_svd(
         Number of data SVD vector to plot. Defaults to 2.
     nr_of_residual_svd_vectors: int
         Number of residual SVD vector to plot. Defaults to 2.
+    show_data_svd_legend: bool
+        Whether or not to show the data SVD legend. Defaults to True.
+    show_residual_svd_legend: bool
+        Whether or not to show the residual SVD legend. Defaults to True.
     """
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
@@ -57,8 +63,15 @@ def plot_svd(
         linthresh=linthresh,
         cycler=cycler,
         indices=range(nr_of_residual_svd_vectors),
+        show_legend=show_residual_svd_legend,
     )
-    plot_rsv_residual(res, axes[0, 1], cycler=cycler, indices=range(nr_of_residual_svd_vectors))
+    plot_rsv_residual(
+        res,
+        axes[0, 1],
+        cycler=cycler,
+        indices=range(nr_of_residual_svd_vectors),
+        show_legend=show_residual_svd_legend,
+    )
     plot_sv_residual(res, axes[0, 2], cycler=cycler)
     add_svd_to_dataset(dataset=res, name="data")
     plot_lsv_data(
@@ -68,8 +81,15 @@ def plot_svd(
         linthresh=linthresh,
         cycler=cycler,
         indices=range(nr_of_data_svd_vectors),
+        show_legend=show_data_svd_legend,
     )
-    plot_rsv_data(res, axes[1, 1], cycler=cycler, indices=range(nr_of_data_svd_vectors))
+    plot_rsv_data(
+        res,
+        axes[1, 1],
+        cycler=cycler,
+        indices=range(nr_of_data_svd_vectors),
+        show_legend=show_data_svd_legend,
+    )
     plot_sv_data(res, axes[1, 2], cycler=cycler)
 
 
@@ -80,6 +100,7 @@ def plot_lsv_data(
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
+    show_legend: bool = True,
 ) -> None:
     """Plot left singular vectors (time) of the data matrix.
 
@@ -98,10 +119,12 @@ def plot_lsv_data(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_legend: bool
+        Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     dLSV = res.data_left_singular_vectors
-    _plot_svd_vetors(dLSV, indices, "left_singular_value_index", ax)
+    _plot_svd_vetors(dLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("data. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -112,6 +135,7 @@ def plot_rsv_data(
     ax: Axis,
     indices: Sequence[int] = range(4),
     cycler: Cycler | None = PlotStyle().cycler,
+    show_legend: bool = True,
 ) -> None:
     """Plot right singular vectors (spectra) of the data matrix.
 
@@ -125,10 +149,12 @@ def plot_rsv_data(
         Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_legend: bool
+        Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     dRSV = res.data_right_singular_vectors
-    _plot_svd_vetors(dRSV, indices, "right_singular_value_index", ax)
+    _plot_svd_vetors(dRSV, indices, "right_singular_value_index", ax, show_legend)
     ax.set_title("data. RSV")
 
 
@@ -166,6 +192,7 @@ def plot_lsv_residual(
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
+    show_legend: bool = True,
 ) -> None:
     """Plot left singular vectors (time) of the residual matrix.
 
@@ -184,13 +211,15 @@ def plot_lsv_residual(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_legend: bool
+        Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
     else:
         rLSV = res.residual_left_singular_vectors
-    _plot_svd_vetors(rLSV, indices, "left_singular_value_index", ax)
+    _plot_svd_vetors(rLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("res. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -201,6 +230,7 @@ def plot_rsv_residual(
     ax: Axis,
     indices: Sequence[int] = range(2),
     cycler: Cycler | None = PlotStyle().cycler,
+    show_legend: bool = True,
 ) -> None:
     """Plot right singular vectors (spectra) of the residual matrix.
 
@@ -214,13 +244,15 @@ def plot_rsv_residual(
         Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_legend: bool
+        Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_right_singular_vectors" in res:
         rRSV = res.weighted_residual_right_singular_vectors
     else:
         rRSV = res.residual_right_singular_vectors
-    _plot_svd_vetors(rRSV, indices, "right_singular_value_index", ax)
+    _plot_svd_vetors(rRSV, indices, "right_singular_value_index", ax, show_legend)
     ax.set_title("res. RSV")
 
 
@@ -255,7 +287,11 @@ def plot_sv_residual(
 
 
 def _plot_svd_vetors(
-    vector_data: xr.DataArray, indices: Sequence[int], sv_index_dim: str, ax: Axis
+    vector_data: xr.DataArray,
+    indices: Sequence[int],
+    sv_index_dim: str,
+    ax: Axis,
+    show_legend: bool,
 ) -> None:
     """Plot SVD vectors with decreasing zorder on axis ``ax``.
 
@@ -269,6 +305,8 @@ def _plot_svd_vetors(
         Name of the singular value index dimension.
     ax: Axis
         Axis to plot on.
+    show_legend: bool
+        Whether or not to show the legend.
 
     See Also
     --------
@@ -283,5 +321,7 @@ def _plot_svd_vetors(
     if x_dim == sv_index_dim:
         values = values.T
         x_dim = vector_data.dims[0]
-    for zorder, value in zip(range(100)[::-1], values):
-        value.plot.line(x=x_dim, ax=ax, zorder=zorder)
+    for index, (zorder, value) in enumerate(zip(range(100)[::-1], values)):
+        value.plot.line(x=x_dim, ax=ax, zorder=zorder, label=index)
+    if show_legend is True:
+        ax.legend(title=sv_index_dim)
