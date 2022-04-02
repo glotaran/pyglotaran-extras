@@ -5,7 +5,10 @@
 [![Tests](https://github.com/glotaran/pyglotaran-extras/actions/workflows/test.yml/badge.svg)](https://github.com/glotaran/pyglotaran-extras/actions/workflows/test.yml)
 [![Documentation Status](https://readthedocs.org/projects/pyglotaran-extras/badge/?version=latest)](https://pyglotaran-extras.readthedocs.io/en/latest/?badge=latest)
 [![Binder](https://static.mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/glotaran/pyglotaran-extras.git/main?urlpath=lab%2Ftree%2Fdocs%2Fsource%2Fnotebooks)
+
 [![codecov](https://codecov.io/gh/glotaran/pyglotaran-extras/branch/main/graph/badge.svg?token=I6F412Y390)](https://codecov.io/gh/glotaran/pyglotaran-extras)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/glotaran/pyglotaran-extras.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/glotaran/pyglotaran-extras/context:python)
+[![Code style Python: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Discord](https://img.shields.io/discord/883443835135475753.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/KfnEYRSTJx)
 
 Supplementary package for pyglotaran with (example) plotting code for use with the pyglotaran package.
