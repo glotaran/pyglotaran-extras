@@ -22,15 +22,21 @@ Prerequisites:
 
 To install pyglotaran-extras from [PyPI](https://pypi.org/), run this command in your terminal:
 
-```shell
+```console
 pip install pyglotaran-extras
+```
+
+If you want to install it via conda, you can run the following command:
+
+```console
+conda install pyglotaran-extras
 ```
 
 ### From Source
 
 To install pyglotaran-extras from sources, either clone this repository or download the latest release, then run this command in your terminal:
 
-```shell
+```console
 git clone https://github.com/glotaran/pyglotaran-extras.git
 cd pyglotaran-extras
 pip install -e .
@@ -38,6 +44,6 @@ pip install -e .
 
 or directly
 
-```shell
+```console
 pip install git+https://github.com/glotaran/pyglotaran-extras.git
 ```
