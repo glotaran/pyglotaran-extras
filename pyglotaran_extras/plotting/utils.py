@@ -201,7 +201,7 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
         Dataset scale extracted from ``res`` falls back to 1 if not present.
     """
     scale = 1
-    if divide_by_scale is True:
+    if divide_by_scale:
         if "dataset_scale" in res.attrs:
             scale = res.attrs["dataset_scale"]
         else:

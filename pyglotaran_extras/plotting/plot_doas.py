@@ -88,8 +88,7 @@ def plot_doas(
         dataset.fitted_data.isel(spectral=index).plot(ax=axi)
 
     plt.tight_layout(pad=5, w_pad=2.0, h_pad=2.0)
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if not figure_only:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig

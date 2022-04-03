@@ -93,7 +93,7 @@ def plot_data_and_fits(
     if linlog:
         axis.set_xscale("symlog", linthresh=linthresh)
     axis.set_ylabel(y_label)
-    if per_axis_legend is True:
+    if per_axis_legend:
         axis.legend()
 
 
@@ -188,7 +188,7 @@ def plot_fitted_traces(
             y_label=y_label,
             cycler=cycler,
         )
-    if per_axis_legend is False:
+    if not per_axis_legend:
         add_unique_figure_legend(fig, axes)
     fig.suptitle(title, fontsize=28)
     fig.tight_layout()

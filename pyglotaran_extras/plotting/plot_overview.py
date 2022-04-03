@@ -125,12 +125,10 @@ def plot_overview(
     plot_residual(
         res, axes[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
     )
-    # plt.tight_layout(pad=3, w_pad=4.0, h_pad=4.0)
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if not figure_only:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig
 
 
 def plot_simple_overview(
@@ -195,11 +193,10 @@ def plot_simple_overview(
     axes[0, 2].set_title("data")
     res.residual.plot(x="time", ax=axes[1, 2])
     axes[1, 2].set_title("residual")
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if not figure_only:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig
 
 
 if __name__ == "__main__":
