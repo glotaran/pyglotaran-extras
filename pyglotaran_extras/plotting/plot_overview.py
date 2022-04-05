@@ -195,11 +195,10 @@ def plot_simple_overview(
     axes[0, 2].set_title("data")
     res.residual.plot(x="time", ax=axes[1, 2])
     axes[1, 2].set_title("residual")
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if figure_only is not True:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig
 
 
 if __name__ == "__main__":
