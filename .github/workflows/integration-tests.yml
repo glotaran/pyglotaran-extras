@@ -44,7 +44,7 @@ jobs:
           example_name: ${{ matrix.example_name }}
           install_extras: false
       - name: Upload Example Plots Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: example-plots
           path: ${{ steps.example-run.outputs.plots-path }}
