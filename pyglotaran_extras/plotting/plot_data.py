@@ -60,6 +60,7 @@ def plot_data_overview(
 
     fig = plt.figure(figsize=figsize)
     data_ax = cast(Axis, plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig))
+    fig.subplots_adjust(hspace=0.5, wspace=0.25)
     lsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 0), fig=fig))
     sv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 1), fig=fig))
     rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
@@ -70,15 +71,12 @@ def plot_data_overview(
         dataset.data.plot(ax=data_ax)
 
     add_svd_to_dataset(dataset=dataset, name="data")
-    plot_lsv_data(
-        dataset, lsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=show_data_svd_legend
-    )
+    plot_lsv_data(dataset, lsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
     plot_sv_data(dataset, sv_ax)
-    plot_rsv_data(
-        dataset, rsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=show_data_svd_legend
-    )
+    plot_rsv_data(dataset, rsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
+    if show_data_svd_legend is True:
+        rsv_ax.legend(title="singular value index", loc="lower right", bbox_to_anchor=(1.13, 1))
     fig.suptitle(title, fontsize=16)
-    fig.tight_layout()
 
     if linlog:
         data_ax.set_xscale("symlog", linthresh=linthresh)
