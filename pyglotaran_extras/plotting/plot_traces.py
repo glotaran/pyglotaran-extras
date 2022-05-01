@@ -137,7 +137,7 @@ def plot_fitted_traces(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
-       . Defaults to True.
+        Defaults to True.
     per_axis_legend : bool
         Whether to use a legend per plot or for the whole figure. Defaults to False.
     figsize : tuple[int, int]
