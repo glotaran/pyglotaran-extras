@@ -11,6 +11,7 @@ from pyglotaran_extras.deprecation.deprecation_utils import FIG_ONLY_WARNING
 from pyglotaran_extras.deprecation.deprecation_utils import PyglotaranExtrasApiDeprecationWarning
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_concentrations import plot_concentrations
+from pyglotaran_extras.plotting.plot_guidance import plot_guidance
 from pyglotaran_extras.plotting.plot_residual import plot_residual
 from pyglotaran_extras.plotting.plot_spectra import plot_spectra
 from pyglotaran_extras.plotting.plot_svd import plot_svd
@@ -91,6 +92,12 @@ def plot_overview(
     """
     res = load_data(result)
 
+    if res.coords["time"].values.size == 1:
+        fig, axes = plot_guidance(res)
+        if figure_only is True:
+            return fig
+        return fig, axes
+
     # Plot dimensions
     M = 4
     N = 3
@@ -125,12 +132,10 @@ def plot_overview(
     plot_residual(
         res, axes[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
     )
-    # plt.tight_layout(pad=3, w_pad=4.0, h_pad=4.0)
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if figure_only is False:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig
 
 
 def plot_simple_overview(

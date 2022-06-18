@@ -80,6 +80,8 @@ def plot_data_and_fits(
     result_map = result_dataset_mapping(result)
     add_cycler_if_not_none(axis, cycler)
     for dataset_name in result_map.keys():
+        if result_map[dataset_name].coords["time"].values.size == 1:
+            continue
         spectral_coords = result_map[dataset_name].coords["spectral"].values
         if spectral_coords.min() <= wavelength <= spectral_coords.max():
             result_data = result_map[dataset_name].sel(spectral=[wavelength], method="nearest")
@@ -135,7 +137,7 @@ def plot_fitted_traces(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
-       . Defaults to True.
+        Defaults to True.
     per_axis_legend : bool
         Whether to use a legend per plot or for the whole figure. Defaults to False.
     figsize : tuple[int, int]
