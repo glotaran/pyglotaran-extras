@@ -132,12 +132,10 @@ def plot_overview(
     plot_residual(
         res, axes[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
     )
-    # plt.tight_layout(pad=3, w_pad=4.0, h_pad=4.0)
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if figure_only is False:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig
 
 
 def plot_simple_overview(
