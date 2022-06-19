@@ -11,7 +11,7 @@ import xarray as xr
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
-from pyglotaran_extras.plotting.utils import extract_irf
+from pyglotaran_extras.plotting.utils import extract_irf_dispersion_center
 
 if TYPE_CHECKING:
 
@@ -92,5 +92,5 @@ def _plot_irf_dispersion_center(
         Plot label for the IRF shown in the legend. Defaults to "IRF"
     """
     add_cycler_if_not_none(ax, cycler)
-    irf = cast(xr.DataArray, extract_irf(res, as_dataarray=True))
+    irf = cast(xr.DataArray, extract_irf_dispersion_center(res, as_dataarray=True))
     irf.plot(ax=ax, label=label, **{spectral_axis: "spectral"})
