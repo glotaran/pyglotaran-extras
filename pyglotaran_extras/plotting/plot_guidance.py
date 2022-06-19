@@ -11,6 +11,7 @@ from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     from cycler import Cycler
+    from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
 
 
 def plot_guidance(
-    result: DatasetConvertible,
+    result: DatasetConvertible | Result,
     figsize: tuple[int, int] = (15, 5),
     title: str = "Guidance Overview",
     y_label: str = "a.u.",
@@ -28,7 +29,7 @@ def plot_guidance(
 
     Parameters
     ----------
-    result: DatasetConvertible
+    result: DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
     figsize: tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (15, 5)

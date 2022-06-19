@@ -20,6 +20,7 @@ from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     from cycler import Cycler
+    from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
 
 
 def plot_overview(
-    result: DatasetConvertible,
+    result: DatasetConvertible | Result,
     center_λ: float | None = None,
     linlog: bool = True,
     linthresh: float = 1,
@@ -46,7 +47,7 @@ def plot_overview(
 
     Parameters
     ----------
-    result: DatasetConvertible
+    result: DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
     center_λ: float | None
         Center wavelength (λ in nm)
@@ -139,7 +140,7 @@ def plot_overview(
 
 
 def plot_simple_overview(
-    result: DatasetConvertible,
+    result: DatasetConvertible | Result,
     title: str | None = None,
     figsize: tuple[int, int] = (12, 6),
     cycler: Cycler | None = PlotStyle().cycler,
@@ -149,7 +150,7 @@ def plot_simple_overview(
 
     Parameters
     ----------
-    result: DatasetConvertible
+    result: DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
     title: str | None
         Title of the figure. Defaults to None.
@@ -213,7 +214,7 @@ if __name__ == "__main__":
     res = load_data(result_path)
     print(res)
 
-    fig, plt.axes = plot_overview(res, figure_only=False)
+    fig, axes = plot_overview(res, figure_only=False)
     if len(sys.argv) > 2:
         fig.savefig(sys.argv[2], bbox_inches="tight")
         print(f"Saved figure to: {sys.argv[2]}")

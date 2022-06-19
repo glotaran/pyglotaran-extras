@@ -16,6 +16,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_sv_data
 __all__ = ["plot_data_overview"]
 
 if TYPE_CHECKING:
+    from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
 
 
 def plot_data_overview(
-    dataset: DatasetConvertible,
+    dataset: DatasetConvertible | Result,
     title: str = "Data overview",
     linlog: bool = False,
     linthresh: float = 1,
@@ -35,7 +36,7 @@ def plot_data_overview(
 
     Parameters
     ----------
-    dataset : DatasetConvertible
+    dataset :  DatasetConvertible | Result
         Dataset containing data and SVD of the data.
     title : str
         Title to add to the figure. Defaults to "Data overview".
