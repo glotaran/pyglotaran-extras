@@ -3,7 +3,7 @@ from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.io.setup_case_study import setup_case_study
 from pyglotaran_extras.plotting.plot_data import plot_data_overview
 from pyglotaran_extras.plotting.plot_guidance import plot_guidance
-from pyglotaran_extras.plotting.plot_irf_dispersions import plot_irf_dispersions
+from pyglotaran_extras.plotting.plot_irf import plot_irf
 from pyglotaran_extras.plotting.plot_overview import plot_overview
 from pyglotaran_extras.plotting.plot_overview import plot_simple_overview
 from pyglotaran_extras.plotting.plot_traces import plot_fitted_traces
@@ -18,7 +18,7 @@ __all__ = [
     "plot_fitted_traces",
     "select_plot_wavelengths",
     "plot_guidance",
-    "plot_irf_dispersions",
+    "plot_irf",
 ]
 
 __version__ = "0.6.0"

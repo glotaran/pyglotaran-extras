@@ -57,10 +57,10 @@ def select_irf_nr(irf_dispersion: xr.DataArray, main_irf_nr: int = 0) -> xr.Data
     return irf_dispersion
 
 
-def extract_irf_dispersion(
+def extract_irf(
     res: xr.Dataset, main_irf_nr: int = 0, *, as_dataarray: bool = True
 ) -> xr.DataArray | float:
-    """Extract the IRF dispersion data from a result dataset where ``irf_nr==main_irf_nr``.
+    """Extract the IRF data from a result dataset where ``irf_nr==main_irf_nr``.
 
     Parameters
     ----------
@@ -117,7 +117,7 @@ def extract_irf_location(
     float
         Location of the ``irf``
     """
-    irf_dispersion = extract_irf_dispersion(res=res, main_irf_nr=main_irf_nr, as_dataarray=False)
+    irf_dispersion = extract_irf(res=res, main_irf_nr=main_irf_nr, as_dataarray=False)
     if isinstance(irf_dispersion, xr.DataArray):
         if center_λ is None:  # center wavelength (λ in nm)
             center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))

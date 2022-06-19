@@ -42,6 +42,7 @@ def plot_overview(
     nr_of_residual_svd_vectors: int = 2,
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
+    show_irf: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
@@ -84,6 +85,8 @@ def plot_overview(
         Whether or not to show the data SVD legend. Defaults to True.
     show_residual_svd_legend: bool
         Whether or not to show the residual SVD legend. Defaults to True.
+    show_irf: bool
+        Whether to show the the IRF as overlay on the residual/data plot. Defaults to True.
 
     Returns
     -------
@@ -131,7 +134,13 @@ def plot_overview(
         show_residual_svd_legend=show_residual_svd_legend,
     )
     plot_residual(
-        res, axes[1, 0], linlog=linlog, linthresh=linthresh, show_data=show_data, cycler=cycler
+        res,
+        axes[1, 0],
+        linlog=linlog,
+        linthresh=linthresh,
+        show_data=show_data,
+        cycler=cycler,
+        show_irf=show_irf,
     )
     if figure_only is False:
         return fig, axes
