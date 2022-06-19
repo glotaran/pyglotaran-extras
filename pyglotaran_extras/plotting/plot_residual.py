@@ -58,6 +58,7 @@ def plot_residual(
         data.plot(x="time", ax=ax, add_colorbar=False)
     if show_irf is True:
         _plot_irf(res, ax=ax, spectral_axis="y", cycler=cycler)
+        ax.set_xlabel("time")
         ax.legend()
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
