@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 from warnings import warn
 
 import numpy as np
+import xarray as xr
 
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
     from typing import Iterable
 
-    import xarray as xr
     from cycler import Cycler
     from matplotlib.axis import Axis
     from matplotlib.figure import Figure
@@ -22,6 +22,89 @@ if TYPE_CHECKING:
 
 class PlotDuplicationWarning(UserWarning):
     """Warning given when there are more subplots than datapoints."""
+
+
+def select_irf_dispersion_center_by_index(
+    irf_dispersion: xr.DataArray, main_irf_nr: int = 0
+) -> xr.DataArray | float:
+    """Select a subset of the IRF dispersion data where ``irf_nr==main_irf_nr``.
+
+    Parameters
+    ----------
+    irf_dispersion: xr.DataArray
+        Data Variable from a result dataset which contains the IRF dispersion data.
+    main_irf_nr: int
+        Index of the main ``irf`` component when using an ``irf``
+        parametrized with multiple peaks. Defaults to 0.
+
+    Returns
+    -------
+    xr.DataArray | float
+        DataArray only containing the IRF dispersion data for the main IRF.
+
+    Raises
+    ------
+    ValueError
+        If ``irf_nr`` is not in the coordinates
+    """
+    if "irf_nr" in irf_dispersion.sizes:
+        if main_irf_nr >= irf_dispersion.sizes["irf_nr"]:
+            raise ValueError(
+                f"The value {main_irf_nr=} is not a valid value for "
+                f"irf_nr, needs to be smaller than {irf_dispersion.sizes['irf_nr']}."
+            )
+        irf_dispersion = irf_dispersion.sel(irf_nr=main_irf_nr)
+    if irf_dispersion.size == 1:
+        irf_dispersion = irf_dispersion.item()
+    return irf_dispersion
+
+
+def extract_irf_dispersion_center(
+    res: xr.Dataset, main_irf_nr: int = 0, *, as_dataarray: bool = True
+) -> xr.DataArray | float:
+    """Extract the IRF dispersion center data from a result dataset where ``irf_nr==irf_nr_index``.
+
+    Parameters
+    ----------
+    res: xr.Dataset
+        Result dataset from a pyglotaran optimization.
+    main_irf_nr: int
+        Index of the main ``irf`` component when using an ``irf``
+        parametrized with multiple peaks. Defaults to 0.
+    as_dataarray: bool
+        Ensure that the returned data are xr.DataArray instead of a float, even if the
+        dispersion is none existent or constant. Defaults to True
+
+
+    Returns
+    -------
+    xr.DataArray | float
+        IRF dispersion data as float or xr.DataArray
+    """
+    if "irf_center_location" in res:
+        return select_irf_dispersion_center_by_index(
+            res.irf_center_location, main_irf_nr=main_irf_nr
+        )
+    if "center_dispersion_1" in res:
+        # legacy compatibility pyglotaran<0.5.0
+        return select_irf_dispersion_center_by_index(
+            res.center_dispersion_1, main_irf_nr=main_irf_nr
+        )
+
+    # No/constant dispersion
+    if "irf_center" in res:
+        irf_dispersion_center = select_irf_dispersion_center_by_index(
+            res.irf_center, main_irf_nr=main_irf_nr
+        )
+    else:
+        irf_dispersion_center = min(res.coords["time"]).item()
+
+    if as_dataarray is True:
+        spectral = res.coords["spectral"].values
+        return xr.DataArray(
+            irf_dispersion_center * np.ones(spectral.shape), {"spectral": spectral}
+        )
+    return irf_dispersion_center
 
 
 def extract_irf_location(
@@ -42,28 +125,17 @@ def extract_irf_location(
     Returns
     -------
     float
-        Location if the ``irf``
+        Location of the ``irf``
     """
-    times = res.coords["time"]
-    if center_λ is None:  # center wavelength (λ in nm)
-        center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
+    irf_dispersion_center = extract_irf_dispersion_center(
+        res=res, main_irf_nr=main_irf_nr, as_dataarray=False
+    )
+    if isinstance(irf_dispersion_center, xr.DataArray):
+        if center_λ is None:  # center wavelength (λ in nm)
+            center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
+        return irf_dispersion_center.sel(spectral=center_λ, method="nearest").item()
 
-    if "irf_center_location" in res:
-        irf_center_location = res.irf_center_location
-        irf_loc = irf_center_location.sel(spectral=center_λ, method="nearest")
-    elif "center_dispersion_1" in res:
-        # legacy compatibility pyglotaran<0.5.0
-        center_dispersion = res.center_dispersion_1
-        irf_loc = center_dispersion.sel(spectral=center_λ, method="nearest").item()
-    elif "irf_center" in res:
-        irf_loc = res.irf_center
-    else:
-        irf_loc = min(times)
-
-    if hasattr(irf_loc, "shape") and len(irf_loc.shape) > 0:
-        irf_loc = irf_loc[main_irf_nr].item()
-
-    return irf_loc
+    return irf_dispersion_center
 
 
 def maximum_coordinate_range(

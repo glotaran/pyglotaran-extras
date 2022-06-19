@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from pyglotaran_extras.plotting.plot_irf_dispersion_center import _plot_irf_dispersion_center
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
@@ -21,6 +22,7 @@ def plot_residual(
     linthresh: float = 1,
     show_data: bool = False,
     cycler: Cycler | None = PlotStyle().cycler,
+    show_irf_dispersion_center: bool = True,
 ) -> None:
     """Plot data or residual on a 2D contour plot.
 
@@ -39,6 +41,9 @@ def plot_residual(
         Whether to show the data or the residual. Defaults to False.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_irf_dispersion_center: bool
+        Whether to show the the IRF dispersion center as overlay on the residual/data plot.
+        Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     data = res.data if show_data else res.residual
@@ -52,6 +57,10 @@ def plot_residual(
         data.plot(x="time", ax=ax)
     else:
         data.plot(x="time", ax=ax, add_colorbar=False)
+    if show_irf_dispersion_center is True:
+        _plot_irf_dispersion_center(res, ax=ax, spectral_axis="y", cycler=cycler)
+        ax.set_xlabel("time")
+        ax.legend()
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
     ax.set_title(title)
