@@ -13,7 +13,10 @@ from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_concentrations import plot_concentrations
 from pyglotaran_extras.plotting.plot_guidance import plot_guidance
 from pyglotaran_extras.plotting.plot_residual import plot_residual
+from pyglotaran_extras.plotting.plot_spectra import plot_sas
 from pyglotaran_extras.plotting.plot_spectra import plot_spectra
+from pyglotaran_extras.plotting.plot_svd import plot_lsv_residual
+from pyglotaran_extras.plotting.plot_svd import plot_rsv_residual
 from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
@@ -154,6 +157,7 @@ def plot_simple_overview(
     figsize: tuple[int, int] = (12, 6),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
+    show_irf: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot simple overview.
 
@@ -171,6 +175,8 @@ def plot_simple_overview(
         Whether or not to only return the figure.
         This is a deprecation helper argument to transition to a consistent return value
         consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
+    show_irf: bool
+        Whether to show the the IRF as overlay on the residual/data plot. Defaults to True.
 
     Returns
     -------
@@ -185,31 +191,16 @@ def plot_simple_overview(
         add_cycler_if_not_none(ax, cycler)
     if title:
         fig.suptitle(title, fontsize=16)
-    sas = res.species_associated_spectra
-    traces = res.species_concentration
-    if "spectral" in traces.coords:
-        traces.sel(spectral=res.spectral.values[0], method="nearest").plot.line(
-            x="time", ax=axes[0, 0]
-        )
-    else:
-        traces.plot.line(x="time", ax=axes[0, 0])
-    sas.plot.line(x="spectral", ax=axes[0, 1])
-    rLSV = res.residual_left_singular_vectors
-    rLSV.isel(left_singular_value_index=range(min(2, len(rLSV)))).plot.line(
-        x="time", ax=axes[1, 0]
-    )
 
-    axes[1, 0].set_title("res. LSV")
-    rRSV = res.residual_right_singular_vectors
-    rRSV.isel(right_singular_value_index=range(min(2, len(rRSV)))).plot.line(
-        x="spectral", ax=axes[1, 1]
-    )
+    plot_concentrations(res, ax=axes[0, 0], center_λ=res.coords["spectral"].values[0])
+    plot_sas(res, ax=axes[0, 1])
 
-    axes[1, 1].set_title("res. RSV")
-    res.data.plot(x="time", ax=axes[0, 2])
-    axes[0, 2].set_title("data")
-    res.residual.plot(x="time", ax=axes[1, 2])
-    axes[1, 2].set_title("residual")
+    plot_lsv_residual(res, ax=axes[1, 0])
+    plot_rsv_residual(res, ax=axes[1, 1])
+
+    plot_residual(res, axes[0, 2], show_data=True, show_irf=show_irf)
+    plot_residual(res, axes[1, 2], show_data=False, show_irf=show_irf)
+
     if figure_only is not True:
         return fig, axes
     warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
