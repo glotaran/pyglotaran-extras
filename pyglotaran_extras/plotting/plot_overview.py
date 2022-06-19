@@ -45,7 +45,7 @@ def plot_overview(
     nr_of_residual_svd_vectors: int = 2,
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
-    show_irf: bool = True,
+    show_irf_dispersion_center: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
@@ -88,8 +88,9 @@ def plot_overview(
         Whether or not to show the data SVD legend. Defaults to True.
     show_residual_svd_legend: bool
         Whether or not to show the residual SVD legend. Defaults to True.
-    show_irf: bool
-        Whether to show the the IRF as overlay on the residual/data plot. Defaults to True.
+    show_irf_dispersion_center: bool
+        Whether to show the the IRF dispersion center as overlay on the residual/data plot.
+        Defaults to True.
 
     Returns
     -------
@@ -143,7 +144,7 @@ def plot_overview(
         linthresh=linthresh,
         show_data=show_data,
         cycler=cycler,
-        show_irf=show_irf,
+        show_irf_dispersion_center=show_irf_dispersion_center,
     )
     if figure_only is False:
         return fig, axes
@@ -157,7 +158,7 @@ def plot_simple_overview(
     figsize: tuple[int, int] = (12, 6),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
-    show_irf: bool = True,
+    show_irf_dispersion_center: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot simple overview.
 
@@ -175,8 +176,9 @@ def plot_simple_overview(
         Whether or not to only return the figure.
         This is a deprecation helper argument to transition to a consistent return value
         consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
-    show_irf: bool
-        Whether to show the the IRF as overlay on the residual/data plot. Defaults to True.
+    show_irf_dispersion_center: bool
+        Whether to show the the IRF dispersion center as overlay on the residual/data plot.
+        Defaults to True.
 
     Returns
     -------
@@ -198,8 +200,12 @@ def plot_simple_overview(
     plot_lsv_residual(res, ax=axes[1, 0])
     plot_rsv_residual(res, ax=axes[1, 1])
 
-    plot_residual(res, axes[0, 2], show_data=True, show_irf=show_irf)
-    plot_residual(res, axes[1, 2], show_data=False, show_irf=show_irf)
+    plot_residual(
+        res, axes[0, 2], show_data=True, show_irf_dispersion_center=show_irf_dispersion_center
+    )
+    plot_residual(
+        res, axes[1, 2], show_data=False, show_irf_dispersion_center=show_irf_dispersion_center
+    )
 
     if figure_only is not True:
         return fig, axes

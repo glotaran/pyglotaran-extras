@@ -24,13 +24,13 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import ResultLike
 
 
-def plot_irf(
+def plot_irf_dispersion_center(
     result: ResultLike,
     ax: Axis | None = None,
     figsize: tuple[int, int] = (12, 8),
     cycler: Cycler | None = PlotStyle().cycler,
 ) -> tuple[Figure, Axis] | None:
-    """Plot the IRF over the spectral dimension for one or multiple datasets.
+    """Plot the IRF dispersion center over the spectral dimension for one or multiple datasets.
 
     Parameters
     ----------
@@ -55,7 +55,9 @@ def plot_irf(
     else:
         axis = ax
     for dataset_name, dataset in result_map.items():
-        _plot_irf(dataset, axis, spectral_axis="x", cycler=cycler, label=dataset_name)
+        _plot_irf_dispersion_center(
+            dataset, axis, spectral_axis="x", cycler=cycler, label=dataset_name
+        )
     axis.legend()
 
     if ax is None:
@@ -64,7 +66,7 @@ def plot_irf(
     return None
 
 
-def _plot_irf(
+def _plot_irf_dispersion_center(
     res: xr.Dataset,
     ax: Axis,
     *,
@@ -72,7 +74,7 @@ def _plot_irf(
     cycler: Cycler | None = PlotStyle().cycler,
     label: str = "IRF",
 ) -> None:
-    """Plot the IRF on an Axis ``ax``.
+    """Plot the IRF dispersion center on an Axis ``ax``.
 
     This is an internal function to be used by higher level functions.
 
