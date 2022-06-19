@@ -124,7 +124,7 @@ def plot_lsv_data(
     """
     add_cycler_if_not_none(ax, cycler)
     dLSV = res.data_left_singular_vectors
-    _plot_svd_vetors(dLSV, indices, "left_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(dLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("data. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -154,7 +154,7 @@ def plot_rsv_data(
     """
     add_cycler_if_not_none(ax, cycler)
     dRSV = res.data_right_singular_vectors
-    _plot_svd_vetors(dRSV, indices, "right_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(dRSV, indices, "right_singular_value_index", ax, show_legend)
     ax.set_title("data. RSV")
 
 
@@ -219,7 +219,7 @@ def plot_lsv_residual(
         rLSV = res.weighted_residual_left_singular_vectors
     else:
         rLSV = res.residual_left_singular_vectors
-    _plot_svd_vetors(rLSV, indices, "left_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(rLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("res. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -252,7 +252,7 @@ def plot_rsv_residual(
         rRSV = res.weighted_residual_right_singular_vectors
     else:
         rRSV = res.residual_right_singular_vectors
-    _plot_svd_vetors(rRSV, indices, "right_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(rRSV, indices, "right_singular_value_index", ax, show_legend)
     ax.set_title("res. RSV")
 
 
@@ -286,7 +286,7 @@ def plot_sv_residual(
     ax.set_title("res. log(SV)")
 
 
-def _plot_svd_vetors(
+def _plot_svd_vectors(
     vector_data: xr.DataArray,
     indices: Sequence[int],
     sv_index_dim: str,
