@@ -10,12 +10,12 @@ from glotaran.project.result import Result
 from pyglotaran_extras.types import DatasetConvertible
 
 
-def load_data(result: DatasetConvertible, dataset_name: str | None = None) -> xr.Dataset:
+def load_data(result: DatasetConvertible | Result, dataset_name: str | None = None) -> xr.Dataset:
     """Extract a single dataset from a :class:`DatasetConvertible` object.
 
     Parameters
     ----------
-    result : DatasetConvertible
+    result : DatasetConvertible | Result
         Result class instance, xarray Dataset or path to a dataset file.
     dataset_name : str, optional
         Name of a specific dataset contained in ``result``, if not provided

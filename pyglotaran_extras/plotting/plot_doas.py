@@ -14,6 +14,7 @@ from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
     from cycler import Cycler
+    from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
 
 
 def plot_doas(
-    result: DatasetConvertible,
+    result: DatasetConvertible | Result,
     figsize: tuple[int, int] = (25, 25),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
@@ -30,7 +31,7 @@ def plot_doas(
 
     Parameters
     ----------
-    result: DatasetConvertible
+    result: DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
     figsize : tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
@@ -88,8 +89,7 @@ def plot_doas(
         dataset.fitted_data.isel(spectral=index).plot(ax=axi)
 
     plt.tight_layout(pad=5, w_pad=2.0, h_pad=2.0)
-    if figure_only is True:
-        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-        return fig
-    else:
+    if figure_only is False:
         return fig, axes
+    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig
