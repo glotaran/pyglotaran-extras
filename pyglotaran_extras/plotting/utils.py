@@ -287,6 +287,43 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
     return scale
 
 
+def shift_time_axis_by_irf_location(
+    plot_data: xr.DataArray,
+    irf_location: float | None,
+) -> xr.DataArray:
+    """Shift ``plot_data`` 'time' axis  by the position of the main ``irf``.
+
+    Parameters
+    ----------
+    plot_data: xr.DataArray
+        Data to plot.
+    irf_location:  float | None
+        Location of the ``irf``, if the value is None the original ``plot_data`` will be returned.
+
+    Returns
+    -------
+    xr.DataArray
+        ``plot_data`` with the time axis shifted by the position of the main ``irf``.
+
+    Raises
+    ------
+    ValueError
+        If ``plot_data`` does not have a time axis.
+
+    See Also
+    --------
+    extract_irf_location
+    """
+    if irf_location is None:
+        return plot_data
+
+    if "time" not in plot_data.coords:
+        raise ValueError("plot_data need to have a 'time' axis.")
+
+    times_shifted = plot_data.coords["time"] - irf_location
+    return plot_data.assign_coords(time=times_shifted)
+
+
 def get_shifted_traces(
     res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int = 0
 ) -> xr.DataArray:
@@ -318,10 +355,9 @@ def get_shifted_traces(
         traces = res.species_associated_concentrations
     else:
         raise ValueError(f"No concentrations in result:\n{res}")
-    irf_loc = extract_irf_location(res, center_λ, main_irf_nr)
 
-    times_shifted = traces.coords["time"] - irf_loc
-    return traces.assign_coords(time=times_shifted)
+    irf_loc = extract_irf_location(res, center_λ, main_irf_nr)
+    return shift_time_axis_by_irf_location(traces, irf_loc)
 
 
 def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
