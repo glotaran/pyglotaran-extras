@@ -84,6 +84,8 @@ def plot_data_overview(
         lsv_ax,
         indices=range(nr_of_data_svd_vectors),
         show_legend=False,
+        linlog=linlog,
+        linthresh=linthresh,
         irf_location=irf_location,
     )
     plot_sv_data(dataset, sv_ax)
