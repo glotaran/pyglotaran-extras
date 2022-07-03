@@ -8,6 +8,7 @@ import numpy as np
 from pyglotaran_extras.plotting.plot_irf_dispersion_center import _plot_irf_dispersion_center
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
+from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -23,6 +24,7 @@ def plot_residual(
     show_data: bool = False,
     cycler: Cycler | None = PlotStyle().cycler,
     show_irf_dispersion_center: bool = True,
+    irf_location: float | None = None,
 ) -> None:
     """Plot data or residual on a 2D contour plot.
 
@@ -44,9 +46,13 @@ def plot_residual(
     show_irf_dispersion_center: bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     data = res.data if show_data else res.residual
+    data = shift_time_axis_by_irf_location(data, irf_location)
     title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)
     dims = data.coords.dims
@@ -58,7 +64,9 @@ def plot_residual(
     else:
         data.plot(x="time", ax=ax, add_colorbar=False)
     if show_irf_dispersion_center is True:
-        _plot_irf_dispersion_center(res, ax=ax, spectral_axis="y", cycler=cycler)
+        _plot_irf_dispersion_center(
+            res, ax=ax, spectral_axis="y", cycler=cycler, irf_location=irf_location
+        )
         ax.set_xlabel("time")
         ax.legend()
     if linlog:

@@ -356,8 +356,8 @@ def get_shifted_traces(
     else:
         raise ValueError(f"No concentrations in result:\n{res}")
 
-    irf_loc = extract_irf_location(res, center_λ, main_irf_nr)
-    return shift_time_axis_by_irf_location(traces, irf_loc)
+    irf_location = extract_irf_location(res, center_λ, main_irf_nr)
+    return shift_time_axis_by_irf_location(traces, irf_location)
 
 
 def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:

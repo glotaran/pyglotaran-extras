@@ -12,6 +12,7 @@ from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_sv_data
+from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 __all__ = ["plot_data_overview"]
 
@@ -31,6 +32,7 @@ def plot_data_overview(
     figsize: tuple[int, int] = (15, 10),
     nr_of_data_svd_vectors: int = 4,
     show_data_svd_legend: bool = True,
+    irf_location: float | None = None,
 ) -> tuple[Figure, Axes]:
     """Plot data as filled contour plot and SVD components.
 
@@ -51,6 +53,9 @@ def plot_data_overview(
         Number of data SVD vector to plot. Defaults to 4.
     show_data_svd_legend: bool
         Whether or not to show the data SVD legend. Defaults to True.
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
 
     Returns
     -------
@@ -66,13 +71,21 @@ def plot_data_overview(
     sv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 1), fig=fig))
     rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
 
-    if len(dataset.data.time) > 1:
-        dataset.data.plot(x="time", ax=data_ax, center=False)
+    data = shift_time_axis_by_irf_location(dataset.data, irf_location)
+
+    if len(data.time) > 1:
+        data.plot(x="time", ax=data_ax, center=False)
     else:
-        dataset.data.plot(ax=data_ax)
+        data.plot(ax=data_ax)
 
     add_svd_to_dataset(dataset=dataset, name="data")
-    plot_lsv_data(dataset, lsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
+    plot_lsv_data(
+        dataset,
+        lsv_ax,
+        indices=range(nr_of_data_svd_vectors),
+        show_legend=False,
+        irf_location=irf_location,
+    )
     plot_sv_data(dataset, sv_ax)
     plot_rsv_data(dataset, rsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
     if show_data_svd_legend is True:

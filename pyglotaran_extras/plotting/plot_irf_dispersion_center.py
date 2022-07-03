@@ -29,6 +29,7 @@ def plot_irf_dispersion_center(
     ax: Axis | None = None,
     figsize: tuple[int, int] = (12, 8),
     cycler: Cycler | None = PlotStyle().cycler,
+    irf_location: float | None = None,
 ) -> tuple[Figure, Axis] | None:
     """Plot the IRF dispersion center over the spectral dimension for one or multiple datasets.
 
@@ -42,6 +43,9 @@ def plot_irf_dispersion_center(
         Size of the figure (N, M) in inches. Defaults to (12, 8).
     cycler: Cycler
         Plot style cycler to use. Defaults to PlotStyle().cycler
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
 
     Returns
     -------
@@ -56,7 +60,12 @@ def plot_irf_dispersion_center(
         axis = ax
     for dataset_name, dataset in result_map.items():
         _plot_irf_dispersion_center(
-            dataset, axis, spectral_axis="x", cycler=cycler, label=dataset_name
+            dataset,
+            axis,
+            spectral_axis="x",
+            cycler=cycler,
+            label=dataset_name,
+            irf_location=irf_location,
         )
     axis.legend()
 
@@ -73,6 +82,7 @@ def _plot_irf_dispersion_center(
     spectral_axis: Literal["x", "y"] = "x",
     cycler: Cycler | None = PlotStyle().cycler,
     label: str = "IRF",
+    irf_location: float | None = None,
 ) -> None:
     """Plot the IRF dispersion center on an Axis ``ax``.
 
@@ -90,7 +100,13 @@ def _plot_irf_dispersion_center(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     label: str
         Plot label for the IRF shown in the legend. Defaults to "IRF"
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis (here values) will get shifted.
+        If it is None the time axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     irf = cast(xr.DataArray, extract_irf_dispersion_center(res, as_dataarray=True))
-    irf.plot(ax=ax, label=label, **{spectral_axis: "spectral"})
+    if irf_location is not None:
+        (irf - irf_location).plot(ax=ax, label=label, **{spectral_axis: "spectral"})
+    else:
+        irf.plot(ax=ax, label=label, **{spectral_axis: "spectral"})
