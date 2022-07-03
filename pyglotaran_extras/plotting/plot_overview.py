@@ -20,6 +20,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_rsv_residual
 from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
+from pyglotaran_extras.plotting.utils import extract_irf_location
 
 if TYPE_CHECKING:
     from cycler import Cycler
@@ -111,6 +112,8 @@ def plot_overview(
     N = 3
     fig, axes = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
 
+    irf_location = extract_irf_location(res, center_λ, main_irf_nr)
+
     if center_λ is None:  # center wavelength (λ in nm)
         center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
 
@@ -136,6 +139,7 @@ def plot_overview(
         nr_of_residual_svd_vectors=nr_of_residual_svd_vectors,
         show_data_svd_legend=show_data_svd_legend,
         show_residual_svd_legend=show_residual_svd_legend,
+        irf_location=irf_location,
     )
     plot_residual(
         res,
@@ -145,6 +149,7 @@ def plot_overview(
         show_data=show_data,
         cycler=cycler,
         show_irf_dispersion_center=show_irf_dispersion_center,
+        irf_location=irf_location,
     )
     if figure_only is False:
         return fig, axes
@@ -197,14 +202,24 @@ def plot_simple_overview(
     plot_concentrations(res, ax=axes[0, 0], center_λ=res.coords["spectral"].values[0])
     plot_sas(res, ax=axes[0, 1])
 
-    plot_lsv_residual(res, ax=axes[1, 0])
+    irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].values[0])
+
+    plot_lsv_residual(res, ax=axes[1, 0], irf_location=irf_location)
     plot_rsv_residual(res, ax=axes[1, 1])
 
     plot_residual(
-        res, axes[0, 2], show_data=True, show_irf_dispersion_center=show_irf_dispersion_center
+        res,
+        axes[0, 2],
+        show_data=True,
+        show_irf_dispersion_center=show_irf_dispersion_center,
+        irf_location=irf_location,
     )
     plot_residual(
-        res, axes[1, 2], show_data=False, show_irf_dispersion_center=show_irf_dispersion_center
+        res,
+        axes[1, 2],
+        show_data=False,
+        show_irf_dispersion_center=show_irf_dispersion_center,
+        irf_location=irf_location,
     )
 
     if figure_only is not True:

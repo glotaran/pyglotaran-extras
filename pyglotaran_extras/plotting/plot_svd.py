@@ -7,6 +7,7 @@ from glotaran.io.prepare_dataset import add_svd_to_dataset
 
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
+from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 if TYPE_CHECKING:
     from typing import Sequence
@@ -27,6 +28,7 @@ def plot_svd(
     nr_of_residual_svd_vectors: int = 2,
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
+    irf_location: float | None = None,
 ) -> None:
     """Plot SVD (Singular Value Decomposition) of data and residual.
 
@@ -51,6 +53,9 @@ def plot_svd(
         Whether or not to show the data SVD legend. Defaults to True.
     show_residual_svd_legend: bool
         Whether or not to show the residual SVD legend. Defaults to True.
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
     """
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
@@ -64,6 +69,7 @@ def plot_svd(
         cycler=cycler,
         indices=range(nr_of_residual_svd_vectors),
         show_legend=show_residual_svd_legend,
+        irf_location=irf_location,
     )
     plot_rsv_residual(
         res,
@@ -82,6 +88,7 @@ def plot_svd(
         cycler=cycler,
         indices=range(nr_of_data_svd_vectors),
         show_legend=show_data_svd_legend,
+        irf_location=irf_location,
     )
     plot_rsv_data(
         res,
@@ -101,6 +108,7 @@ def plot_lsv_data(
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
+    irf_location: float | None = None,
 ) -> None:
     """Plot left singular vectors (time) of the data matrix.
 
@@ -121,9 +129,13 @@ def plot_lsv_data(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_legend: bool
         Whether or not to show the legend. Defaults to True.
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     dLSV = res.data_left_singular_vectors
+    dLSV = shift_time_axis_by_irf_location(dLSV, irf_location)
     _plot_svd_vectors(dLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("data. LSV")
     if linlog:
@@ -193,6 +205,7 @@ def plot_lsv_residual(
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
+    irf_location: float | None = None,
 ) -> None:
     """Plot left singular vectors (time) of the residual matrix.
 
@@ -213,12 +226,16 @@ def plot_lsv_residual(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_legend: bool
         Whether or not to show the legend. Defaults to True.
+    irf_location:  float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_left_singular_vectors" in res:
         rLSV = res.weighted_residual_left_singular_vectors
     else:
         rLSV = res.residual_left_singular_vectors
+    rLSV = shift_time_axis_by_irf_location(rLSV, irf_location)
     _plot_svd_vectors(rLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("res. LSV")
     if linlog:
