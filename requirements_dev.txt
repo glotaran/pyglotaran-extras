@@ -1,6 +1,6 @@
 # Runtime dependencies
 
-matplotlib==3.5.2
+matplotlib==3.5.3
 pyglotaran==0.6.0
 
 # Documentation dependencies
