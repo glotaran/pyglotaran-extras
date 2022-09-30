@@ -32,7 +32,7 @@ pip install pyglotaran-extras
 If you want to install it via conda, you can run the following command:
 
 ```console
-conda install pyglotaran-extras
+conda install -c conda-forge pyglotaran-extras
 ```
 
 ### From Source
