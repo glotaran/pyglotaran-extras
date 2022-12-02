@@ -21,7 +21,7 @@ def plot_residual(
     ax: Axis,
     linlog: bool = False,
     linthresh: float = 1,
-    show_data: bool = False,
+    show_data: bool | None = False,
     cycler: Cycler | None = PlotStyle().cycler,
     show_irf_dispersion_center: bool = True,
     irf_location: float | None = None,
@@ -39,8 +39,9 @@ def plot_residual(
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    show_data : bool
-        Whether to show the data or the residual. Defaults to False.
+    show_data: bool | None
+        Whether to show the input data or residual. If set to ``None`` the plot is skipped
+        which improves plotting performance for big datasets. Defaults to False.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_irf_dispersion_center: bool
@@ -50,14 +51,25 @@ def plot_residual(
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
     """
+    if show_data is None:
+        ax.text(
+            0.5,
+            0.5,
+            "Skipped",
+            horizontalalignment="center",
+            verticalalignment="center",
+            fontsize=24,
+        )
+        return
+
     add_cycler_if_not_none(ax, cycler)
     data = res.data if show_data else res.residual
     data = shift_time_axis_by_irf_location(data, irf_location)
     title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)
-    dims = data.coords.dims
     # Handle different dimensionality of data
     if min(shape) == 1:
+        dims = data.coords.dims
         data.plot.line(x=dims[shape.argmax()], ax=ax)
     elif min(shape) < 5:
         data.plot(x="time", ax=ax)

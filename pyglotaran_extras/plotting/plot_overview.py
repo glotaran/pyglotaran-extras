@@ -37,7 +37,7 @@ def plot_overview(
     linlog: bool = True,
     linthresh: float = 1,
     linscale: float = 1,
-    show_data: bool = False,
+    show_data: bool | None = False,
     main_irf_nr: int = 0,
     figsize: tuple[int, int] = (18, 16),
     cycler: Cycler | None = PlotStyle().cycler,
@@ -68,8 +68,9 @@ def plot_overview(
         For example, when linscale == 1.0 (the default), the space used for the
         positive and negative halves of the linear range will be equal to one
         decade in the logarithmic range. Defaults to 1.
-    show_data: bool
-        Whether to show the input data or residual. Defaults to False.
+    show_data: bool | None
+        Whether to show the input data or residual. If set to ``None`` the plot is skipped
+        which improves plotting performance for big datasets. Defaults to False.
     main_irf_nr: int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
@@ -103,10 +104,7 @@ def plot_overview(
 
     if res.coords["time"].values.size == 1:
         fig, axes = plot_guidance(res)
-        if figure_only is True:
-            return fig
-        return fig, axes
-
+        return fig if figure_only is True else (fig, axes)
     # Plot dimensions
     M = 4
     N = 3
@@ -164,6 +162,7 @@ def plot_simple_overview(
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
     show_irf_dispersion_center: bool = True,
+    show_data: bool | None = False,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot simple overview.
 
@@ -184,6 +183,9 @@ def plot_simple_overview(
     show_irf_dispersion_center: bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
+    show_data: bool | None
+        Whether to show the input data or residual. If set to ``None`` the plot is skipped
+        which improves plotting performance for big datasets. Defaults to False.
 
     Returns
     -------
@@ -210,7 +212,7 @@ def plot_simple_overview(
     plot_residual(
         res,
         axes[0, 2],
-        show_data=True,
+        show_data=show_data,
         show_irf_dispersion_center=show_irf_dispersion_center,
         irf_location=irf_location,
     )
