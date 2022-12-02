@@ -104,10 +104,7 @@ def plot_overview(
 
     if res.coords["time"].values.size == 1:
         fig, axes = plot_guidance(res)
-        if figure_only is True:
-            return fig
-        return fig, axes
-
+        return fig if figure_only is True else (fig, axes)
     # Plot dimensions
     M = 4
     N = 3
