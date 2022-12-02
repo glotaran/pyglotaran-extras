@@ -5,6 +5,7 @@
 ## 0.7.0 (Unreleased)
 
 - 🩹🚇 Fix 'Test pyglotaran dev' CI step (#117)
+- 👌 Add option to deactivate data/residual plotting in overview plots (#118)
 
 (changes-0_6_0)=
 
