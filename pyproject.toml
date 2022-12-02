@@ -31,21 +31,17 @@ ignore-init-module = true
 fail-under = 100
 
 [tool.nbqa.addopts]
-flake8 = [
-    "--extend-ignore=E402,F404"
-]
+flake8 = ["--extend-ignore=E402,F404"]
 
 
 [tool.coverage.run]
 branch = true
-include = [
-  'pyglotaran_extras/*',
-]
+include = ['pyglotaran_extras/*']
 omit = [
   'setup.py',
   'tests/*',
-# comment the above line if you want to see if all tests did run
-  ]
+  # comment the above line if you want to see if all tests did run
+]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -64,7 +60,7 @@ exclude_lines = [
   # Don't complain if non-runnable code isn't run:
   'if 0:',
   'if __name__ == .__main__.:',
-  'if TYPE_CHECKING:'
+  'if TYPE_CHECKING:',
 ]
 
 [tool.mypy]
