@@ -3,8 +3,10 @@ from __future__ import annotations
 
 from textwrap import dedent
 
+import numpy as np
 import pytest
 
+from pyglotaran_extras.inspect.utils import pretty_format_numerical
 from pyglotaran_extras.inspect.utils import wrap_in_details_tag
 
 
@@ -108,3 +110,37 @@ def test_wrap_in_details_tag(
         )
         == expected
     )
+
+
+@pytest.mark.parametrize(
+    "value, decimal_places, expected",
+    (
+        (0.00000001, 1, "1.0e-08"),
+        (-0.00000001, 1, "-1.0e-08"),
+        (0.1, 1, "0.1"),
+        (1.7, 1, "1.7"),
+        (10, 1, "10"),
+        (1.0000000000000002, 10, "1"),
+        (-1.0000000000000002, 10, "-1"),
+        (10, 10, "10"),
+        (-10, 10, "-10"),
+        (0.00000001, 8, "0.00000001"),
+        (-0.00000001, 8, "-0.00000001"),
+        (0.009, 2, "9.00e-03"),
+        (-0.009, 2, "-9.00e-03"),
+        (0.01, 2, "0.01"),
+        (12.3, 2, "12.30"),
+        (np.nan, 1, "nan"),
+        (np.inf, 1, "inf"),
+        (-np.inf, 1, "-inf"),
+    ),
+)
+def test_pretty_format_numerical(value: float, decimal_places: int, expected: str):
+    """Pretty format values depending on decimal_places to show.
+
+    TODO: remove after raise pyglotaran dependency to 0.7.0
+    Forward port of https://github.com/glotaran/pyglotaran/pull/1192 tests
+    """
+    result = pretty_format_numerical(value, decimal_places)
+
+    assert result == expected
