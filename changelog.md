@@ -1,5 +1,11 @@
 # Changelog
 
+(changes-0_7_0)=
+
+## 0.7.0 (Unreleased)
+
+- 🩹🚇 Fix 'Test pyglotaran dev' CI step (#117)
+
 (changes-0_6_0)=
 
 ## 0.6.0 (2022-06-07)
