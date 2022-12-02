@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
+from collections.abc import Iterable
+
 import numpy as np
 
 
@@ -81,3 +84,32 @@ def pretty_format_numerical(value: float | int, decimal_places: int = 1) -> str:
     else:
         format_instruction = ".0f"
     return f"{value:{format_instruction}}"
+
+
+def pretty_format_numerical_iterable(
+    input_values: Iterable[str | float], decimal_places: int | None = 3
+) -> Generator[str | float, None, None]:
+    """Pretty format numerical values in an iterable of numerical values or strings.
+
+    Parameters
+    ----------
+    input_values: Iterable[str  |  float]
+        Values that should be formatted.
+    decimal_places: int | None
+        Number of decimal places a value should have, if None the original value will be used.
+        Defaults to 3
+
+    See Also
+    --------
+    pretty_format_numerical
+
+    Yields
+    ------
+    str | float
+        Formatted string or initial value if ``decimal_places`` is None.
+    """
+    for val in input_values:
+        if decimal_places is None or isinstance(val, str):
+            yield val
+        else:
+            yield pretty_format_numerical(val, decimal_places=decimal_places)

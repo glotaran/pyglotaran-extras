@@ -1,12 +1,14 @@
 """Tests for ``pyglotaran_extras.inspect.utils``."""
 from __future__ import annotations
 
+from collections.abc import Iterable
 from textwrap import dedent
 
 import numpy as np
 import pytest
 
 from pyglotaran_extras.inspect.utils import pretty_format_numerical
+from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.inspect.utils import wrap_in_details_tag
 
 
@@ -144,3 +146,16 @@ def test_pretty_format_numerical(value: float, decimal_places: int, expected: st
     result = pretty_format_numerical(value, decimal_places)
 
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "decimal_places, expected",
+    (
+        (None, ["Foo", 1, 0.009, -1.0000000000000002, np.nan, np.inf]),
+        (2, ["Foo", "1", "9.00e-03", "-1", "nan", "inf"]),
+    ),
+)
+def test_pretty_format_numerical_iterable(decimal_places: int, expected: Iterable[str | float]):
+    """Values correct formatted"""
+    values = ("Foo", 1, 0.009, -1.0000000000000002, np.nan, np.inf)
+    assert list(pretty_format_numerical_iterable(values, decimal_places)) == expected
