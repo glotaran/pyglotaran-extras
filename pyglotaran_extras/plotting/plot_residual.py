@@ -67,9 +67,9 @@ def plot_residual(
     data = shift_time_axis_by_irf_location(data, irf_location)
     title = "dataset" if show_data else "residual"
     shape = np.array(data.shape)
-    dims = data.coords.dims
     # Handle different dimensionality of data
     if min(shape) == 1:
+        dims = data.coords.dims
         data.plot.line(x=dims[shape.argmax()], ax=ax)
     elif min(shape) < 5:
         data.plot(x="time", ax=ax)
