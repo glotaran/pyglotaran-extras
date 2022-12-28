@@ -23,13 +23,29 @@ DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
     "cycler,expected_cycler",
     ((None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())),
 )
-def test_add_cycler_if_not_none(cycler: Cycler | None, expected_cycler: cycle):
-    """Default cycler inf None and cycler otherwise"""
+def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycler: cycle):
+    """Default cycler if None and cycler otherwise on a single axis"""
     ax = plt.subplot()
     add_cycler_if_not_none(ax, cycler)
 
     for _ in range(10):
-        assert next(ax._get_lines.prop_cycler) == next(expected_cycler)
+        expected = next(expected_cycler)
+        assert next(ax._get_lines.prop_cycler) == expected
+
+
+@pytest.mark.parametrize(
+    "cycler,expected_cycler",
+    ((None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())),
+)
+def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cycler: cycle):
+    """Default cycler if None and cycler otherwise on all axes"""
+    _, axes = plt.subplots(1, 2)
+    add_cycler_if_not_none(axes, cycler)
+
+    for _ in range(10):
+        expected = next(expected_cycler)
+        assert next(axes[0]._get_lines.prop_cycler) == expected
+        assert next(axes[1]._get_lines.prop_cycler) == expected
 
 
 @pytest.mark.parametrize(

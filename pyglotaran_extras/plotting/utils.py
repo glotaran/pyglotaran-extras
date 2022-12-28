@@ -361,7 +361,7 @@ def get_shifted_traces(
     return shift_time_axis_by_irf_location(traces, irf_location)
 
 
-def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
+def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
     """Add cycler to and axis if it is not None.
 
     This is a convenience function that allow to opt out of using
@@ -371,13 +371,17 @@ def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
 
     Parameters
     ----------
-    axis: Axis
-        Axis to plot the data and fits on.
+    axis: Axis | Axes
+        Axis to plot on.
     cycler: Cycler | None
         Plot style cycler to use.
     """
     if cycler is not None:
-        axis.set_prop_cycle(cycler)
+        # We can't use `Axis` in isinstance so we check for the np.ndarray attribute of `Axes`
+        if hasattr(axis, "flatten") is False:
+            axis = np.array([axis])
+        for ax in axis.flatten():
+            ax.set_prop_cycle(cycler)
 
 
 def abs_max(
