@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import Iterable
 from warnings import warn
 
 import numpy as np
@@ -10,7 +11,7 @@ import xarray as xr
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
-    from typing import Iterable
+    from typing import Hashable
 
     from cycler import Cycler
     from matplotlib.axis import Axis
@@ -377,3 +378,27 @@ def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
     """
     if cycler is not None:
         axis.set_prop_cycle(cycler)
+
+
+def abs_max(
+    data: xr.DataArray, *, result_dims: Hashable | Iterable[Hashable] = ()
+) -> xr.DataArray:
+    """Calculate the absolute maximum values of ``data`` along all dims except ``result_dims``.
+
+    Parameters
+    ----------
+    data: xr.DataArray
+        Data for which the absolute maximum should be calculated.
+    result_dims: Hashable | Iterable[Hashable]
+        Dimensions of ``data`` which should be preserved and part of the resulting DataArray.
+        Defaults to () which results in the absolute maximum of all values
+
+    Returns
+    -------
+    xr.DataArray
+        Absolute maximum values of ``data`` with dimensions ``result_dims``.
+    """
+    if not isinstance(result_dims, Iterable):
+        result_dims = (result_dims,)
+    reduce_dims = (dim for dim in data.dims if dim not in result_dims)
+    return np.abs(data).max(dim=reduce_dims)
