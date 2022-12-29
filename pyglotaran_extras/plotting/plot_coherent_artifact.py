@@ -22,7 +22,7 @@ def plot_coherent_artifact(
     *,
     time_range: tuple[float, float] | None = None,
     spectral: float = 0,
-    normalize: bool = False,
+    normalize: bool = True,
     figsize: tuple[int, int] = (18, 7),
     show_zero_line: bool = True,
     cycler: Cycler | None = None,
@@ -47,7 +47,7 @@ def plot_coherent_artifact(
     normalize: bool
         Whether or not to normalize the IRF derivative plot. If the IRF derivative is normalized,
         the IRFAS is scaled with the reciprocal of the normalization to compensate for this.
-        Defaults to False.
+        Defaults to True.
     figsize: tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (18, 7).
     show_zero_line: bool
