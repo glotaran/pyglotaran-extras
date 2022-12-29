@@ -395,7 +395,7 @@ def abs_max(
         Data for which the absolute maximum should be calculated.
     result_dims: Hashable | Iterable[Hashable]
         Dimensions of ``data`` which should be preserved and part of the resulting DataArray.
-        Defaults to () which results in the absolute maximum of all values
+        Defaults to () which results in using the absolute maximum of all values.
 
     Returns
     -------

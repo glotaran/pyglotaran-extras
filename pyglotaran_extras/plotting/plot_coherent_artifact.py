@@ -38,18 +38,18 @@ def plot_coherent_artifact(
         Result dataset from a pyglotaran optimization.
     time_range: tuple[float, float] | None
         Start and end time for the IRF derivative plot. Defaults to None which means that
-        the full time range is used
+        the full time range is used.
     spectral: float
         Value of the spectral axis that should be used to select the data for the IRF derivative
-        plot this value does not need to be an exact existing value and only has a effect if the
+        plot this value does not need to be an exact existing value and only has effect if the
         IRF has dispersion. Defaults to 0 which means that the IRF derivative plot at lowest
         spectral value will be shown.
     normalize: bool
-        Whether or not to normalize the IRF derivative plot.If the IRF derivative is normalized,
+        Whether or not to normalize the IRF derivative plot. If the IRF derivative is normalized,
         the IRFAS is scaled with the reciprocal of the normalization to compensate for this.
         Defaults to False.
     figsize: tuple[int, int]
-        Size of the figure (N, M) in inches. Defaults to (18, 7)
+        Size of the figure (N, M) in inches. Defaults to (18, 7).
     show_zero_line: bool
         Whether or not to add a horizontal line at zero. Defaults to True.
     cycler: Cycler | None
