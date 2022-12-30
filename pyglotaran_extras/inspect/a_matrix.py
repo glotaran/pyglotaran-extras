@@ -1,4 +1,4 @@
-"""Quick and dirty implementation to show all a-matrixes of a result."""
+"""Module containing a-matrix render functionality."""
 
 from __future__ import annotations
 

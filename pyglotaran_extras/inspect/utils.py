@@ -46,7 +46,7 @@ def wrap_in_details_tag(
 
         out_str += "</summary>\n"
 
-    out_str += f"\n{details_content}\n</details>"
+    out_str += f"\n{details_content}\n<br>\n</details>"
     return out_str
 
 

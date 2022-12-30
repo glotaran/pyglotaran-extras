@@ -25,6 +25,7 @@ from pyglotaran_extras.inspect.utils import wrap_in_details_tag
                 <details >
 
                 FOO
+                <br>
                 </details>"""
             ),
             id="defaults",
@@ -39,6 +40,7 @@ from pyglotaran_extras.inspect.utils import wrap_in_details_tag
                 <details >
 
                 FOO
+                <br>
                 </details>"""
             ),
             id="heading no summary",
@@ -53,6 +55,7 @@ from pyglotaran_extras.inspect.utils import wrap_in_details_tag
                 <details open>
 
                 FOO
+                <br>
                 </details>"""
             ),
             id="defaults open details",
@@ -70,6 +73,7 @@ from pyglotaran_extras.inspect.utils import wrap_in_details_tag
                 </summary>
 
                 FOO
+                <br>
                 </details>"""
             ),
             id="defaults with simple summary",
@@ -89,6 +93,7 @@ from pyglotaran_extras.inspect.utils import wrap_in_details_tag
                 </summary>
 
                 FOO
+                <br>
                 </details>"""
             ),
             id="defaults with heading summary",

@@ -20,6 +20,7 @@ dataset_1
 <tr><td>Sum                                            </td><td>0.333                         </td><td>0.333                         </td><td>0.333                         </td><td>1    </td></tr>
 </tbody>
 </table>
+<br>
 </details>
 <details >
 <summary>
@@ -41,6 +42,7 @@ dataset_2
 <tr><td>Sum                                            </td><td>1                         </td><td>                          </td><td>-4.441e-16                </td><td>1.000 </td></tr>
 </tbody>
 </table>
+<br>
 </details>
 <details >
 <summary>
@@ -60,4 +62,5 @@ single_entry_a_matrix
 <tr><td>Sum                                            </td><td>1                         </td><td>1    </td></tr>
 </tbody>
 </table>
+<br>
 </details>
