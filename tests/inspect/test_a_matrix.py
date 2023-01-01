@@ -24,9 +24,9 @@ def test_a_matrix_to_html_table(
     result_parallel_spectral_decay: Result, kwargs: dict[str, Any], compare_file_suffix: str
 ):
     """Same string as in test file except final newline added by editors."""
-    expected = (
-        TEST_DATA / f"a_matrix/a_matrix_to_html_table_{compare_file_suffix}.md"
-    ).read_text()
+    expected = (TEST_DATA / f"a_matrix/a_matrix_to_html_table_{compare_file_suffix}.md").read_text(
+        encoding="utf8"
+    )
     assert a_matrix_to_html_table(
         result_parallel_spectral_decay.data["dataset_1"].a_matrix_megacomplex_parallel_decay,
         "megacomplex_parallel_decay",
@@ -51,7 +51,9 @@ def test_show_a_matrixes(
     compare_file_suffix: str,
 ):
     """Same string as in test file except final newline added by editors."""
-    expected = (TEST_DATA / f"a_matrix/show_a_matrixes_{compare_file_suffix}.md").read_text()
+    expected = (TEST_DATA / f"a_matrix/show_a_matrixes_{compare_file_suffix}.md").read_text(
+        encoding="utf8"
+    )
 
     result = result_parallel_spectral_decay
     result.data["dataset_2"] = result_sequential_spectral_decay.data["dataset_1"]
