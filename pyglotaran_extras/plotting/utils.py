@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import Iterable
 from warnings import warn
 
 import numpy as np
@@ -10,7 +11,7 @@ import xarray as xr
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
-    from typing import Iterable
+    from typing import Hashable
 
     from cycler import Cycler
     from matplotlib.axis import Axis
@@ -360,7 +361,7 @@ def get_shifted_traces(
     return shift_time_axis_by_irf_location(traces, irf_location)
 
 
-def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
+def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
     """Add cycler to and axis if it is not None.
 
     This is a convenience function that allow to opt out of using
@@ -370,10 +371,38 @@ def add_cycler_if_not_none(axis: Axis, cycler: Cycler | None) -> None:
 
     Parameters
     ----------
-    axis: Axis
-        Axis to plot the data and fits on.
+    axis: Axis | Axes
+        Axis to plot on.
     cycler: Cycler | None
         Plot style cycler to use.
     """
     if cycler is not None:
-        axis.set_prop_cycle(cycler)
+        # We can't use `Axis` in isinstance so we check for the np.ndarray attribute of `Axes`
+        if hasattr(axis, "flatten") is False:
+            axis = np.array([axis])
+        for ax in axis.flatten():
+            ax.set_prop_cycle(cycler)
+
+
+def abs_max(
+    data: xr.DataArray, *, result_dims: Hashable | Iterable[Hashable] = ()
+) -> xr.DataArray:
+    """Calculate the absolute maximum values of ``data`` along all dims except ``result_dims``.
+
+    Parameters
+    ----------
+    data: xr.DataArray
+        Data for which the absolute maximum should be calculated.
+    result_dims: Hashable | Iterable[Hashable]
+        Dimensions of ``data`` which should be preserved and part of the resulting DataArray.
+        Defaults to () which results in using the absolute maximum of all values.
+
+    Returns
+    -------
+    xr.DataArray
+        Absolute maximum values of ``data`` with dimensions ``result_dims``.
+    """
+    if not isinstance(result_dims, Iterable):
+        result_dims = (result_dims,)
+    reduce_dims = (dim for dim in data.dims if dim not in result_dims)
+    return np.abs(data).max(dim=reduce_dims)
