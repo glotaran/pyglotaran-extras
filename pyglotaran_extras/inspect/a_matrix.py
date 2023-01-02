@@ -21,7 +21,7 @@ def a_matrix_to_html_table(
     normalize_initial_concentration: bool = False,
     decimal_places: int = 3,
 ) -> str:
-    """Create html multi header table from a-matrix.
+    """Create HTML multi header table from a-matrix.
 
     Parameters
     ----------
@@ -37,7 +37,7 @@ def a_matrix_to_html_table(
     Returns
     -------
     str
-        Multi header html table representing the a-matrix.
+        Multi header HTML table representing the a-matrix.
     """
     species = a_matrix.coords[f"species_{megacomplex_suffix}"].values
     # Crete a copy so normalization does not mutate the original values
@@ -105,8 +105,8 @@ def show_a_matrixes(
     a_matrix_min_size: int
         Defaults to None.
     expanded_datasets: tuple[str, ...]
-        Names of dataset to expand the details view for. Defaults to empty tuple () which means no dataset
-        is expanded.
+        Names of dataset to expand the details view for. Defaults to empty tuple () which means no
+        dataset is expanded.
     heading_offset: int
         Number of heading level to offset the headings. Defaults to 2 which means that the
         first/top most heading is h3.
