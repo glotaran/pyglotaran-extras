@@ -30,14 +30,14 @@ def a_matrix_to_html_table(
     megacomplex_suffix: str
         Megacomplex suffix used for the a-matrix data variable and coordinate names.
     normalize_initial_concentration: bool
-        Whether or not to normalize the initial concentration. Defaults to False
+        Whether or not to normalize the initial concentration. Defaults to False.
     decimal_places: int
-        Decimal places to display. Defaults to 3
+        Decimal places to display. Defaults to 3.
 
     Returns
     -------
     str
-        Multi header htm table representing the a-matrix.
+        Multi header html table representing the a-matrix.
     """
     species = a_matrix.coords[f"species_{megacomplex_suffix}"].values
     # Crete a copy so normalization does not mutate the original values
@@ -105,7 +105,7 @@ def show_a_matrixes(
     a_matrix_min_size: int
         Defaults to None.
     expanded_datasets: tuple[str, ...]
-        Names of dataset to expand the details view for. Defaults to () which means no dataset
+        Names of dataset to expand the details view for. Defaults to empty tuple () which means no dataset
         is expanded.
     heading_offset: int
         Number of heading level to offset the headings. Defaults to 2 which means that the

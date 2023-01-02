@@ -24,9 +24,9 @@ def wrap_in_details_tag(
     summary_content: str | None
         Summary test that should be displayed. Defaults to None so the summary is ``Details``.
     summary_heading_level: int | None
-        Level of the heading wrapping the ``summary`` if it is not None. Defaults to None
+        Level of the heading wrapping the ``summary`` if it is not None. Defaults to None.
     is_open: bool
-        Whether or not the details tag should be initially opened. Defaults to False
+        Whether or not the details tag should be initially opened. Defaults to False.
 
     Returns
     -------
@@ -63,7 +63,7 @@ def pretty_format_numerical(value: float | int, decimal_places: int = 1) -> str:
     value: float | int
         Numerical value to format.
     decimal_places: int
-        Decimal places to display. Defaults to 1
+        Decimal places to display. Defaults to 1.
 
     Returns
     -------
@@ -97,7 +97,7 @@ def pretty_format_numerical_iterable(
         Values that should be formatted.
     decimal_places: int | None
         Number of decimal places a value should have, if None the original value will be used.
-        Defaults to 3
+        Defaults to 3.
 
     See Also
     --------
