@@ -47,6 +47,7 @@ def plot_overview(
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
     show_irf_dispersion_center: bool = True,
+    show_zero_line: bool = True,
 ) -> Figure | tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
@@ -93,6 +94,9 @@ def plot_overview(
     show_irf_dispersion_center: bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero to the plots of the spectra.
+        Defaults to True.
 
     Returns
     -------
@@ -126,7 +130,7 @@ def plot_overview(
         main_irf_nr=main_irf_nr,
         cycler=cycler,
     )
-    plot_spectra(res, axes[0:2, 1:3], cycler=cycler)
+    plot_spectra(res, axes[0:2, 1:3], cycler=cycler, show_zero_line=show_zero_line)
     plot_svd(
         res,
         axes[2:4, 0:3],

@@ -15,7 +15,12 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
 
-def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler | None = PlotStyle().cycler) -> None:
+def plot_spectra(
+    res: xr.Dataset,
+    axes: Axes,
+    cycler: Cycler | None = PlotStyle().cycler,
+    show_zero_line: bool = True,
+) -> None:
     """Plot spectra such as SAS and DAS as well as their normalize version on ``axes``.
 
     Parameters
@@ -26,15 +31,21 @@ def plot_spectra(res: xr.Dataset, axes: Axes, cycler: Cycler | None = PlotStyle(
         Axes to plot the spectra on (needs to be at least 2x2).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
     """
-    plot_sas(res, axes[0, 0], cycler=cycler)
-    plot_das(res, axes[0, 1], cycler=cycler)
-    plot_norm_sas(res, axes[1, 0], cycler=cycler)
-    plot_norm_das(res, axes[1, 1], cycler=cycler)
+    plot_sas(res, axes[0, 0], cycler=cycler, show_zero_line=show_zero_line)
+    plot_das(res, axes[0, 1], cycler=cycler, show_zero_line=show_zero_line)
+    plot_norm_sas(res, axes[1, 0], cycler=cycler, show_zero_line=show_zero_line)
+    plot_norm_das(res, axes[1, 1], cycler=cycler, show_zero_line=show_zero_line)
 
 
 def plot_sas(
-    res: xr.Dataset, ax: Axis, title: str = "SAS", cycler: Cycler | None = PlotStyle().cycler
+    res: xr.Dataset,
+    ax: Axis,
+    title: str = "SAS",
+    cycler: Cycler | None = PlotStyle().cycler,
+    show_zero_line: bool = True,
 ) -> None:
     """Plot SAS (Species Associated Spectra) on ``ax``.
 
@@ -48,6 +59,8 @@ def plot_sas(
         Title of the plot. Defaults to "SAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     keys = [
@@ -58,10 +71,16 @@ def plot_sas(
         sas.plot.line(x="spectral", ax=ax)
         ax.set_title(title)
         ax.get_legend().remove()
+    if show_zero_line is True:
+        ax.axhline(0, color="k", linewidth=1)
 
 
 def plot_norm_sas(
-    res: xr.Dataset, ax: Axis, title: str = "norm SAS", cycler: Cycler | None = PlotStyle().cycler
+    res: xr.Dataset,
+    ax: Axis,
+    title: str = "norm SAS",
+    cycler: Cycler | None = PlotStyle().cycler,
+    show_zero_line: bool = True,
 ) -> None:
     """Plot normalized SAS (Species Associated Spectra) on ``ax``.
 
@@ -75,6 +94,8 @@ def plot_norm_sas(
         Title of the plot. Defaults to "norm SAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     keys = [
@@ -86,10 +107,16 @@ def plot_norm_sas(
         (sas / np.abs(sas).max(dim="spectral")).plot.line(x="spectral", ax=ax)
         ax.set_title(title)
         ax.get_legend().remove()
+    if show_zero_line is True:
+        ax.axhline(0, color="k", linewidth=1)
 
 
 def plot_das(
-    res: xr.Dataset, ax: Axis, title: str = "DAS", cycler: Cycler | None = PlotStyle().cycler
+    res: xr.Dataset,
+    ax: Axis,
+    title: str = "DAS",
+    cycler: Cycler | None = PlotStyle().cycler,
+    show_zero_line: bool = True,
 ) -> None:
     """Plot DAS (Decay Associated Spectra) on ``ax``.
 
@@ -103,6 +130,8 @@ def plot_das(
         Title of the plot. Defaults to "DAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     keys = [
@@ -113,10 +142,16 @@ def plot_das(
         das.plot.line(x="spectral", ax=ax)
         ax.set_title(title)
         ax.get_legend().remove()
+    if show_zero_line is True:
+        ax.axhline(0, color="k", linewidth=1)
 
 
 def plot_norm_das(
-    res: xr.Dataset, ax: Axis, title: str = "norm DAS", cycler: Cycler | None = PlotStyle().cycler
+    res: xr.Dataset,
+    ax: Axis,
+    title: str = "norm DAS",
+    cycler: Cycler | None = PlotStyle().cycler,
+    show_zero_line: bool = True,
 ) -> None:
     """Plot normalized DAS (Decay Associated Spectra) on ``ax``.
 
@@ -130,6 +165,8 @@ def plot_norm_das(
         Title of the plot. Defaults to "norm DAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
     keys = [
@@ -140,3 +177,5 @@ def plot_norm_das(
         (das / np.abs(das).max(dim="spectral")).plot.line(x="spectral", ax=ax)
         ax.set_title(title)
         ax.get_legend().remove()
+    if show_zero_line is True:
+        ax.axhline(0, color="k", linewidth=1)
