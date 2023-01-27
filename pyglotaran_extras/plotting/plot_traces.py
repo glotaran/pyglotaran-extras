@@ -40,6 +40,7 @@ def plot_data_and_fits(
     per_axis_legend: bool = False,
     y_label: str = "a.u.",
     cycler: Cycler | None = PlotStyle().data_cycler_solid,
+    show_zero_line: bool = True,
 ) -> None:
     """Plot data and fits for a given ``wavelength`` on a given ``axis``.
 
@@ -72,6 +73,8 @@ def plot_data_and_fits(
         Label used for the y-axis of each subplot.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
 
     See Also
     --------
@@ -94,6 +97,8 @@ def plot_data_and_fits(
             [next(axis._get_lines.prop_cycler) for _ in range(2)]
     if linlog:
         axis.set_xscale("symlog", linthresh=linthresh)
+    if show_zero_line is True:
+        axis.axhline(0, color="k", linewidth=1)
     axis.set_ylabel(y_label)
     if per_axis_legend is True:
         axis.legend()
@@ -113,6 +118,7 @@ def plot_fitted_traces(
     title: str = "Fit overview",
     y_label: str = "a.u.",
     cycler: Cycler | None = PlotStyle().data_cycler_solid,
+    show_zero_line: bool = True,
 ) -> tuple[Figure, Axes]:
     """Plot data and their fit in per wavelength plot grid.
 
@@ -148,6 +154,9 @@ def plot_fitted_traces(
         Label used for the y-axis of each subplot.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
+    show_zero_line: bool
+        Whether or not to add a horizontal line at zero. Defaults to True.
+
 
     Returns
     -------
@@ -189,6 +198,7 @@ def plot_fitted_traces(
             per_axis_legend=per_axis_legend,
             y_label=y_label,
             cycler=cycler,
+            show_zero_line=show_zero_line,
         )
     if per_axis_legend is False:
         add_unique_figure_legend(fig, axes)
