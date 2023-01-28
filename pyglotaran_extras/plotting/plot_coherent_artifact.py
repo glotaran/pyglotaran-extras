@@ -6,19 +6,22 @@ from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
-import xarray as xr
-from cycler import Cycler
 
+from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 
 if TYPE_CHECKING:
+    from cycler import Cycler
+    from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
+    from pyglotaran_extras.types import DatasetConvertible
+
 
 def plot_coherent_artifact(
-    res: xr.Dataset,
+    dataset: DatasetConvertible | Result,
     *,
     time_range: tuple[float, float] | None = None,
     spectral: float = 0,
@@ -34,7 +37,7 @@ def plot_coherent_artifact(
 
     Parameters
     ----------
-    res: xr.Dataset
+    dataset: DatasetConvertible | Result
         Result dataset from a pyglotaran optimization.
     time_range: tuple[float, float] | None
         Start and end time for the IRF derivative plot. Defaults to None which means that
@@ -65,20 +68,21 @@ def plot_coherent_artifact(
     """
     fig, axes = plt.subplots(1, 2, figsize=figsize)
     add_cycler_if_not_none(axes, cycler)
+    dataset = load_data(dataset)
 
     if (
-        "coherent_artifact_response" not in res
-        or "coherent_artifact_associated_spectra" not in res
+        "coherent_artifact_response" not in dataset
+        or "coherent_artifact_associated_spectra" not in dataset
     ):
         warn(
-            UserWarning(f"Dataset does not contain coherent artifact data:\n {res.data_vars}"),
+            UserWarning(f"Dataset does not contain coherent artifact data:\n {dataset.data_vars}"),
             stacklevel=2,
         )
         return fig, axes
 
-    irf_max = abs_max(res.coherent_artifact_response, result_dims=("coherent_artifact_order"))
+    irf_max = abs_max(dataset.coherent_artifact_response, result_dims=("coherent_artifact_order"))
     irfas_max = abs_max(
-        res.coherent_artifact_associated_spectra, result_dims=("coherent_artifact_order")
+        dataset.coherent_artifact_associated_spectra, result_dims=("coherent_artifact_order")
     )
     scales = np.sqrt(irfas_max * irf_max)
     norm_factor = 1
@@ -90,7 +94,7 @@ def plot_coherent_artifact(
         irf_y_label = f"normalized {irf_y_label}"
 
     plot_slice_irf = (
-        res.coherent_artifact_response.sel(spectral=spectral, method="nearest")
+        dataset.coherent_artifact_response.sel(spectral=spectral, method="nearest")
         / irf_max
         * scales
         / norm_factor
@@ -102,7 +106,9 @@ def plot_coherent_artifact(
     axes[0].set_title("IRF Derivatives")
     axes[0].set_ylabel(f"{irf_y_label} (a.u.)")
 
-    plot_slice_irfas = res.coherent_artifact_associated_spectra / irfas_max * scales * norm_factor
+    plot_slice_irfas = (
+        dataset.coherent_artifact_associated_spectra / irfas_max * scales * norm_factor
+    )
     plot_slice_irfas.plot.line(x="spectral", ax=axes[1])
     axes[1].get_legend().remove()
     axes[1].set_title("IRFAS")
@@ -113,9 +119,9 @@ def plot_coherent_artifact(
         axes[1].axhline(0, color="k", linewidth=1)
 
     #
-    if res.coords["coherent_artifact_order"][0] == 1:
+    if dataset.coords["coherent_artifact_order"][0] == 1:
         axes[0].legend(
-            [f"{int(ax_label)-1}" for ax_label in res.coords["coherent_artifact_order"]],
+            [f"{int(ax_label)-1}" for ax_label in dataset.coords["coherent_artifact_order"]],
             title="coherent_artifact_order",
         )
     if title:
