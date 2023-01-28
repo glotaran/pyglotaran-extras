@@ -338,7 +338,7 @@ def _plot_svd_vectors(
     if x_dim == sv_index_dim:
         values = values.T
         x_dim = vector_data.dims[0]
-    for index, (zorder, value) in enumerate(zip(range(100)[::-1], values)):
-        value.plot.line(x=x_dim, ax=ax, zorder=zorder, label=index)
+    for zorder, label, value in zip(range(100)[::-1], indices[:max_index], values):
+        value.plot.line(x=x_dim, ax=ax, zorder=zorder, label=label)
     if show_legend is True:
         ax.legend(title=sv_index_dim)
