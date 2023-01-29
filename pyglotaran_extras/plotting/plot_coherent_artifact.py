@@ -68,7 +68,7 @@ def plot_coherent_artifact(
     """
     fig, axes = plt.subplots(1, 2, figsize=figsize)
     add_cycler_if_not_none(axes, cycler)
-    dataset = load_data(dataset)
+    dataset = load_data(dataset, _stacklevel=3)
 
     if (
         "coherent_artifact_response" not in dataset

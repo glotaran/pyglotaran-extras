@@ -45,7 +45,7 @@ def plot_guidance(
     tuple[Figure, Axes]
         Figure and axes which can then be refined by the user.
     """
-    res = load_data(result)
+    res = load_data(result, _stacklevel=3)
     fig, axes = plt.subplots(1, 2, figsize=figsize)
 
     for axis in axes:
