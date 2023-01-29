@@ -104,7 +104,7 @@ def plot_overview(
         If ``figure_only`` is True, Figure object which contains the plots (deprecated).
         If ``figure_only`` is False, Figure object which contains the plots and the Axes.
     """
-    res = load_data(result)
+    res = load_data(result, _stacklevel=3)
 
     if res.coords["time"].values.size == 1:
         fig, axes = plot_guidance(res)
@@ -197,7 +197,7 @@ def plot_simple_overview(
         If ``figure_only`` is True, Figure object which contains the plots (deprecated).
         If ``figure_only`` is False, Figure object which contains the plots and the Axes.
     """
-    res = load_data(result)
+    res = load_data(result, _stacklevel=3)
 
     fig, axes = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
     for ax in axes.flatten():

@@ -1,3 +1,10 @@
+# isort: off
+# Hack around https://github.com/pydata/xarray/issues/7259 which also affects pyglotaran <= 0.7.0
+import numpy  # noqa
+import netCDF4  # noqa
+
+# isort: on
+
 from dataclasses import replace
 
 import pytest

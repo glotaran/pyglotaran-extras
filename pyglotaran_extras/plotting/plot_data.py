@@ -62,7 +62,7 @@ def plot_data_overview(
     tuple[Figure, Axes]
         Figure and axes which can then be refined by the user.
     """
-    dataset = load_data(dataset)
+    dataset = load_data(dataset, _stacklevel=3)
 
     fig = plt.figure(figsize=figsize)
     data_ax = cast(Axis, plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig))
