@@ -31,7 +31,7 @@ def plot_doas(
     time_range: tuple[float, float] | None = None,
     spectral: float = 0,
     main_irf_nr: int | None = 0,
-    normalize: bool = True,
+    normalize: bool = False,
     figsize: tuple[int, int] = (20, 5),
     show_zero_line: bool = True,
     cycler: Cycler | None = PlotStyle().cycler,
@@ -63,7 +63,7 @@ def plot_doas(
     normalize: bool
         Whether or not to normalize the DOAS spectra plot. If the DOAS spectra is normalized,
         the Oscillation is scaled with the reciprocal of the normalization to compensate for this.
-        Defaults to True.
+        Defaults to False.
     figsize: tuple[int, int]
         Size of the figure (N, M) in inches. Defaults to (20, 5)
     show_zero_line: bool
