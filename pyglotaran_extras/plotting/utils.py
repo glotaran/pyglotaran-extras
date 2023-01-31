@@ -110,7 +110,7 @@ def extract_irf_dispersion_center(
 
 
 def extract_irf_location(
-    res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int = 0
+    res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int | None = 0
 ) -> float:
     """Determine location of the ``irf``, which can be used to shift plots.
 
@@ -121,14 +121,16 @@ def extract_irf_location(
     center_λ: float | None
         Center wavelength (λ in nm)
     main_irf_nr : int
-        Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks. Defaults to 0.
+        Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks.
+        If it is none ``None`` the location will be 0. Defaults to 0.
 
     Returns
     -------
     float
         Location of the ``irf``
     """
+    if main_irf_nr is None:
+        return 0
     irf_dispersion_center = extract_irf_dispersion_center(
         res=res, main_irf_nr=main_irf_nr, as_dataarray=False
     )
