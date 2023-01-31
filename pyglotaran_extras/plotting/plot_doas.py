@@ -30,8 +30,7 @@ def plot_doas(
     damped_oscillation: list[str] | None = None,
     time_range: tuple[float, float] | None = None,
     spectral: float = 0,
-    center_λ: float | None = None,
-    main_irf_nr: int = 0,
+    main_irf_nr: int | None = 0,
     normalize: bool = True,
     figsize: tuple[int, int] = (20, 5),
     show_zero_line: bool = True,
@@ -49,19 +48,18 @@ def plot_doas(
         List of oscillation names which should be plotted.
         Defaults to None which means that all oscillations will be plotted.
     time_range: tuple[float, float] | None
-        Start and end time for the Oscillation plot. Defaults to None which means that
-        the full time range is used.
+        Start and end time for the Oscillation plot, if ``main_irf_nr`` is not None the value are
+        relative to the IRF location. Defaults to None which means that the full time range is
+        used.
     spectral: float
         Value of the spectral axis that should be used to select the data for the Oscillation
         plot this value does not need to be an exact existing value and only has effect if the
         IRF has dispersion. Defaults to 0 which means that the Oscillation plot at lowest
         spectral value will be shown.
-    center_λ: float | None = None,
-        Center wavelength (λ in nm) to select the IRF location by which the Oscillation
-        plot is shifted. Defaults to None.
-    main_irf_nr: int
-        Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks. Defaults to 0.
+    main_irf_nr: int | None
+        Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks
+        and is used to shift the time axis. If it is none ``None`` the shifting will be
+        deactivated. Defaults to 0.
     normalize: bool
         Whether or not to normalize the DOAS spectra plot. If the DOAS spectra is normalized,
         the Oscillation is scaled with the reciprocal of the normalization to compensate for this.
@@ -99,7 +97,7 @@ def plot_doas(
         {"damped_oscillation": damped_oscillation} if damped_oscillation is not None else {}
     )
 
-    irf_location = extract_irf_location(dataset, center_λ, main_irf_nr)
+    irf_location = extract_irf_location(dataset, spectral, main_irf_nr)
 
     oscillations = shift_time_axis_by_irf_location(
         dataset[f"damped_oscillation_{oscillation_type}"]
