@@ -10,6 +10,8 @@ import numpy as np
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
+from pyglotaran_extras.plotting.utils import extract_irf_location
+from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 if TYPE_CHECKING:
     from cycler import Cycler
@@ -25,6 +27,7 @@ def plot_coherent_artifact(
     *,
     time_range: tuple[float, float] | None = None,
     spectral: float = 0,
+    main_irf_nr: int | None = 0,
     normalize: bool = True,
     figsize: tuple[int, int] = (18, 7),
     show_zero_line: bool = True,
@@ -47,6 +50,10 @@ def plot_coherent_artifact(
         plot this value does not need to be an exact existing value and only has effect if the
         IRF has dispersion. Defaults to 0 which means that the IRF derivative plot at lowest
         spectral value will be shown.
+    main_irf_nr: int | None
+        Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks
+        and is used to shift the time axis. If it is none ``None`` the shifting will be
+        deactivated. Defaults to 0.
     normalize: bool
         Whether or not to normalize the IRF derivative plot. If the IRF derivative is normalized,
         the IRFAS is scaled with the reciprocal of the normalization to compensate for this.
@@ -80,7 +87,10 @@ def plot_coherent_artifact(
         )
         return fig, axes
 
-    irf_max = abs_max(dataset.coherent_artifact_response, result_dims=("coherent_artifact_order"))
+    irf_location = extract_irf_location(dataset, spectral, main_irf_nr)
+    irf_data = shift_time_axis_by_irf_location(dataset.coherent_artifact_response, irf_location)
+
+    irf_max = abs_max(irf_data, result_dims=("coherent_artifact_order"))
     irfas_max = abs_max(
         dataset.coherent_artifact_associated_spectra, result_dims=("coherent_artifact_order")
     )
@@ -94,10 +104,7 @@ def plot_coherent_artifact(
         irf_y_label = f"normalized {irf_y_label}"
 
     plot_slice_irf = (
-        dataset.coherent_artifact_response.sel(spectral=spectral, method="nearest")
-        / irf_max
-        * scales
-        / norm_factor
+        irf_data.sel(spectral=spectral, method="nearest") / irf_max * scales / norm_factor
     )
     irf_sel_kwargs = (
         {"time": slice(time_range[0], time_range[1])} if time_range is not None else {}
