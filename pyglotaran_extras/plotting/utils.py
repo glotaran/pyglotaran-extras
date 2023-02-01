@@ -8,6 +8,7 @@ from warnings import warn
 import numpy as np
 import xarray as xr
 
+from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
@@ -109,7 +110,7 @@ def extract_irf_dispersion_center(
 
 
 def extract_irf_location(
-    res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int = 0
+    res: xr.Dataset, center_λ: float | None = None, main_irf_nr: int | None = 0
 ) -> float:
     """Determine location of the ``irf``, which can be used to shift plots.
 
@@ -120,14 +121,16 @@ def extract_irf_location(
     center_λ: float | None
         Center wavelength (λ in nm)
     main_irf_nr : int
-        Index of the main ``irf`` component when using an ``irf``
-        parametrized with multiple peaks. Defaults to 0.
+        Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks.
+        If it is none ``None`` the location will be 0. Defaults to 0.
 
     Returns
     -------
     float
         Location of the ``irf``
     """
+    if main_irf_nr is None:
+        return 0
     irf_dispersion_center = extract_irf_dispersion_center(
         res=res, main_irf_nr=main_irf_nr, as_dataarray=False
     )
@@ -406,3 +409,57 @@ def abs_max(
         result_dims = (result_dims,)
     reduce_dims = (dim for dim in data.dims if dim not in result_dims)
     return np.abs(data).max(dim=reduce_dims)
+
+
+def calculate_ticks_in_units_of_pi(
+    values: np.ndarray | xr.DataArray, *, step_size: float = 0.5
+) -> tuple[Iterable[float], Iterable[str]]:
+    """Calculate tick values and labels in units of Pi.
+
+    Parameters
+    ----------
+    values: np.ndarray
+        Values which the ticks should be calculated for.
+    step_size: float
+        Step size of the ticks in units of pi. Defaults to 0.5
+
+    Returns
+    -------
+    tuple[Iterable[float], Iterable[str]]
+        Tick values and tick labels
+
+    See Also
+    --------
+    pyglotaran_extras.plotting.plot_doas.plot_doas
+
+    Examples
+    --------
+    If you have a case study that uses a ``damped-oscillation`` megacomplex you can plot the
+    ``damped_oscillation_phase`` with y-tick in units of Pi by the following code given that the
+    dataset is saved under ``dataset.nc``.
+
+    .. code-block:: python
+        import matplotlib.pyplot as plt
+
+        from glotaran.io import load_dataset
+        from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
+
+        dataset = load_dataset("dataset.nc")
+
+        fig, ax = plt.subplots(1, 1)
+
+        damped_oscillation_phase = dataset["damped_oscillation_phase"].sel(
+            damped_oscillation=["osc1"]
+        )
+        damped_oscillation_phase.plot.line(x="spectral", ax=ax)
+
+        ax.set_yticks(
+            *calculate_ticks_in_units_of_pi(damped_oscillation_phase), rotation="horizontal"
+        )
+    """
+    values = np.array(values)
+    int_values_over_pi = np.round(values / np.pi / step_size)
+    tick_labels = np.arange(int_values_over_pi.min(), int_values_over_pi.max() + 1) * step_size
+    return tick_labels * np.pi, (
+        str(val) for val in pretty_format_numerical_iterable(tick_labels, decimal_places=1)
+    )
