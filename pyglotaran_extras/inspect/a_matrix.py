@@ -122,7 +122,6 @@ def show_a_matrixes(
     result_map = result_dataset_mapping(result)
 
     for dataset_name in result_map:
-
         a_matrix_names = list(
             filter(
                 lambda var_name: var_name.startswith("a_matrix_"),
@@ -136,7 +135,6 @@ def show_a_matrixes(
         details_content = ""
 
         for a_matrix_name in a_matrix_names:
-
             mc_suffix = a_matrix_name.replace("a_matrix_", "")
 
             a_matrix = result_map[dataset_name][a_matrix_name]
@@ -154,7 +152,6 @@ def show_a_matrixes(
             )
 
         if details_content != "":
-
             output_str += wrap_in_details_tag(
                 details_content,
                 summary_content=dataset_name,

@@ -14,7 +14,6 @@ from pyglotaran_extras.deprecation.deprecation_utils import pyglotaran_extras_ve
 from pyglotaran_extras.deprecation.deprecation_utils import warn_deprecated
 
 if TYPE_CHECKING:
-
     from _pytest.monkeypatch import MonkeyPatch
 
 OVERDUE_ERROR_MESSAGE = (
