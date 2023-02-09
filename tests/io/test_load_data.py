@@ -11,7 +11,6 @@ from glotaran.io import load_result
 from pyglotaran_extras.io.load_data import load_data
 
 if TYPE_CHECKING:
-
     from _pytest.recwarn import WarningsRecorder
     from glotaran.project.result import Result
 

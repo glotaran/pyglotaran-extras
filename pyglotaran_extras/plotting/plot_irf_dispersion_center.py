@@ -14,7 +14,6 @@ from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import extract_irf_dispersion_center
 
 if TYPE_CHECKING:
-
     from typing import Literal
 
     from cycler import Cycler
