@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from cycler import Cycler
 
 
-class ColorCode(Enum):
+class ColorCode(str, Enum):
     """Color definitions from legacy glotaran.
 
     See: https://glotaran.github.io/legacy/plot_styles
@@ -72,7 +72,7 @@ class ColorCode(Enum):
         return colors.rgb2hex([1.0 * x / 255 for x in rgb_tuple])
 
 
-class LineStyle(Enum):
+class LineStyle(str, Enum):
     """Subset of line styles supported by matplotlib."""
 
     solid = "-"
@@ -81,7 +81,7 @@ class LineStyle(Enum):
     dashdot = "-."
 
 
-class DataColorCode(Enum):
+class DataColorCode(str, Enum):
     """Colors used to plot data and fits.
 
     Pairs of visually similar looking colors whereby the
@@ -109,7 +109,7 @@ class DataColorCode(Enum):
     # orange = "#ff8c00"
 
 
-class DataLineStyle(Enum):
+class DataLineStyle(str, Enum):
     """Data plots can alternate between solid lines for data and dashed lines for fits.
 
     This is mostly useful for data with very low noise (e.g. simulated data),
@@ -125,14 +125,12 @@ class PlotStyle:
 
     def __init__(self) -> None:
         """Initialize Stiles from Enums."""
-        self._line_style = [e.value for e in LineStyle]
-        self._color_codes = [e.value for e in ColorCode]
+        self._line_style = list(LineStyle)
+        self._color_codes = list(ColorCode)
         # Since Enum only supports unique values we need to manually add the last one
-        self._data_color_codes = [e.value for e in DataColorCode] + [DataColorCode.orange.value]
+        self._data_color_codes = list(DataColorCode) + [DataColorCode.orange]
         # Extend linecycler to same size as colorcycler
-        self._data_line_style = [e.value for e in DataLineStyle] * (
-            len(self._data_color_codes) // 2
-        )
+        self._data_line_style = list(DataLineStyle) * (len(self._data_color_codes) // 2)
         self.SMALL_SIZE = 12
         self.MEDIUM_SIZE = 14
         self.BIGGER_SIZE = 18
