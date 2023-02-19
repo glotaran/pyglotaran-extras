@@ -133,6 +133,7 @@ def show_a_matrixes(
             continue
 
         details_content = ""
+        header_newline_prefix = ""
 
         for a_matrix_name in a_matrix_names:
             mc_suffix = a_matrix_name.replace("a_matrix_", "")
@@ -142,7 +143,7 @@ def show_a_matrixes(
             if a_matrix_min_size is not None and max(a_matrix.shape) < a_matrix_min_size:
                 continue
 
-            details_content += f"###{heading_prefix} {mc_suffix}:\n\n"
+            details_content += f"{header_newline_prefix}###{heading_prefix} {mc_suffix}:\n\n"
 
             details_content += a_matrix_to_html_table(
                 a_matrix,
@@ -150,6 +151,7 @@ def show_a_matrixes(
                 normalize_initial_concentration=normalize_initial_concentration,
                 decimal_places=decimal_places,
             )
+            header_newline_prefix = "\n\n"
 
         if details_content != "":
             output_str += wrap_in_details_tag(

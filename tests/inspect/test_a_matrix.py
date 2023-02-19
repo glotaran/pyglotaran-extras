@@ -70,3 +70,33 @@ def test_show_a_matrixes(
     result.data["single_entry_a_matrix"] = xr.Dataset({"a_matrix_single_entry": single_entry_data})
 
     assert str(show_a_matrixes(result, **kwargs)) == expected.rstrip("\n")
+
+
+def test_show_a_matrixes_multiple_a_matrixes_in_dataset(
+    result_sequential_spectral_decay: Result,
+):
+    """Add two new lines in front of headings except for the first in a dataset."""
+    expected = (
+        TEST_DATA / "a_matrix/show_a_matrixes_multiple_a_matrixes_in_dataset.md"
+    ).read_text(encoding="utf8")
+
+    single_entry_data = result_sequential_spectral_decay.data[
+        "dataset_1"
+    ].a_matrix_megacomplex_sequential_decay[:1, :1]
+
+    a_matrix_one = single_entry_data.rename(
+        {
+            name: name.replace("megacomplex_sequential_decay", "megacomplex_one")
+            for name in single_entry_data.coords
+        }
+    )
+    a_matrix_two = single_entry_data.rename(
+        {
+            name: name.replace("megacomplex_sequential_decay", "megacomplex_two")
+            for name in single_entry_data.coords
+        }
+    )
+    dummy_dataset = xr.Dataset(
+        {"a_matrix_megacomplex_one": a_matrix_one, "a_matrix_megacomplex_two": a_matrix_two}
+    )
+    assert str(show_a_matrixes(dummy_dataset)) == expected.rstrip("\n")
