@@ -16,6 +16,7 @@ from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
+from pyglotaran_extras.plotting.utils import not_single_element_dims
 
 matplotlib.use("Agg")
 DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
@@ -85,3 +86,22 @@ def test_calculate_ticks_in_units_of_pi(
 
     assert np.allclose(list(tick_values), expected_tick_values)
     assert list(tick_labels) == expected_tick_labels
+
+
+@pytest.mark.parametrize(
+    "data_array, expected",
+    (
+        (xr.DataArray([1]), []),
+        (xr.DataArray([1], coords={"dim1": [1]}), []),
+        (xr.DataArray([[1], [1]], coords={"dim1": [1, 2], "dim2": [1]}), ["dim1"]),
+        (
+            xr.DataArray(
+                [[[1, 1]], [[1, 1]]], coords={"dim1": [1, 2], "dim2": [1], "dim3": [1, 2]}
+            ),
+            ["dim1", "dim3"],
+        ),
+    ),
+)
+def test_not_single_element_dims(data_array: xr.DataArray, expected: list[Hashable]):
+    """Only get dim with more than one element."""
+    assert not_single_element_dims(data_array) == expected

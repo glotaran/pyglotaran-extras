@@ -463,3 +463,22 @@ def calculate_ticks_in_units_of_pi(
     return tick_labels * np.pi, (
         str(val) for val in pretty_format_numerical_iterable(tick_labels, decimal_places=1)
     )
+
+
+def not_single_element_dims(data_array: xr.DataArray) -> list[Hashable]:
+    """Names of dimensions in ``data`` which don't have a size equal to one.
+
+    This helper function is for example used to determine if a data only have a single trace,
+    since this requires different plotting code (e.g. ``data_array.plot.line(x="time")``).
+
+    Parameters
+    ----------
+    data_array: xr.DataArray
+        _description_
+
+    Returns
+    -------
+    list[Hashable]
+        Names of dimensions in ``data`` which don't have a size equal to one.
+    """
+    return [dim for dim, values in data_array.coords.items() if values.size != 1]
