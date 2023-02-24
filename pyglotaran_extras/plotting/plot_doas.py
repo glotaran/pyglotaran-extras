@@ -78,7 +78,7 @@ def plot_doas(
     legend_format_string: str
         Format string for each entry in the legend of the oscillation plot. Possible values which
         can be replaced are ``label`` (label of the oscillation in the model definition),
-        ``frequency`` and ``rate``. Use ``""`` to remove the legend. Defaults to
+        ``frequency`` (ν) and ``rate`` (γ). Use ``""`` to remove the legend. Defaults to
         ``r"{label}: $\nu$={frequency:.0f}, $\gamma$={rate:.1f}"``
 
     Returns
