@@ -37,9 +37,9 @@ def plot_doas(
     cycler: Cycler | None = PlotStyle().cycler,
     oscillation_type: Literal["cos", "sin"] = "cos",
     title: str | None = "Damped oscillations",
-    legend_format_string: str = "{label}: v={frequency:.0f}, Γ={rate:.1f}",
+    legend_format_string: str = r"{label}: $\nu$={frequency:.0f}, $\gamma$={rate:.1f}",
 ) -> tuple[Figure, Axes]:
-    """Plot DOAS (Damped Oscillation) related data of the optimization result.
+    r"""Plot DOAS (Damped Oscillation) related data of the optimization result.
 
     Parameters
     ----------
@@ -79,7 +79,7 @@ def plot_doas(
         Format string for each entry in the legend of the oscillation plot. Possible values which
         can be replaced are ``label`` (label of the oscillation in the model definition),
         ``frequency`` and ``rate``. Use ``""`` to remove the legend. Defaults to
-        ``"{label}: v={frequency:.0f}, Γ={rate:.1f}"``
+        ``r"{label}: $\nu$={frequency:.0f}, $\gamma$={rate:.1f}"``
 
     Returns
     -------
