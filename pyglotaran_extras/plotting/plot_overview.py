@@ -39,7 +39,7 @@ def plot_overview(
     linscale: float = 1,
     show_data: bool | None = False,
     main_irf_nr: int = 0,
-    figsize: tuple[int, int] = (18, 16),
+    figsize: tuple[float, float] = (18, 16),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
     nr_of_data_svd_vectors: int = 4,
@@ -162,7 +162,7 @@ def plot_overview(
 def plot_simple_overview(
     result: DatasetConvertible | Result,
     title: str | None = None,
-    figsize: tuple[int, int] = (12, 6),
+    figsize: tuple[float, float] = (12, 6),
     cycler: Cycler | None = PlotStyle().cycler,
     figure_only: bool = True,
     show_irf_dispersion_center: bool = True,
