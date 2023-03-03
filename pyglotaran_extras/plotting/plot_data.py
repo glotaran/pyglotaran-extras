@@ -33,7 +33,7 @@ def plot_data_overview(
     title: str = "Data overview",
     linlog: bool = False,
     linthresh: float = 1,
-    figsize: tuple[int, int] = (15, 10),
+    figsize: tuple[float, float] = (15, 10),
     nr_of_data_svd_vectors: int = 4,
     show_data_svd_legend: bool = True,
     irf_location: float | None = None,
@@ -119,7 +119,7 @@ def _plot_single_trace(
     title: str = "Single trace data",
     linlog: bool = False,
     linthresh: float = 1,
-    figsize: tuple[int, int] = (15, 10),
+    figsize: tuple[float, float] = (15, 10),
 ) -> tuple[Figure, Axis]:
     """Plot single trace data in case ``plot_data_overview`` gets passed ingle trace data.
 
@@ -136,7 +136,7 @@ def _plot_single_trace(
     linthresh: float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    figsize: tuple[int, int]
+    figsize: tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (15, 10).
 
     Returns

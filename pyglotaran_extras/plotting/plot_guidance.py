@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 def plot_guidance(
     result: DatasetConvertible | Result,
-    figsize: tuple[int, int] = (15, 5),
+    figsize: tuple[float, float] = (15, 5),
     title: str = "Guidance Overview",
     y_label: str = "a.u.",
     cycler: Cycler | None = PlotStyle().cycler,
@@ -31,7 +31,7 @@ def plot_guidance(
     ----------
     result: DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
-    figsize: tuple[int, int]
+    figsize: tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (15, 5)
     title: str
         Title to add to the figure. Defaults to "Guidance Overview"

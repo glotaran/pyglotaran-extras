@@ -114,7 +114,7 @@ def plot_fitted_traces(
     linthresh: float = 1,
     divide_by_scale: bool = True,
     per_axis_legend: bool = False,
-    figsize: tuple[int, int] = (30, 15),
+    figsize: tuple[float, float] = (30, 15),
     title: str = "Fit overview",
     y_label: str = "a.u.",
     cycler: Cycler | None = PlotStyle().data_cycler_solid,

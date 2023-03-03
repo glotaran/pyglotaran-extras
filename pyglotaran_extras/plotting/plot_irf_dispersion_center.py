@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 def plot_irf_dispersion_center(
     result: ResultLike,
     ax: Axis | None = None,
-    figsize: tuple[int, int] = (12, 8),
+    figsize: tuple[float, float] = (12, 8),
     cycler: Cycler | None = PlotStyle().cycler,
     irf_location: float | None = None,
 ) -> tuple[Figure, Axis] | None:
@@ -38,7 +38,7 @@ def plot_irf_dispersion_center(
         Data structure which can be converted to a mapping.
     ax : Axis | None
         Axis to plot on. Defaults to None which means that a new figure and axis will be created.
-    figsize: tuple[int, int]
+    figsize: tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (12, 8).
     cycler: Cycler
         Plot style cycler to use. Defaults to PlotStyle().cycler

@@ -32,7 +32,7 @@ def plot_doas(
     spectral: float = 0,
     main_irf_nr: int | None = 0,
     normalize: bool = False,
-    figsize: tuple[int, int] = (20, 5),
+    figsize: tuple[float, float] = (20, 5),
     show_zero_line: bool = True,
     cycler: Cycler | None = PlotStyle().cycler,
     oscillation_type: Literal["cos", "sin"] = "cos",
@@ -65,7 +65,7 @@ def plot_doas(
         Whether or not to normalize the DOAS spectra plot. If the DOAS spectra is normalized,
         the Oscillation is scaled with the reciprocal of the normalization to compensate for this.
         Defaults to False.
-    figsize: tuple[int, int]
+    figsize: tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (20, 5)
     show_zero_line: bool
         Whether or not to add a horizontal line at zero. Defaults to True
