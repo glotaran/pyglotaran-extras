@@ -5,9 +5,8 @@ from importlib.metadata import distribution
 from warnings import warn
 
 FIG_ONLY_WARNING = (
-    "In the future plot functions which create figures, will return a tuple "
-    "of Figure AND the Axes. Please set ``figure_only=False`` and adjust your code.\n"
-    "This usage will be an error in version: 0.7.0."
+    "The ``figure_only`` argument was deprecated please remove it from the function call.\n"
+    "This usage will be an error in version: 0.8.0."
 )
 
 
@@ -40,7 +39,7 @@ def pyglotaran_extras_version() -> str:
     from pyglotaran_extras.
     This way all of the deprecation functionality can be used even in
     ``pyglotaran_extras.__init__.py`` without moving the import below the definition of
-    ``__version__`` or causeing a circular import issue.
+    ``__version__`` or causing a circular import issue.
 
     Returns
     -------
@@ -81,8 +80,8 @@ def parse_version(version_str: str) -> tuple[int, int, int]:
         return tuple(
             map(int, (*split_version[:2], split_version[2].partition("rc")[0]))
         )  # type:ignore[return-value]
-    except ValueError:
-        raise ValueError(error_message)
+    except ValueError as error:
+        raise ValueError(error_message) from error
 
 
 def check_overdue(deprecated_qual_name_usage: str, to_be_removed_in_version: str) -> None:
