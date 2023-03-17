@@ -1,0 +1,31 @@
+{
+  "title": "Convenience plotting functions for pyglotaran",
+  "creators": [
+    {
+      "name": "Joris Snellenburg",
+      "affiliation": "Vrije Universiteit Amsterdam",
+      "orcid": "0000-0002-1428-0221"
+    },
+    {
+      "name": "Sebastian Weigand",
+      "affiliation": "Technical University Berlin"
+    },
+    {
+      "name": "Ivo H.M. van Stokkum",
+      "affiliation": "Vrije Universiteit Amsterdam",
+      "orcid": "0000-0002-6143-2021"
+    }
+  ],
+  "keywords": [
+    "global analysis",
+    "target analysis",
+    "time-resolved spectroscopy",
+    "biophysics",
+    "glotaran",
+    "python",
+    "plotting"
+  ],
+  "access_right": "open",
+  "license": "MIT",
+  "upload_type": "software"
+}
