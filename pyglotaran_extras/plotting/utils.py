@@ -477,7 +477,7 @@ def not_single_element_dims(data_array: xr.DataArray) -> list[Hashable]:
     Parameters
     ----------
     data_array: xr.DataArray
-        _description_
+        DataArray to check if it has only a single dimension.
 
     Returns
     -------
