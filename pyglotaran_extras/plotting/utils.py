@@ -1,6 +1,8 @@
 """Module containing plotting utility functionality."""
 from __future__ import annotations
 
+from math import ceil
+from math import log
 from typing import TYPE_CHECKING
 from typing import Iterable
 from warnings import warn
@@ -578,3 +580,59 @@ class MinorSymLogLocator(Locator):
             Not used
         """
         raise NotImplementedError(f"Cannot get tick locations for a {type(self)} type.")
+
+
+def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: None | int = None) -> str:
+    """Format ``sub_plot_number`` into an upper case letter, that can be used as label.
+
+    Parameters
+    ----------
+    sub_plot_number: int
+        Number of the subplot starting at One.
+    size: None | int
+        Size of the axes array (number of plots). Defaults to None
+
+    Returns
+    -------
+    str
+        Upper case label for a sub plot.
+
+    Examples
+    --------
+    >>> print(format_sub_plot_number_upper_case_letter(1))
+    A
+
+    >>> print(format_sub_plot_number_upper_case_letter(26))
+    Z
+
+    >>> print(format_sub_plot_number_upper_case_letter(27))
+    AA
+
+    >>> print(format_sub_plot_number_upper_case_letter(1, 26))
+    AA
+
+    >>> print(format_sub_plot_number_upper_case_letter(2, 26))
+    AB
+
+    >>> print(format_sub_plot_number_upper_case_letter(26, 26))
+    AZ
+
+    >>> print(format_sub_plot_number_upper_case_letter(27, 50))
+    BA
+
+    See Also
+    --------
+    BuiltinLabelFormatFunctions
+    add_subplot_labels
+    """
+    sub_plot_number -= 1
+    if size is not None and size > 26:
+        return "".join(
+            format_sub_plot_number_upper_case_letter(((sub_plot_number // (26**i)) % 26) + 1)
+            for i in reversed(range(1, ceil(log(size, 26))))
+        ) + format_sub_plot_number_upper_case_letter((sub_plot_number % 26) + 1)
+    if sub_plot_number < 26:
+        return chr(ord("A") + sub_plot_number)
+    return format_sub_plot_number_upper_case_letter(
+        sub_plot_number // 26
+    ) + format_sub_plot_number_upper_case_letter((sub_plot_number % 26) + 1)

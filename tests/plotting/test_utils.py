@@ -16,6 +16,7 @@ from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
+from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
 from pyglotaran_extras.plotting.utils import not_single_element_dims
 
 matplotlib.use("Agg")
@@ -105,3 +106,24 @@ def test_calculate_ticks_in_units_of_pi(
 def test_not_single_element_dims(data_array: xr.DataArray, expected: list[Hashable]):
     """Only get dim with more than one element."""
     assert not_single_element_dims(data_array) == expected
+
+
+@pytest.mark.parametrize(
+    ("value", "size", "expected"),
+    (
+        (1, None, "A"),
+        (2, None, "B"),
+        (26, None, "Z"),
+        (27, None, "AA"),
+        (26**2 + 26, None, "ZZ"),
+        (1, 26**2, "AA"),
+        (2, 26**2, "AB"),
+        (26, 26**2, "AZ"),
+        (26**2, 26**2, "ZZ"),
+        (1, 26**3, "AAA"),
+        (26**3, 26**3, "ZZZ"),
+    ),
+)
+def test_format_sub_plot_number_upper_case_letter(value: int, size: int | None, expected: str):
+    """Expected string format."""
+    assert format_sub_plot_number_upper_case_letter(value, size) == expected
