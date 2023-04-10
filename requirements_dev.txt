@@ -5,7 +5,7 @@ matplotlib==3.7.1
 numpy==1.22.4
 pyglotaran==0.6.0
 tabulate==0.9.0
-xarray==2023.1.0
+xarray==2023.3.0
 
 # Documentation dependencies
 -r docs/requirements.txt
