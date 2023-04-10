@@ -367,6 +367,25 @@ def get_shifted_traces(
     return shift_time_axis_by_irf_location(traces, irf_location)
 
 
+def ensure_axes_array(axes: Axis | Axes) -> Axes:
+    """Ensure that axes have flatten method even if it is a single axis.
+
+    Parameters
+    ----------
+    axes: Axis | Axes
+        Axis or Axes to convert for API consistency.
+
+    Returns
+    -------
+    Axes
+        Numpy ndarray of axes.
+    """
+    # We can't use `Axis` in isinstance so we check for the np.ndarray attribute of `Axes`
+    if hasattr(axes, "flatten") is False:
+        axes = np.array([axes])
+    return axes
+
+
 def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
     """Add cycler to and axis if it is not None.
 
@@ -383,9 +402,7 @@ def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
         Plot style cycler to use.
     """
     if cycler is not None:
-        # We can't use `Axis` in isinstance so we check for the np.ndarray attribute of `Axes`
-        if hasattr(axis, "flatten") is False:
-            axis = np.array([axis])
+        axis = ensure_axes_array(axis)
         for ax in axis.flatten():
             ax.set_prop_cycle(cycler)
 

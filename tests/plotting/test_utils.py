@@ -16,6 +16,7 @@ from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
+from pyglotaran_extras.plotting.utils import ensure_axes_array
 from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
 from pyglotaran_extras.plotting.utils import not_single_element_dims
 
@@ -127,3 +128,14 @@ def test_not_single_element_dims(data_array: xr.DataArray, expected: list[Hashab
 def test_format_sub_plot_number_upper_case_letter(value: int, size: int | None, expected: str):
     """Expected string format."""
     assert format_sub_plot_number_upper_case_letter(value, size) == expected
+
+
+def test_ensure_axes_array():
+    """Hasa flatten method."""
+    _, ax = plt.subplots(1, 1)
+    assert hasattr(ax, "flatten") is False
+    assert hasattr(ensure_axes_array(ax), "flatten") is True
+
+    _, axes = plt.subplots(1, 2)
+    assert hasattr(axes, "flatten") is True
+    assert hasattr(ensure_axes_array(axes), "flatten") is True
