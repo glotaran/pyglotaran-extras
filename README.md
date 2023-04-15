@@ -7,7 +7,6 @@
 [![Binder](https://static.mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/glotaran/pyglotaran-extras.git/main?urlpath=lab%2Ftree%2Fdocs%2Fsource%2Fnotebooks)
 
 [![codecov](https://codecov.io/gh/glotaran/pyglotaran-extras/branch/main/graph/badge.svg?token=I6F412Y390)](https://codecov.io/gh/glotaran/pyglotaran-extras)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/glotaran/pyglotaran-extras.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/glotaran/pyglotaran-extras/context:python)
 [![Code style Python: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Discord](https://img.shields.io/discord/883443835135475753.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/KfnEYRSTJx)
 
@@ -18,8 +17,8 @@ Can be installed as a python package or from sources.
 
 Prerequisites:
 
-- Python 3.8 or 3.9
-- Python package `pyglotaran` v0.3.0 (or later)
+- Python 3.8, 3.9 or 3.10
+- Python package `pyglotaran` v0.6.0 (or later)
 
 ### Stable Release
 
