@@ -41,14 +41,14 @@ def plot_overview(
     main_irf_nr: int = 0,
     figsize: tuple[float, float] = (18, 16),
     cycler: Cycler | None = PlotStyle().cycler,
-    figure_only: bool = True,
+    figure_only: bool | None = None,
     nr_of_data_svd_vectors: int = 4,
     nr_of_residual_svd_vectors: int = 2,
     show_data_svd_legend: bool = True,
     show_residual_svd_legend: bool = True,
     show_irf_dispersion_center: bool = True,
     show_zero_line: bool = True,
-) -> Figure | tuple[Figure, Axes]:
+) -> tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
     Parameters
@@ -79,10 +79,8 @@ def plot_overview(
         Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    figure_only: bool
-        Whether or not to only return the figure.
-        This is a deprecation helper argument to transition to a consistent return value
-        consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
+    figure_only: bool | None
+        Deprecated please remove this argument for you function calls. Defaults to None.
     nr_of_data_svd_vectors: int
         Number of data SVD vector to plot. Defaults to 4.
     nr_of_residual_svd_vectors: int
@@ -100,15 +98,15 @@ def plot_overview(
 
     Returns
     -------
-    Figure|tuple[Figure, Axes]
-        If ``figure_only`` is True, Figure object which contains the plots (deprecated).
-        If ``figure_only`` is False, Figure object which contains the plots and the Axes.
+    tuple[Figure, Axes]
     """
     res = load_data(result, _stacklevel=3)
 
     if res.coords["time"].values.size == 1:
         fig, axes = plot_guidance(res)
-        return fig if figure_only is True else (fig, axes)
+        if figure_only is not None:
+            warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+        return fig, axes
     # Plot dimensions
     M = 4
     N = 3
@@ -153,10 +151,9 @@ def plot_overview(
         show_irf_dispersion_center=show_irf_dispersion_center,
         irf_location=irf_location,
     )
-    if figure_only is False:
-        return fig, axes
-    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-    return fig
+    if figure_only is not None:
+        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig, axes
 
 
 def plot_simple_overview(
@@ -164,7 +161,7 @@ def plot_simple_overview(
     title: str | None = None,
     figsize: tuple[float, float] = (12, 6),
     cycler: Cycler | None = PlotStyle().cycler,
-    figure_only: bool = True,
+    figure_only: bool | None = None,
     show_irf_dispersion_center: bool = True,
     show_data: bool | None = False,
 ) -> Figure | tuple[Figure, Axes]:
@@ -180,10 +177,8 @@ def plot_simple_overview(
         Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    figure_only: bool
-        Whether or not to only return the figure.
-        This is a deprecation helper argument to transition to a consistent return value
-        consisting of the :class:`Figure` and the :class:`Axes`. Defaults to True.
+    figure_only: bool | None
+        Deprecated please remove this argument for you function calls. Defaults to None.
     show_irf_dispersion_center: bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
@@ -193,9 +188,7 @@ def plot_simple_overview(
 
     Returns
     -------
-    Figure|tuple[Figure, Axes]
-        If ``figure_only`` is True, Figure object which contains the plots (deprecated).
-        If ``figure_only`` is False, Figure object which contains the plots and the Axes.
+    tuple[Figure, Axes]
     """
     res = load_data(result, _stacklevel=3)
 
@@ -228,10 +221,9 @@ def plot_simple_overview(
         irf_location=irf_location,
     )
 
-    if figure_only is not True:
-        return fig, axes
-    warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
-    return fig
+    if figure_only is not None:
+        warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
+    return fig, axes
 
 
 if __name__ == "__main__":
@@ -241,7 +233,7 @@ if __name__ == "__main__":
     res = load_data(result_path)
     print(res)
 
-    fig, axes = plot_overview(res, figure_only=False)
+    fig, axes = plot_overview(res)
     if len(sys.argv) > 2:
         fig.savefig(sys.argv[2], bbox_inches="tight")
         print(f"Saved figure to: {sys.argv[2]}")

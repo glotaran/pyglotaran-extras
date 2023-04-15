@@ -4,8 +4,25 @@
 
 ## 0.7.0 (Unreleased)
 
+- 👌 Fix typo in internal function name (#94)
+- ✨ Add IRF dispersion center plotting (#95)
+- 👌 Improve typing (#96)
+- 👌 Shift time axis by IRF location (#99)
 - 🩹🚇 Fix 'Test pyglotaran dev' CI step (#117)
 - 👌 Add option to deactivate data/residual plotting in overview plots (#118)
+- ✨ Add coherent artifact plot functionality (#123)
+- ✨ Add a-matrix inspection function (#124)
+- ✨ Add show_zero_line option to plot_overview and plot_fitted_traces (#128)
+- 🩹 Fix SVD vector labels always starting from zero (#133)
+- 👌 Make result input for plot_coherent_artifact more generic (#134)
+- ✨ Add plot_doas function that only plots DOAS related information (#135)
+- ✨ Shift irf derivatives in plot_coherent_artifact by irf position (#136)
+- 👌 Convert plot style Enums to StrEnums for ease of use (#144)
+- 🩹 Fix heading in show_a_matrixes for multiple a-matrixes per dataset (#148)
+- 👌 Add legend_format_string argument to plot_doas (#150)
+- 👌 Make plot_data_overview able to plot single trace data (#137)
+- 👌 Improve plot_doas default legend_format_string (#151)
+- 🩹⌨️ Fix figsize typing (#152)
 - 🩹📚 Fix search in docs (#157)
 
 (changes-0_6_0)=
