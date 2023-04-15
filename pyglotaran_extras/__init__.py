@@ -25,4 +25,4 @@ __all__ = [
     "select_plot_wavelengths",
 ]
 
-__version__ = "0.8.0dev0"
+__version__ = "0.8.0.dev0"
