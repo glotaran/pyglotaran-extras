@@ -10,6 +10,7 @@ from pyglotaran_extras.plotting.plot_overview import plot_overview
 from pyglotaran_extras.plotting.plot_overview import plot_simple_overview
 from pyglotaran_extras.plotting.plot_traces import plot_fitted_traces
 from pyglotaran_extras.plotting.plot_traces import select_plot_wavelengths
+from pyglotaran_extras.plotting.utils import add_subplot_labels
 
 __all__ = [
     "load_data",
@@ -23,6 +24,7 @@ __all__ = [
     "plot_simple_overview",
     "plot_fitted_traces",
     "select_plot_wavelengths",
+    "add_subplot_labels",
 ]
 
 __version__ = "0.8.0.dev0"

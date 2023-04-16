@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Hashable
 from typing import Iterable
+from typing import Literal
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -15,10 +16,12 @@ from cycler import cycle
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
+from pyglotaran_extras.plotting.utils import add_subplot_labels
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
 from pyglotaran_extras.plotting.utils import ensure_axes_array
 from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
 from pyglotaran_extras.plotting.utils import not_single_element_dims
+from pyglotaran_extras.types import SubPlotLabelCoord
 
 matplotlib.use("Agg")
 DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
@@ -139,3 +142,60 @@ def test_ensure_axes_array():
     _, axes = plt.subplots(1, 2)
     assert hasattr(axes, "flatten") is True
     assert hasattr(ensure_axes_array(axes), "flatten") is True
+
+
+def test_add_subplot_labels_defaults():
+    """Sanity check that default arguments got passed on to mpl annotate method."""
+    _, axes = plt.subplots(2, 2)
+
+    add_subplot_labels(axes)
+
+    assert [ax.texts[0].get_text() for ax in axes.flatten()] == ["1", "2", "3", "4"]
+    assert [ax.texts[0].get_position() for ax in axes.flatten()] == pytest.approx(
+        [(-0.05, 1.05)] * 4
+    )
+    assert [ax.texts[0].get_anncoords() for ax in axes.flatten()] == ["axes fraction"] * 4
+    assert [ax.texts[0].get_fontsize() for ax in axes.flatten()] == [16] * 4
+
+
+@pytest.mark.parametrize(
+    "direction, expected", (("row", ["1", "2", "3", "4"]), ("column", ["1", "3", "2", "4"]))
+)
+@pytest.mark.parametrize("label_position", ((0.01, 0.95), (-0.1, 1.0)))
+@pytest.mark.parametrize("label_coords", ("data", ("axes fraction", "data")))
+@pytest.mark.parametrize("fontsize", (12, 26))
+def test_add_subplot_labels_assignment(
+    direction: Literal["row", "column"],
+    label_position: tuple[float, float],
+    label_coords: SubPlotLabelCoord,
+    fontsize: int,
+    expected: list[str],
+):
+    """Test basic label text assignment."""
+    _, axes = plt.subplots(2, 2)
+
+    add_subplot_labels(
+        axes,
+        label_position=label_position,
+        label_coords=label_coords,
+        direction=direction,
+        fontsize=fontsize,
+    )
+
+    assert [ax.texts[0].get_text() for ax in axes.flatten()] == expected
+    assert [ax.texts[0].get_position() for ax in axes.flatten()] == pytest.approx(
+        [label_position] * 4
+    )
+    assert [ax.texts[0].get_anncoords() for ax in axes.flatten()] == [label_coords] * 4
+    assert [ax.texts[0].get_fontsize() for ax in axes.flatten()] == [fontsize] * 4
+
+    plt.close()
+
+
+@pytest.mark.parametrize("label_format_template, expected", (("{})", "1)"), ("({})", "(1)")))
+def test_add_subplot_labels_label_format_template(label_format_template: str, expected: str):
+    """Template is used."""
+    _, ax = plt.subplots(1, 1)
+    add_subplot_labels(ax, label_format_template=label_format_template)
+
+    assert ax.texts[0].get_text() == expected
