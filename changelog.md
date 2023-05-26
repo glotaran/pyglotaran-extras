@@ -5,6 +5,7 @@
 ## 0.8.0 (Unreleased)
 
 - 🩹 Fix crashes of plot_doas and plot_coherent_artifact for non dispersive IRF (#173)
+- 🚧📦 Remove upper python version limit (#174)
 
 (changes-0_7_0)=
 
