@@ -105,11 +105,13 @@ def plot_doas(
 
     irf_location = extract_irf_location(dataset, spectral, main_irf_nr)
 
+    oscillations = dataset[f"damped_oscillation_{oscillation_type}"]
+
+    if "spectral" in oscillations.coords:
+        oscillations = oscillations.sel(spectral=spectral, method="nearest")
+
     oscillations = shift_time_axis_by_irf_location(
-        dataset[f"damped_oscillation_{oscillation_type}"]
-        .sel(spectral=spectral, method="nearest")
-        .sel(**osc_sel_kwargs),
-        irf_location,
+        oscillations.sel(**osc_sel_kwargs), irf_location
     )
     oscillations_spectra = dataset["damped_oscillation_associated_spectra"].sel(**osc_sel_kwargs)
 

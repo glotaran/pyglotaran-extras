@@ -103,9 +103,10 @@ def plot_coherent_artifact(
         norm_factor = scales.max()
         irf_y_label = f"normalized {irf_y_label}"
 
-    plot_slice_irf = (
-        irf_data.sel(spectral=spectral, method="nearest") / irf_max * scales / norm_factor
-    )
+    if "spectral" in irf_data:
+        irf_data = irf_data.sel(spectral=spectral, method="nearest")
+
+    plot_slice_irf = irf_data / irf_max * scales / norm_factor
     irf_sel_kwargs = (
         {"time": slice(time_range[0], time_range[1])} if time_range is not None else {}
     )
