@@ -1,8 +1,12 @@
 # Changelog
 
+(changes-0_8_0)=
+
+## 0.8.0 (Unreleased)
+
 (changes-0_7_0)=
 
-## 0.7.0 (Unreleased)
+## 0.7.0 (2023-04-15)
 
 - 👌 Fix typo in internal function name (#94)
 - ✨ Add IRF dispersion center plotting (#95)
