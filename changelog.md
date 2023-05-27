@@ -4,6 +4,8 @@
 
 ## 0.8.0 (Unreleased)
 
+- 🩹 Fix crashes of plot_doas and plot_coherent_artifact for non dispersive IRF (#173)
+
 (changes-0_7_0)=
 
 ## 0.7.0 (2023-04-15)
