@@ -15,6 +15,13 @@ repos:
       - id: fix-encoding-pragma
         args: [--remove]
 
+  - repo: https://github.com/PyCQA/docformatter
+    rev: v1.7.1
+    hooks:
+      - id: docformatter
+        additional_dependencies: [tomli]
+        args: [--in-place, --config, ./pyproject.toml]
+
   - repo: https://github.com/MarcoGorelli/absolufy-imports
     rev: v0.3.1
     hooks:

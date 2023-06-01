@@ -16,6 +16,11 @@ exclude = '''
 )/
 '''
 
+[tool.docformatter]
+black = true
+wrap-summaries = 99
+wrap-descriptions = 99
+
 [tool.isort]
 profile = "hug"
 src_paths = ["pyglotaran_extras"]
