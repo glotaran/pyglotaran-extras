@@ -81,7 +81,7 @@ def test_parse_version(version_str: str, expected: tuple[int, int, int]):
     ("1", "0.1", "a.b.c"),
 )
 def test_parse_version_errors(version_str: str):
-    """Invalid version strings"""
+    """Invalid version strings."""
     with pytest.raises(ValueError, match=f"'{version_str}'"):
         parse_version(version_str)
 

@@ -1,4 +1,4 @@
-"""Tests for pyglotaran_extras.plotting.utils"""
+"""Tests for pyglotaran_extras.plotting.utils."""
 from __future__ import annotations
 
 from typing import Hashable
@@ -32,7 +32,7 @@ DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
     ((None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())),
 )
 def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycler: cycle):
-    """Default cycler if None and cycler otherwise on a single axis"""
+    """Default cycler if None and cycler otherwise on a single axis."""
     ax = plt.subplot()
     add_cycler_if_not_none(ax, cycler)
 
@@ -46,7 +46,7 @@ def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycl
     ((None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())),
 )
 def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cycler: cycle):
-    """Default cycler if None and cycler otherwise on all axes"""
+    """Default cycler if None and cycler otherwise on all axes."""
     _, axes = plt.subplots(1, 2)
     add_cycler_if_not_none(axes, cycler)
 

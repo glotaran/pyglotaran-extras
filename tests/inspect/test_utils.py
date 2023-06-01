@@ -161,6 +161,6 @@ def test_pretty_format_numerical(value: float, decimal_places: int, expected: st
     ),
 )
 def test_pretty_format_numerical_iterable(decimal_places: int, expected: Iterable[str | float]):
-    """Values correct formatted"""
+    """Values correct formatted."""
     values = ("Foo", 1, 0.009, -1.0000000000000002, np.nan, np.inf)
     assert list(pretty_format_numerical_iterable(values, decimal_places)) == expected

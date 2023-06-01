@@ -1,6 +1,7 @@
 """Module containing predefined plot styles.
 
-For reference see: https://glotaran.github.io/legacy/plot_styles
+For reference see:
+https://glotaran.github.io/legacy/plot_styles
 """
 from __future__ import annotations
 
@@ -84,10 +85,9 @@ class LineStyle(str, Enum):
 class DataColorCode(str, Enum):
     """Colors used to plot data and fits.
 
-    Pairs of visually similar looking colors whereby the
-    first (lighter) color is used to plot the data,
-    and the second (darker) color is used to represent
-    the fitted trace (that goes 'through' the data).
+    Pairs of visually similar looking colors whereby the first (lighter) color is used to plot the
+    data, and the second (darker) color is used to represent the fitted trace (that goes 'through'
+    the data).
     """
 
     # Name	#Hex
@@ -112,8 +112,8 @@ class DataColorCode(str, Enum):
 class DataLineStyle(str, Enum):
     """Data plots can alternate between solid lines for data and dashed lines for fits.
 
-    This is mostly useful for data with very low noise (e.g. simulated data),
-    since data and fir often overlap
+    This is mostly useful for data with very low noise (e.g. simulated data), since data and fit
+    often overlap.
     """
 
     solid = "-"

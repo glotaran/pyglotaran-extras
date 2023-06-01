@@ -16,21 +16,21 @@ if TYPE_CHECKING:
 
 
 def test_get_script_dir():
-    """Called directly"""
+    """Called directly."""
     expected = Path(__file__).parent
 
     assert get_script_dir() == expected
 
 
 def test_get_script_dir_in_closure():
-    """Called inside other function imported from different file"""
+    """Called inside other function imported from different file."""
     expected = Path(__file__).parent
 
     assert wrapped_get_script_dir() == expected
 
 
 def test_get_script_dir_tmp_path(tmp_path: Path):
-    """File in temp folder"""
+    """File in temp folder."""
     tmp_file = tmp_path / "foo.py"
     content = dedent(
         """
@@ -49,7 +49,7 @@ def test_get_script_dir_tmp_path(tmp_path: Path):
 
 
 def test_setup_case_study(monkeypatch: MonkeyPatch, tmp_path: Path):
-    """Default settings"""
+    """Default settings."""
     mock_home = tmp_path / "home"
     monkeypatch.setattr(Path, "home", lambda: mock_home)
 
@@ -62,7 +62,7 @@ def test_setup_case_study(monkeypatch: MonkeyPatch, tmp_path: Path):
 
 
 def test_setup_case_study_custom(tmp_path: Path):
-    """Custom settings"""
+    """Custom settings."""
     results_folder_root = tmp_path / "foo"
 
     results_folder, script_folder = setup_case_study(
