@@ -49,7 +49,7 @@ repos:
     rev: v1.5.0
     hooks:
       - id: yesqa
-        additional_dependencies: [flake8-docstrings, darglint==1.8.0]
+        additional_dependencies: [flake8-docstrings]
 
   - repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.4.0
@@ -113,10 +113,15 @@ repos:
       - id: flake8
         alias: flake8-docs
         args:
-          - "--select=D,DAR"
+          - "--select=D,DOC"
+          - "--extend-ignore= DOC502"
+          - "--color=always"
+          - "--require-return-section-when-returning-none=False"
+          - "--allow-init-docstring=True"
+          - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|setup.py$|tests?/)"
-        additional_dependencies: [flake8-docstrings, darglint==1.8.0]
+        additional_dependencies: [flake8-docstrings, pydoclint]
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: "v6.1.2"

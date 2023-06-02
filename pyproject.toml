@@ -84,3 +84,11 @@ warn_unused_configs = true
 module = "tests.*"
 disallow_incomplete_defs = false
 disallow_untyped_defs = false
+
+# For now this is not use because pydoclint does not support toml when used with flake8
+[tool.pydoclint]
+skip-checking-short-docstrings = false
+style = 'numpy'
+exclude = '^(docs/|setup.py$|tests?/)'
+require-return-section-when-returning-none = false
+allow-init-docstring = true
