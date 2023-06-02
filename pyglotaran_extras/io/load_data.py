@@ -20,10 +20,10 @@ def load_data(
     ----------
     result : DatasetConvertible | Result
         Result class instance, xarray Dataset or path to a dataset file.
-    dataset_name : str, optional
+    dataset_name : str | None
         Name of a specific dataset contained in ``result``, if not provided
         the first dataset will be extracted. Defaults to None.
-    _stacklevel: int
+    _stacklevel : int
         Stacklevel of the warning which is raised when ``result`` is of class ``Result``,
         contains multiple datasets and no ``dataset_name`` is provided. Changing this value is
         only required if you use this function inside of another function. Defaults to 2

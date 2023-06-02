@@ -53,9 +53,9 @@ def plot_data_and_fits(
         Data structure which can be converted to a mapping.
     wavelength : float
         Wavelength to plot data and fits for.
-    axis: Axis
+    axis : Axis
         Axis to plot the data and fits on.
-    center_λ: float | None
+    center_λ : float | None
         Center wavelength (λ in nm)
     main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
@@ -68,13 +68,13 @@ def plot_data_and_fits(
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
         Defaults to True.
-    per_axis_legend: bool
+    per_axis_legend : bool
         Whether to use a legend per plot or for the whole figure. Defaults to False.
-    y_label: str
+    y_label : str
         Label used for the y-axis of each subplot.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
 
     See Also
@@ -128,12 +128,12 @@ def plot_fitted_traces(
     ----------
     result : ResultLike
         Data structure which can be converted to a mapping of datasets.
-    axes_shape : tuple[int, int]
-        Shape of the plot grid (N, M). Defaults to (4, 4).
-    wavelengths: Iterable[float]
+    wavelengths : Iterable[float]
         Wavelength which should be used for each subplot, should to be of length N*M
         with ``axes_shape`` being of shape (N, M), else it will result in missing plots.
-    center_λ: float | None
+    axes_shape : tuple[int, int]
+        Shape of the plot grid (N, M). Defaults to (4, 4).
+    center_λ : float | None
         Center wavelength of the IRF (λ in nm).
     main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
@@ -148,15 +148,15 @@ def plot_fitted_traces(
         Defaults to True.
     per_axis_legend : bool
         Whether to use a legend per plot or for the whole figure. Defaults to False.
-    figsize : tuple[int, int]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (30, 15).
     title : str
         Title to add to the figure. Defaults to "Fit overview".
-    y_label: str
+    y_label : str
         Label used for the y-axis of each subplot.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
 
 

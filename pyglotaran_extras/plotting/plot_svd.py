@@ -46,15 +46,15 @@ def plot_svd(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    nr_of_data_svd_vectors: int
+    nr_of_data_svd_vectors : int
         Number of data SVD vector to plot. Defaults to 4.
-    nr_of_residual_svd_vectors: int
+    nr_of_residual_svd_vectors : int
         Number of residual SVD vector to plot. Defaults to 2.
-    show_data_svd_legend: bool
+    show_data_svd_legend : bool
         Whether or not to show the data SVD legend. Defaults to True.
-    show_residual_svd_legend: bool
+    show_residual_svd_legend : bool
         Whether or not to show the residual SVD legend. Defaults to True.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
     """
@@ -128,9 +128,9 @@ def plot_lsv_data(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_legend: bool
+    show_legend : bool
         Whether or not to show the legend. Defaults to True.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
     """
@@ -163,7 +163,7 @@ def plot_rsv_data(
         Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_legend: bool
+    show_legend : bool
         Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
@@ -226,9 +226,9 @@ def plot_lsv_residual(
         This avoids having the plot go to infinity around zero. Defaults to 1.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_legend: bool
+    show_legend : bool
         Whether or not to show the legend. Defaults to True.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
     """
@@ -264,7 +264,7 @@ def plot_rsv_residual(
         Indices of the singular vector to plot. Defaults to range(4).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_legend: bool
+    show_legend : bool
         Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
@@ -317,15 +317,15 @@ def _plot_svd_vectors(
 
     Parameters
     ----------
-    vector_data: xr.DataArray
+    vector_data : xr.DataArray
         DataArray containing the SVD vector data.
-    indices: Sequence[int]
+    indices : Sequence[int]
         Indices of the singular vector to plot.
-    sv_index_dim: str
+    sv_index_dim : str
         Name of the singular value index dimension.
-    ax: Axis
+    ax : Axis
         Axis to plot on.
-    show_legend: bool
+    show_legend : bool
         Whether or not to show the legend.
 
     See Also

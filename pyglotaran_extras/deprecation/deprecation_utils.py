@@ -133,16 +133,13 @@ def warn_deprecated(
     to_be_removed_in_version : str
         Version the support for this usage will be removed.
 
-    stacklevel: int
+    stacklevel : int
         Stack at which the warning should be shown as raise. Default: 2
 
     Raises
     ------
     OverDueDeprecation
         If the current version is greater or equal to ``to_be_removed_in_version``.
-
-
-    -- noqa: DAR402
     """
     check_overdue(deprecated_qual_name_usage, to_be_removed_in_version)
     warn(

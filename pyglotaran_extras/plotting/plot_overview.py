@@ -53,46 +53,46 @@ def plot_overview(
 
     Parameters
     ----------
-    result: DatasetConvertible | Result
+    result : DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
-    center_λ: float | None
+    center_λ : float | None
         Center wavelength (λ in nm)
-    linlog: bool
+    linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
-    linthresh: float
+    linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    linscale: float
+    linscale : float
         This allows the linear range (-linthresh to linthresh) to be stretched
         relative to the logarithmic range.
         Its value is the number of decades to use for each half of the linear range.
         For example, when linscale == 1.0 (the default), the space used for the
         positive and negative halves of the linear range will be equal to one
         decade in the logarithmic range. Defaults to 1.
-    show_data: bool | None
+    show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
-    figsize : tuple[int, int]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    figure_only: bool | None
+    figure_only : bool | None
         Deprecated please remove this argument for you function calls. Defaults to None.
-    nr_of_data_svd_vectors: int
+    nr_of_data_svd_vectors : int
         Number of data SVD vector to plot. Defaults to 4.
-    nr_of_residual_svd_vectors: int
+    nr_of_residual_svd_vectors : int
         Number of residual SVD vector to plot. Defaults to 2.
-    show_data_svd_legend: bool
+    show_data_svd_legend : bool
         Whether or not to show the data SVD legend. Defaults to True.
-    show_residual_svd_legend: bool
+    show_residual_svd_legend : bool
         Whether or not to show the residual SVD legend. Defaults to True.
-    show_irf_dispersion_center: bool
+    show_irf_dispersion_center : bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero to the plots of the spectra.
         Defaults to True.
 
@@ -169,20 +169,20 @@ def plot_simple_overview(
 
     Parameters
     ----------
-    result: DatasetConvertible | Result
+    result : DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
-    title: str | None
+    title : str | None
         Title of the figure. Defaults to None.
-    figsize : tuple[int, int]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    figure_only: bool | None
+    figure_only : bool | None
         Deprecated please remove this argument for you function calls. Defaults to None.
-    show_irf_dispersion_center: bool
+    show_irf_dispersion_center : bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
-    show_data: bool | None
+    show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
 

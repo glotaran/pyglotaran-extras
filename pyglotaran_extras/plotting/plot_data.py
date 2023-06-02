@@ -43,7 +43,7 @@ def plot_data_overview(
 
     Parameters
     ----------
-    dataset :  DatasetConvertible | Result
+    dataset : DatasetConvertible | Result
         Dataset containing data and SVD of the data.
     title : str
         Title to add to the figure. Defaults to "Data overview".
@@ -52,19 +52,19 @@ def plot_data_overview(
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    figsize : tuple[int, int]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (15, 10).
-    nr_of_data_svd_vectors: int
+    nr_of_data_svd_vectors : int
         Number of data SVD vector to plot. Defaults to 4.
-    show_data_svd_legend: bool
+    show_data_svd_legend : bool
         Whether or not to show the data SVD legend. Defaults to True.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
 
     Returns
     -------
-    tuple[Figure, Axes]|tuple[Figure,Axis]
+    tuple[Figure, Axes] | tuple[Figure,Axis]
         Figure and axes which can then be refined by the user.
     """
     dataset = load_data(dataset, _stacklevel=3)
@@ -127,18 +127,18 @@ def _plot_single_trace(
 
     Parameters
     ----------
-    data_array: xr.DataArray
+    data_array : xr.DataArray
         DataArray containing only data  of a single trace.
-    x_dim: Hashable
+    x_dim : Hashable
         Name of the x dimension.
-    title: str
+    title : str
         Title to add to the figure. Defaults to "Data overview".
-    linlog: bool
+    linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
-    linthresh: float
+    linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    figsize: tuple[float, float]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (15, 10).
 
     Returns

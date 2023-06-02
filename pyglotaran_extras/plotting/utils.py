@@ -42,9 +42,9 @@ def select_irf_dispersion_center_by_index(
 
     Parameters
     ----------
-    irf_dispersion: xr.DataArray
+    irf_dispersion : xr.DataArray
         Data Variable from a result dataset which contains the IRF dispersion data.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
 
@@ -77,12 +77,12 @@ def extract_irf_dispersion_center(
 
     Parameters
     ----------
-    res: xr.Dataset
+    res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
-    as_dataarray: bool
+    as_dataarray : bool
         Ensure that the returned data are xr.DataArray instead of a float, even if the
         dispersion is none existent or constant. Defaults to True
 
@@ -127,9 +127,9 @@ def extract_irf_location(
     ----------
     res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    center_λ: float | None
+    center_λ : float | None
         Center wavelength (λ in nm)
-    main_irf_nr : int
+    main_irf_nr : int | None
         Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks.
         If it is none ``None`` the location will be 0. Defaults to 0.
 
@@ -219,15 +219,15 @@ def select_plot_wavelengths(
 
     Parameters
     ----------
-    result: ResultLike
+    result : ResultLike
         Data structure which can be converted to a mapping of datasets.
-    axes_shape: tuple[int, int]
+    axes_shape : tuple[int, int]
         Shape of the plot grid (N, M). Defaults to (4, 4).
-    wavelength_range: tuple[float, float]
+    wavelength_range : tuple[float, float] | None
         Tuple of minimum and maximum values to calculate the the wavelengths
         used for plotting. If not provided the values will be tetermined over all datasets.
         Defaults to None.
-    equidistant_wavelengths: bool
+    equidistant_wavelengths : bool
         Whether or not wavelengths should be selected based on equidistant values
         or equidistant indices (only supported for a single dataset).
         Since in general multiple datasets will have. Defaults to True.
@@ -308,9 +308,9 @@ def shift_time_axis_by_irf_location(
 
     Parameters
     ----------
-    plot_data: xr.DataArray
+    plot_data : xr.DataArray
         Data to plot.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf``, if the value is None the original ``plot_data`` will be returned.
 
     Returns
@@ -344,11 +344,11 @@ def get_shifted_traces(
 
     Parameters
     ----------
-    res: xr.Dataset
+    res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    center_λ: float|None
+    center_λ : float | None
         Center wavelength (λ in nm). Defaults to None.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
 
@@ -402,9 +402,9 @@ def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
 
     Parameters
     ----------
-    axis: Axis | Axes
+    axis : Axis | Axes
         Axis to plot on.
-    cycler: Cycler | None
+    cycler : Cycler | None
         Plot style cycler to use.
     """
     if cycler is not None:
@@ -420,9 +420,9 @@ def abs_max(
 
     Parameters
     ----------
-    data: xr.DataArray
+    data : xr.DataArray
         Data for which the absolute maximum should be calculated.
-    result_dims: Hashable | Iterable[Hashable]
+    result_dims : Hashable | Iterable[Hashable]
         Dimensions of ``data`` which should be preserved and part of the resulting DataArray.
         Defaults to () which results in using the absolute maximum of all values.
 
@@ -444,9 +444,9 @@ def calculate_ticks_in_units_of_pi(
 
     Parameters
     ----------
-    values: np.ndarray
+    values : np.ndarray | xr.DataArray
         Values which the ticks should be calculated for.
-    step_size: float
+    step_size : float
         Step size of the ticks in units of pi. Defaults to 0.5
 
     Returns
@@ -499,7 +499,7 @@ def not_single_element_dims(data_array: xr.DataArray) -> list[Hashable]:
 
     Parameters
     ----------
-    data_array: xr.DataArray
+    data_array : xr.DataArray
         DataArray to check if it has only a single dimension.
 
     Returns

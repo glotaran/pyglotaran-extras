@@ -19,13 +19,13 @@ def wrap_in_details_tag(
 
     Parameters
     ----------
-    details_content: str
+    details_content : str
         Markdown string that should be displayed when the details are expanded.
-    summary_content: str | None
+    summary_content : str | None
         Summary test that should be displayed. Defaults to None so the summary is ``Details``.
-    summary_heading_level: int | None
+    summary_heading_level : int | None
         Level of the heading wrapping the ``summary`` if it is not None. Defaults to None.
-    is_open: bool
+    is_open : bool
         Whether or not the details tag should be initially opened. Defaults to False.
 
     Returns
@@ -55,14 +55,14 @@ def pretty_format_numerical(value: float | int, decimal_places: int = 1) -> str:
 
     Used to format values like the t-value.
 
-    TODO: remove after raise pyglotaran dependency to 0.7.0
+    TODO : remove after raise pyglotaran dependency to 0.7.0
     Forward port of https://github.com/glotaran/pyglotaran/pull/1192
 
     Parameters
     ----------
-    value: float | int
+    value : float | int
         Numerical value to format.
-    decimal_places: int
+    decimal_places : int
         Decimal places to display. Defaults to 1.
 
     Returns
@@ -93,9 +93,9 @@ def pretty_format_numerical_iterable(
 
     Parameters
     ----------
-    input_values: Iterable[str  |  float]
+    input_values : Iterable[str | float]
         Values that should be formatted.
-    decimal_places: int | None
+    decimal_places : int | None
         Number of decimal places a value should have, if None the original value will be used.
         Defaults to 3.
 

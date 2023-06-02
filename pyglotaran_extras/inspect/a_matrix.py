@@ -25,13 +25,13 @@ def a_matrix_to_html_table(
 
     Parameters
     ----------
-    a_matrix: xr.DataArray
+    a_matrix : xr.DataArray
         DataArray containing the a-matrix values and coordinates.
-    megacomplex_suffix: str
+    megacomplex_suffix : str
         Megacomplex suffix used for the a-matrix data variable and coordinate names.
-    normalize_initial_concentration: bool
+    normalize_initial_concentration : bool
         Whether or not to normalize the initial concentration. Defaults to False.
-    decimal_places: int
+    decimal_places : int
         Decimal places to display. Defaults to 3.
 
     Returns
@@ -96,18 +96,18 @@ def show_a_matrixes(
 
     Parameters
     ----------
-    result: ResultLike
+    result : ResultLike
         Result or result dataset.
-    normalize_initial_concentration: bool
+    normalize_initial_concentration : bool
         Whether or not to normalize the initial concentration. Defaults to False.
-    decimal_places: int
+    decimal_places : int
         Decimal places to display. Defaults to 3.
-    a_matrix_min_size: int
+    a_matrix_min_size : int | None
         Defaults to None.
-    expanded_datasets: tuple[str, ...]
+    expanded_datasets : tuple[str, ...]
         Names of dataset to expand the details view for. Defaults to empty tuple () which means no
         dataset is expanded.
-    heading_offset: int
+    heading_offset : int
         Number of heading level to offset the headings. Defaults to 2 which means that the
         first/top most heading is h3.
 

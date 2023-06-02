@@ -29,15 +29,15 @@ def plot_guidance(
 
     Parameters
     ----------
-    result: DatasetConvertible | Result
+    result : DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
-    figsize: tuple[float, float]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (15, 5)
-    title: str
+    title : str
         Title to add to the figure. Defaults to "Guidance Overview"
-    y_label: str
+    y_label : str
         Label used for the y-axis of each subplot. Defaults to "a.u."
-    cycler: Cycler | None
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
 
     Returns

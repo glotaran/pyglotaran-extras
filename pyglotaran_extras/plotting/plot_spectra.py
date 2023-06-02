@@ -31,7 +31,7 @@ def plot_spectra(
         Axes to plot the spectra on (needs to be at least 2x2).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
     """
     plot_sas(res, axes[0, 0], cycler=cycler, show_zero_line=show_zero_line)
@@ -59,7 +59,7 @@ def plot_sas(
         Title of the plot. Defaults to "SAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
@@ -94,7 +94,7 @@ def plot_norm_sas(
         Title of the plot. Defaults to "norm SAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
@@ -130,7 +130,7 @@ def plot_das(
         Title of the plot. Defaults to "DAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
@@ -165,7 +165,7 @@ def plot_norm_das(
         Title of the plot. Defaults to "norm DAS".
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)

@@ -21,7 +21,7 @@ def setup_case_study(
     ----------
     output_folder_name : str
         Name of the base folder for the results. Defaults to "pyglotaran_results".
-    results_folder_root : None
+    results_folder_root : None | str | PathLike[str]
         The folder where the results named ``output_folder_name`` should be saved to.
         Defaults to None, which results in the users Home folder being used.
 
