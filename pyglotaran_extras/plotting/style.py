@@ -128,7 +128,7 @@ class PlotStyle:
         self._line_style = list(LineStyle)
         self._color_codes = list(ColorCode)
         # Since Enum only supports unique values we need to manually add the last one
-        self._data_color_codes = list(DataColorCode) + [DataColorCode.orange]
+        self._data_color_codes = [*list(DataColorCode), DataColorCode.orange]
         # Extend linecycler to same size as colorcycler
         self._data_line_style = list(DataLineStyle) * (len(self._data_color_codes) // 2)
         self.SMALL_SIZE = 12
