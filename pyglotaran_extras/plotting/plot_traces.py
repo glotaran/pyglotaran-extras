@@ -83,7 +83,7 @@ def plot_data_and_fits(
     """
     result_map = result_dataset_mapping(result)
     add_cycler_if_not_none(axis, cycler)
-    for dataset_name in result_map.keys():
+    for dataset_name in result_map:
         if result_map[dataset_name].coords["time"].to_numpy().size == 1:
             continue
         spectral_coords = result_map[dataset_name].coords["spectral"].to_numpy()
@@ -176,7 +176,7 @@ def plot_fitted_traces(
     fig, axes = plt.subplots(*axes_shape, figsize=figsize)
     nr_of_plots = len(axes.flatten())
     max_spectral_values = max(
-        len(result_map[dataset_name].coords["spectral"]) for dataset_name in result_map.keys()
+        len(result_map[dataset_name].coords["spectral"]) for dataset_name in result_map
     )
     if nr_of_plots > max_spectral_values:
         warn(
