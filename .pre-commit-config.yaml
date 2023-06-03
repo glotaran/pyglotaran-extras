@@ -49,7 +49,10 @@ repos:
     rev: v1.5.0
     hooks:
       - id: yesqa
-        additional_dependencies: [flake8-docstrings, flake8-print]
+        additional_dependencies:
+          - flake8-docstrings
+          - flake8-print
+          - pep8-naming
 
   - repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.4.0

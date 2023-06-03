@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 import pyglotaran_extras
-from pyglotaran_extras.deprecation.deprecation_utils import OverDueDeprecation
+from pyglotaran_extras.deprecation.deprecation_utils import OverDueDeprecationError
 from pyglotaran_extras.deprecation.deprecation_utils import PyglotaranExtrasApiDeprecationWarning
 from pyglotaran_extras.deprecation.deprecation_utils import check_overdue
 from pyglotaran_extras.deprecation.deprecation_utils import parse_version
@@ -97,7 +97,7 @@ def test_check_overdue_no_raise(monkeypatch: MonkeyPatch):
 @pytest.mark.usefixtures("_pyglotaran_extras_1_0_0")
 def test_check_overdue_raises(monkeypatch: MonkeyPatch):
     """Current version is equal or bigger than drop_version."""
-    with pytest.raises(OverDueDeprecation) as excinfo:
+    with pytest.raises(OverDueDeprecationError) as excinfo:
         check_overdue(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,
             to_be_removed_in_version="0.6.0",
@@ -125,7 +125,7 @@ def test_warn_deprecated():
 def test_warn_deprecated_overdue_deprecation(monkeypatch: MonkeyPatch):
     """Current version is equal or bigger than drop_version."""
 
-    with pytest.raises(OverDueDeprecation) as excinfo:
+    with pytest.raises(OverDueDeprecationError) as excinfo:
         warn_deprecated(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,
             new_qual_name_usage=NEW_QUAL_NAME,
@@ -144,7 +144,7 @@ def test_warn_deprecated_no_overdue_deprecation_on_dev(monkeypatch: MonkeyPatch)
         lambda: "0.6.0-dev",
     )
 
-    with pytest.raises(OverDueDeprecation):
+    with pytest.raises(OverDueDeprecationError):
         warn_deprecated(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,
             new_qual_name_usage=NEW_QUAL_NAME,

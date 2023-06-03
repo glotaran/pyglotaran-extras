@@ -10,7 +10,7 @@ FIG_ONLY_WARNING = (
 )
 
 
-class OverDueDeprecation(Exception):
+class OverDueDeprecationError(Exception):
     """Error thrown when a deprecation should have been removed.
 
     See Also
@@ -109,7 +109,7 @@ def check_overdue(deprecated_qual_name_usage: str, to_be_removed_in_version: str
             f"was supposed to be dropped in version: {to_be_removed_in_version!r}.\n"
             f"Current version is: {pyglotaran_extras_version()!r}"
         )
-        raise OverDueDeprecation(msg)
+        raise OverDueDeprecationError(msg)
 
 
 def warn_deprecated(

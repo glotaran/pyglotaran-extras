@@ -107,10 +107,7 @@ def plot_overview(
         if figure_only is not None:
             warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
         return fig, axes
-    # Plot dimensions
-    M = 4
-    N = 3
-    fig, axes = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
+    fig, axes = plt.subplots(4, 3, figsize=figsize, constrained_layout=True)
 
     irf_location = extract_irf_location(res, center_λ, main_irf_nr)
 

@@ -135,8 +135,8 @@ def plot_lsv_data(
         axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
-    dLSV = res.data_left_singular_vectors
-    dLSV = shift_time_axis_by_irf_location(dLSV, irf_location)
+    dLSV = res.data_left_singular_vectors  # noqa: N806
+    dLSV = shift_time_axis_by_irf_location(dLSV, irf_location)  # noqa: N806
     _plot_svd_vectors(dLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("data. LSV")
     if linlog:
@@ -167,7 +167,7 @@ def plot_rsv_data(
         Whether or not to show the legend. Defaults to True.
     """
     add_cycler_if_not_none(ax, cycler)
-    dRSV = res.data_right_singular_vectors
+    dRSV = res.data_right_singular_vectors  # noqa: N806
     _plot_svd_vectors(dRSV, indices, "right_singular_value_index", ax, show_legend)
     ax.set_title("data. RSV")
 
@@ -192,7 +192,7 @@ def plot_sv_data(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
     add_cycler_if_not_none(ax, cycler)
-    dSV = res.data_singular_values
+    dSV = res.data_singular_values  # noqa: N806
     dSV.sel(singular_value_index=indices[: len(dSV.singular_value_index)]).plot.line(
         "ro-", yscale="log", ax=ax
     )
@@ -234,10 +234,10 @@ def plot_lsv_residual(
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_left_singular_vectors" in res:
-        rLSV = res.weighted_residual_left_singular_vectors
+        rLSV = res.weighted_residual_left_singular_vectors  # noqa: N806
     else:
-        rLSV = res.residual_left_singular_vectors
-    rLSV = shift_time_axis_by_irf_location(rLSV, irf_location)
+        rLSV = res.residual_left_singular_vectors  # noqa: N806
+    rLSV = shift_time_axis_by_irf_location(rLSV, irf_location)  # noqa: N806
     _plot_svd_vectors(rLSV, indices, "left_singular_value_index", ax, show_legend)
     ax.set_title("res. LSV")
     if linlog:
@@ -269,9 +269,9 @@ def plot_rsv_residual(
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_right_singular_vectors" in res:
-        rRSV = res.weighted_residual_right_singular_vectors
+        rRSV = res.weighted_residual_right_singular_vectors  # noqa: N806
     else:
-        rRSV = res.residual_right_singular_vectors
+        rRSV = res.residual_right_singular_vectors  # noqa: N806
     _plot_svd_vectors(rRSV, indices, "right_singular_value_index", ax, show_legend)
     ax.set_title("res. RSV")
 
@@ -297,9 +297,9 @@ def plot_sv_residual(
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_singular_values" in res:
-        rSV = res.weighted_residual_singular_values
+        rSV = res.weighted_residual_singular_values  # noqa: N806
     else:
-        rSV = res.residual_singular_values
+        rSV = res.residual_singular_values  # noqa: N806
     rSV.sel(singular_value_index=indices[: len(rSV.singular_value_index)]).plot.line(
         "ro-", yscale="log", ax=ax
     )
