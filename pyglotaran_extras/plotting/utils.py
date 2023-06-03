@@ -204,7 +204,11 @@ def add_unique_figure_legend(fig: Figure, axes: Axes) -> None:
         ax_handles, ax_labels = ax.get_legend_handles_labels()
         handles += ax_handles
         labels += ax_labels
-    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    unique = [
+        (handle, label)
+        for i, (handle, label) in enumerate(zip(handles, labels))
+        if label not in labels[:i]
+    ]
     unique.sort(key=lambda entry: entry[1])
     fig.legend(*zip(*unique))
 
