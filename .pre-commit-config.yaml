@@ -100,12 +100,11 @@ repos:
         pass_filenames: false
         additional_dependencies: [click<8]
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.0.270
     hooks:
-      - id: flake8
-        args:
-          - "--max-line-length=99"
+      - id: ruff
 
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
@@ -113,15 +112,15 @@ repos:
       - id: flake8
         alias: flake8-docs
         args:
-          - "--select=D,DOC"
-          - "--extend-ignore= DOC502"
+          - "--select=DOC"
+          - "--extend-ignore=DOC502"
           - "--color=always"
           - "--require-return-section-when-returning-none=False"
           - "--allow-init-docstring=True"
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|setup.py$|tests?/)"
-        additional_dependencies: [flake8-docstrings, pydoclint]
+        additional_dependencies: [pydoclint]
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: "v6.1.2"
