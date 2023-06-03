@@ -114,7 +114,7 @@ select = [
   "ISC", # flake8-implicit-str-concat
   "INP", # flake8-no-pep420
   "PIE", # flake8-pie
-  # "T20", # flake8-print
+  "T20", # flake8-print
   # "PT",  # flake8-pytest-style
   "RSE", # flake8-raise
   "RET", # flake8-return

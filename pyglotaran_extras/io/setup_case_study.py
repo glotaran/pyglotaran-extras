@@ -40,7 +40,7 @@ def setup_case_study(
             Folder the script or Notebook resides in.
     """
     analysis_folder = get_script_dir(nesting=1)
-    print(f"Setting up case study for folder: {analysis_folder}")
+    print(f"Setting up case study for folder: {analysis_folder}")  # noqa: T201
     if results_folder_root is None:
         results_folder_root = Path.home() / output_folder_name
     else:
@@ -48,7 +48,7 @@ def setup_case_study(
     script_folder_rel = analysis_folder.relative_to(analysis_folder.parent)
     results_folder = (results_folder_root / script_folder_rel).resolve()
     results_folder.mkdir(parents=True, exist_ok=True)
-    print(f"Results will be saved in: {results_folder}")
+    print(f"Results will be saved in: {results_folder}")  # noqa: T201
     return results_folder, analysis_folder.resolve()
 
 

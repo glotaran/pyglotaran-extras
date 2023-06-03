@@ -231,12 +231,12 @@ if __name__ == "__main__":
 
     result_path = Path(sys.argv[1])
     res = load_data(result_path)
-    print(res)
+    print(res)  # noqa: T201
 
     fig, axes = plot_overview(res)
     if len(sys.argv) > 2:
         fig.savefig(sys.argv[2], bbox_inches="tight")
-        print(f"Saved figure to: {sys.argv[2]}")
+        print(f"Saved figure to: {sys.argv[2]}")  # noqa: T201
     else:
         plt.show(block=False)
         input("press <ENTER> to continue")
