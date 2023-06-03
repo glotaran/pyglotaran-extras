@@ -1,7 +1,8 @@
 """Module containing type definitions."""
 from __future__ import annotations
 
-import sys
+from collections.abc import Mapping
+from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Literal
@@ -13,18 +14,11 @@ from typing import Union
 import xarray as xr
 from glotaran.project.result import Result
 
-if TYPE_CHECKING:
-    if sys.version_info < (3, 10):
-        from typing_extensions import TypeAlias
-    else:
-        from typing import TypeAlias
-
-
-DatasetConvertible = Union[xr.Dataset, xr.DataArray, str, Path]
+DatasetConvertible: TypeAlias = xr.Dataset | xr.DataArray | str | Path
 """Types of data which can be converted to a dataset."""
-ResultLike = Union[
-    Result, DatasetConvertible, Mapping[str, DatasetConvertible], Sequence[DatasetConvertible]
-]
+ResultLike: TypeAlias = (
+    Result | DatasetConvertible | Mapping[str, DatasetConvertible] | Sequence[DatasetConvertible]
+)
 """Result like data which can be converted to a per dataset mapping."""
 
 

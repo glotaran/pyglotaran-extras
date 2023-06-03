@@ -19,7 +19,7 @@ from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 __all__ = ["plot_data_overview"]
 
 if TYPE_CHECKING:
-    from typing import Hashable
+    from collections.abc import Hashable
 
     import xarray as xr
     from glotaran.project.result import Result

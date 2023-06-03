@@ -11,7 +11,7 @@ from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 if TYPE_CHECKING:
-    from typing import Sequence
+    from collections.abc import Sequence
 
     import xarray as xr
     from cycler import Cycler

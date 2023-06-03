@@ -19,7 +19,7 @@ from pyglotaran_extras.plotting.utils import select_plot_wavelengths
 __all__ = ["select_plot_wavelengths", "plot_fitted_traces"]
 
 if TYPE_CHECKING:
-    from typing import Iterable
+    from collections.abc import Iterable
 
     from cycler import Cycler
     from matplotlib.axis import Axis

@@ -35,7 +35,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
     result_mapping = {}
     if isinstance(result, Result):
         return result.data
-    if isinstance(result, (xr.Dataset, xr.DataArray, Path, str)):
+    if isinstance(result, xr.Dataset | xr.DataArray | Path | str):
         return {"dataset": load_data(result)}
     if isinstance(result, Sequence):
         for index, value in enumerate(result):

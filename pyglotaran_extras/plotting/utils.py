@@ -4,8 +4,8 @@ from __future__ import annotations
 from math import ceil
 from math import log
 from types import MappingProxyType
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
-from typing import Iterable
 from warnings import warn
 
 import numpy as np
@@ -17,9 +17,9 @@ from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
     from typing import Callable
-    from typing import Hashable
     from typing import Literal
     from typing import Mapping
+    from collections.abc import Hashable
 
     from cycler import Cycler
     from matplotlib.axis import Axis

@@ -23,6 +23,9 @@ from pyglotaran_extras.plotting.utils import not_single_element_dims
 from pyglotaran_extras.types import SubPlotLabelCoord
 
 if TYPE_CHECKING:
+    from collections.abc import Hashable
+    from collections.abc import Iterable
+
     from cycler import Cycler
     from cycler import cycle
 

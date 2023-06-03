@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from typing import Tuple
 from typing import cast
 
 import matplotlib.pyplot as plt
@@ -54,7 +53,7 @@ def plot_irf_dispersion_center(
     """
     result_map = result_dataset_mapping(result)
     if ax is None:
-        fig, axis = cast(Tuple[Figure, Axis], plt.subplots(1, figsize=figsize))
+        fig, axis = cast(tuple[Figure, Axis], plt.subplots(1, figsize=figsize))
     else:
         axis = ax
     for dataset_name, dataset in result_map.items():
