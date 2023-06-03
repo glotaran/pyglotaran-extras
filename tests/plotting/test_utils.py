@@ -1,6 +1,7 @@
 """Tests for pyglotaran_extras.plotting.utils."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Hashable
 from typing import Iterable
 from typing import Literal
@@ -10,8 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import xarray as xr
-from cycler import Cycler
-from cycler import cycle
 
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import abs_max
@@ -22,6 +21,10 @@ from pyglotaran_extras.plotting.utils import ensure_axes_array
 from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
 from pyglotaran_extras.plotting.utils import not_single_element_dims
 from pyglotaran_extras.types import SubPlotLabelCoord
+
+if TYPE_CHECKING:
+    from cycler import Cycler
+    from cycler import cycle
 
 matplotlib.use("Agg")
 DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]

@@ -7,6 +7,8 @@ from typing import cast
 
 import matplotlib.pyplot as plt
 import xarray as xr
+from matplotlib.axis import Axis
+from matplotlib.figure import Figure
 
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
@@ -17,8 +19,6 @@ if TYPE_CHECKING:
     from typing import Literal
 
     from cycler import Cycler
-    from matplotlib.axis import Axis
-    from matplotlib.figure import Figure
 
     from pyglotaran_extras.types import ResultLike
 

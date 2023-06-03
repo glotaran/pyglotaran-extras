@@ -6,7 +6,6 @@ from typing import Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
-from cycler import Cycler
 
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.style import PlotStyle
@@ -17,6 +16,7 @@ from pyglotaran_extras.plotting.utils import extract_irf_location
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 if TYPE_CHECKING:
+    from cycler import Cycler
     from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes

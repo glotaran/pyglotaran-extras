@@ -1,8 +1,8 @@
 """Tests for ``pyglotaran_extras.inspect.utils``."""
 from __future__ import annotations
 
-from collections.abc import Iterable
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
@@ -10,6 +10,9 @@ import pytest
 from pyglotaran_extras.inspect.utils import pretty_format_numerical
 from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.inspect.utils import wrap_in_details_tag
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 @pytest.mark.parametrize(

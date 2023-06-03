@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-import xarray as xr
 from glotaran.utils.ipython import MarkdownStr
 from tabulate import tabulate
 
@@ -11,7 +12,11 @@ from pyglotaran_extras.inspect.utils import pretty_format_numerical
 from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.inspect.utils import wrap_in_details_tag
 from pyglotaran_extras.io.utils import result_dataset_mapping
-from pyglotaran_extras.types import ResultLike
+
+if TYPE_CHECKING:
+    import xarray as xr
+
+    from pyglotaran_extras.types import ResultLike
 
 
 def a_matrix_to_html_table(

@@ -1,15 +1,18 @@
 """Tests for ``pyglotaran_extras.inspect.a_matrix``."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Any
 
 import pytest
 import xarray as xr
-from glotaran.project import Result
 from tests import TEST_DATA
 
 from pyglotaran_extras.inspect.a_matrix import a_matrix_to_html_table
 from pyglotaran_extras.inspect.a_matrix import show_a_matrixes
+
+if TYPE_CHECKING:
+    from glotaran.project import Result
 
 
 @pytest.mark.parametrize(

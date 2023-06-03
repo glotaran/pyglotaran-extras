@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator
-from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from collections.abc import Iterable
 
 
 def wrap_in_details_tag(
