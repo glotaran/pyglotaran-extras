@@ -58,7 +58,7 @@ def a_matrix_to_html_table(
         ["species<br>initial concentration<br>lifetime↓"]
         + [
             f"{sp}<br>{pretty_format_numerical(ic,decimal_places)}<br>&nbsp;"
-            for sp, ic in zip(species, initial_concentration)
+            for sp, ic in zip(species, initial_concentration, strict=True)
         ]
         + ["Sum"]
     )
@@ -67,7 +67,7 @@ def a_matrix_to_html_table(
         pretty_format_numerical_iterable(
             (lifetime, *amps, amps.sum()), decimal_places=decimal_places
         )
-        for lifetime, amps in zip(lifetime, a_matrix.values)
+        for lifetime, amps in zip(lifetime, a_matrix.values, strict=True)
     ]
     data.append(
         pretty_format_numerical_iterable(

@@ -187,7 +187,7 @@ def plot_sv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(4).
+        Indices of the singular vector to plot. Defaults to range(10).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
@@ -291,7 +291,7 @@ def plot_sv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(4).
+        Indices of the singular vector to plot. Defaults to range(10).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     """
@@ -341,7 +341,7 @@ def _plot_svd_vectors(
     if x_dim == sv_index_dim:
         values = values.T
         x_dim = vector_data.dims[0]
-    for zorder, label, value in zip(range(100)[::-1], indices[:max_index], values):
+    for zorder, label, value in zip(range(100)[::-1], indices[:max_index], values, strict=False):
         value.plot.line(x=x_dim, ax=ax, zorder=zorder, label=label)
     if show_legend is True:
         ax.legend(title=sv_index_dim)

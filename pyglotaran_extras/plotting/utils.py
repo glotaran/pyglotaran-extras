@@ -207,11 +207,11 @@ def add_unique_figure_legend(fig: Figure, axes: Axes) -> None:
         labels += ax_labels
     unique = [
         (handle, label)
-        for i, (handle, label) in enumerate(zip(handles, labels))
+        for i, (handle, label) in enumerate(zip(handles, labels, strict=True))
         if label not in labels[:i]
     ]
     unique.sort(key=lambda entry: entry[1])
-    fig.legend(*zip(*unique))
+    fig.legend(*zip(*unique, strict=True))
 
 
 def select_plot_wavelengths(
@@ -300,7 +300,8 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
                     "Diving data by dataset scales is only supported by results from "
                     "'pyglotaran>=0.5.0'. Please upgrade pyglotaran and recreate the "
                     "result to plot."
-                )
+                ),
+                stacklevel=2,
             )
     return scale
 

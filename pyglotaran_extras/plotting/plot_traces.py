@@ -187,7 +187,7 @@ def plot_fitted_traces(
             ),
             stacklevel=2,
         )
-    for wavelength, axis in zip(wavelengths, axes.flatten()):
+    for wavelength, axis in zip(wavelengths, axes.flatten(), strict=True):
         plot_data_and_fits(
             result=result_map,
             wavelength=wavelength,
