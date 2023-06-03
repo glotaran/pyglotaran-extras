@@ -1,8 +1,8 @@
 """PyTest fixture and test helper definitions."""
 # isort: off
 # Hack around https://github.com/pydata/xarray/issues/7259 which also affects pyglotaran <= 0.7.0
-import numpy  # noqa
-import netCDF4  # noqa
+import numpy  # noqa: F401
+import netCDF4  # noqa: F401
 
 # isort: on
 
@@ -17,7 +17,7 @@ from pyglotaran_extras.io.setup_case_study import get_script_dir
 
 
 def wrapped_get_script_dir():
-    """Testfunction for calls to get_script_dir used inside of other functions."""
+    """Test function for calls to get_script_dir used inside of other functions."""
     return get_script_dir(nesting=1)
 
 

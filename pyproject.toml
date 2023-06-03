@@ -124,7 +124,7 @@ select = [
   "PTH", # flake8-use-pathlib
   "ERA", # eradicate
   "PD",  # pandas-vet
-  # "PGH", # pygrep-hooks
+  "PGH", # pygrep-hooks
   "NPY", # NumPy-specific
   "RUF", # Ruff-specific
 ]
