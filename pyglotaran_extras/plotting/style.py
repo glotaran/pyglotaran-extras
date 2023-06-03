@@ -104,9 +104,8 @@ class DataColorCode(str, Enum):
     brown = "#964b00"
     maroon = "#800000"
     yellow = "#ffff00"
-    # Needs to be added manually to the list in PlotStyle
+    # Adding orange a second time needs to be added manually to the list in PlotStyle
     # since Enum doesn't allow duplicates
-    # orange = "#ff8c00"
 
 
 class DataLineStyle(str, Enum):

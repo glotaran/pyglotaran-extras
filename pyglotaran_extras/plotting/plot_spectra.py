@@ -103,7 +103,6 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        # sas = res.species_associated_spectra
         (sas / np.abs(sas).max(dim="spectral")).plot.line(x="spectral", ax=ax)
         ax.set_title(title)
         ax.get_legend().remove()

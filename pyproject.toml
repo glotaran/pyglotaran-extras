@@ -122,7 +122,7 @@ select = [
   # "TCH", # flake8-type-checking
   "ARG", # flake8-unused-arguments
   "PTH", # flake8-use-pathlib
-  # "ERA", # eradicate
+  "ERA", # eradicate
   # "PD", # pandas-vet
   # "PGH", # pygrep-hooks
   "NPY", # NumPy-specific
