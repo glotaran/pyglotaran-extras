@@ -104,11 +104,12 @@ def check_overdue(deprecated_qual_name_usage: str, to_be_removed_in_version: str
         parse_version(pyglotaran_extras_version()) >= parse_version(to_be_removed_in_version)
         and "dev" not in pyglotaran_extras_version()
     ):
-        raise OverDueDeprecation(
-            f"Support for {deprecated_qual_name_usage.partition('(')[0]!r} was "
-            f"supposed to be dropped in version: {to_be_removed_in_version!r}.\n"
+        msg = (
+            f"Support for {deprecated_qual_name_usage.partition('(')[0]!r} "
+            f"was supposed to be dropped in version: {to_be_removed_in_version!r}.\n"
             f"Current version is: {pyglotaran_extras_version()!r}"
         )
+        raise OverDueDeprecation(msg)
 
 
 def warn_deprecated(

@@ -60,10 +60,11 @@ def select_irf_dispersion_center_by_index(
     """
     if "irf_nr" in irf_dispersion.sizes:
         if main_irf_nr >= irf_dispersion.sizes["irf_nr"]:
-            raise ValueError(
-                f"The value {main_irf_nr=} is not a valid value for "
-                f"irf_nr, needs to be smaller than {irf_dispersion.sizes['irf_nr']}."
+            msg = (
+                f"The value main_irf_nr={main_irf_nr!r} is not a valid value for irf_nr, needs "
+                f"to be smaller than {irf_dispersion.sizes['irf_nr']}."
             )
+            raise ValueError(msg)
         irf_dispersion = irf_dispersion.sel(irf_nr=main_irf_nr)
     if irf_dispersion.size == 1:
         irf_dispersion = irf_dispersion.item()
@@ -335,7 +336,8 @@ def shift_time_axis_by_irf_location(
         return plot_data
 
     if "time" not in plot_data.coords:
-        raise ValueError("plot_data need to have a 'time' axis.")
+        msg = "plot_data need to have a 'time' axis."
+        raise ValueError(msg)
 
     times_shifted = plot_data.coords["time"] - irf_location
     return plot_data.assign_coords(time=times_shifted)
@@ -371,7 +373,8 @@ def get_shifted_traces(
     elif "species_associated_concentrations" in res:
         traces = res.species_associated_concentrations
     else:
-        raise ValueError(f"No concentrations in result:\n{res}")
+        msg = f"No concentrations in result:\n{res}"
+        raise ValueError(msg)
 
     irf_location = extract_irf_location(res, center_λ, main_irf_nr)
     return shift_time_axis_by_irf_location(traces, irf_location)
