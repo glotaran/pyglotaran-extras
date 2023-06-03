@@ -31,8 +31,8 @@ DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
 
 
 @pytest.mark.parametrize(
-    "cycler,expected_cycler",
-    ((None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())),
+    ("cycler", "expected_cycler"),
+    [(None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())],
 )
 def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycler: cycle):
     """Default cycler if None and cycler otherwise on a single axis."""
@@ -45,8 +45,8 @@ def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycl
 
 
 @pytest.mark.parametrize(
-    "cycler,expected_cycler",
-    ((None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())),
+    ("cycler", "expected_cycler"),
+    [(None, DEFAULT_CYCLER()), (PlotStyle().cycler, PlotStyle().cycler())],
 )
 def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cycler: cycle):
     """Default cycler if None and cycler otherwise on all axes."""
@@ -60,8 +60,8 @@ def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cy
 
 
 @pytest.mark.parametrize(
-    "result_dims, expected",
-    (
+    ("result_dims", "expected"),
+    [
         ((), xr.DataArray(40)),
         ("dim1", xr.DataArray([20, 40], coords={"dim1": [1, 2]})),
         ("dim2", xr.DataArray([30, 40], coords={"dim2": [3, 4]})),
@@ -70,7 +70,7 @@ def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cy
             ("dim1", "dim2"),
             xr.DataArray([[10, 20], [30, 40]], coords={"dim1": [1, 2], "dim2": [3, 4]}),
         ),
-    ),
+    ],
 )
 def test_abs_max(result_dims: Hashable | Iterable[Hashable], expected: xr.DataArray):
     """Result values are positive and dimensions are preserved if result_dims is not empty."""
@@ -79,11 +79,11 @@ def test_abs_max(result_dims: Hashable | Iterable[Hashable], expected: xr.DataAr
 
 
 @pytest.mark.parametrize(
-    "step_size, expected_tick_values,expected_tick_labels",
-    (
+    ("step_size", "expected_tick_values", "expected_tick_labels"),
+    [
         (0.5, np.linspace(-np.pi, 2 * np.pi, num=7), ["-1", "-0.5", "0", "0.5", "1", "1.5", "2"]),
         (1, np.linspace(-np.pi, 2 * np.pi, num=4), ["-1", "0", "1", "2"]),
-    ),
+    ],
 )
 def test_calculate_ticks_in_units_of_pi(
     step_size: float, expected_tick_values: list[float], expected_tick_labels: list[str]
@@ -97,8 +97,8 @@ def test_calculate_ticks_in_units_of_pi(
 
 
 @pytest.mark.parametrize(
-    "data_array, expected",
-    (
+    ("data_array", "expected"),
+    [
         (xr.DataArray([1]), []),
         (xr.DataArray([1], coords={"dim1": [1]}), []),
         (xr.DataArray([[1], [1]], coords={"dim1": [1, 2], "dim2": [1]}), ["dim1"]),
@@ -108,7 +108,7 @@ def test_calculate_ticks_in_units_of_pi(
             ),
             ["dim1", "dim3"],
         ),
-    ),
+    ],
 )
 def test_not_single_element_dims(data_array: xr.DataArray, expected: list[Hashable]):
     """Only get dim with more than one element."""

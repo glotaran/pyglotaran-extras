@@ -115,7 +115,7 @@ select = [
   "INP", # flake8-no-pep420
   "PIE", # flake8-pie
   "T20", # flake8-print
-  # "PT",  # flake8-pytest-style
+  "PT",  # flake8-pytest-style
   "RSE", # flake8-raise
   "RET", # flake8-return
   "SIM", # flake8-simplify

@@ -16,8 +16,8 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize(
-    "details_content, summary_content, summary_heading_level,is_open,expected",
-    (
+    ("details_content", "summary_content", "summary_heading_level", "is_open", "expected"),
+    [
         pytest.param(
             "FOO",
             None,
@@ -101,7 +101,7 @@ if TYPE_CHECKING:
             ),
             id="defaults with heading summary",
         ),
-    ),
+    ],
 )
 def test_wrap_in_details_tag(
     details_content: str,
@@ -123,8 +123,8 @@ def test_wrap_in_details_tag(
 
 
 @pytest.mark.parametrize(
-    "value, decimal_places, expected",
-    (
+    ("value", "decimal_places", "expected"),
+    [
         (0.00000001, 1, "1.0e-08"),
         (-0.00000001, 1, "-1.0e-08"),
         (0.1, 1, "0.1"),
@@ -143,7 +143,7 @@ def test_wrap_in_details_tag(
         (np.nan, 1, "nan"),
         (np.inf, 1, "inf"),
         (-np.inf, 1, "-inf"),
-    ),
+    ],
 )
 def test_pretty_format_numerical(value: float, decimal_places: int, expected: str):
     """Pretty format values depending on decimal_places to show.
@@ -157,11 +157,11 @@ def test_pretty_format_numerical(value: float, decimal_places: int, expected: st
 
 
 @pytest.mark.parametrize(
-    "decimal_places, expected",
-    (
+    ("decimal_places", "expected"),
+    [
         (None, ["Foo", 1, 0.009, -1.0000000000000002, np.nan, np.inf]),
         (2, ["Foo", "1", "9.00e-03", "-1", "nan", "inf"]),
-    ),
+    ],
 )
 def test_pretty_format_numerical_iterable(decimal_places: int, expected: Iterable[str | float]):
     """Values correct formatted."""

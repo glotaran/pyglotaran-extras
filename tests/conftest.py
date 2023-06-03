@@ -25,11 +25,11 @@ def wrapped_get_script_dir():
 def result_parallel_spectral_decay():
     """Test result from ``glotaran.testing.simulated_data.parallel_spectral_decay``."""
     scheme = replace(scheme_par, maximum_number_function_evaluations=1)
-    yield optimize(scheme)
+    return optimize(scheme)
 
 
 @pytest.fixture(scope="session")
 def result_sequential_spectral_decay():
     """Test result from ``glotaran.testing.simulated_data.sequential_spectral_decay``."""
     scheme = replace(scheme_seq, maximum_number_function_evaluations=1)
-    yield optimize(scheme)
+    return optimize(scheme)
