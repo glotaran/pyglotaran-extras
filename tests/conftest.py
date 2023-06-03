@@ -1,3 +1,4 @@
+"""PyTest fixture and test helper definitions."""
 # isort: off
 # Hack around https://github.com/pydata/xarray/issues/7259 which also affects pyglotaran <= 0.7.0
 import numpy  # noqa

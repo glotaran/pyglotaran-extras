@@ -1,3 +1,4 @@
+"""Tests for ``pyglotaran_extras.io.setup_case_study``."""
 from __future__ import annotations
 
 import subprocess

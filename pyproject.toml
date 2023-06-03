@@ -101,7 +101,7 @@ select = [
   "C", # mccabe
   "F", # pyflakes
   # "UP",  # pyupgrade
-  # "D", # pydocstyle
+  "D", # pydocstyle
   # "N",   # pep8-naming
   # "YTT", # flake8-2020
   # "BLE", # flake8-blind-except
@@ -129,7 +129,7 @@ select = [
   # "RUF", # Ruff-specific
 ]
 
-ignore = ["D202", "ISC002"]
+ignore = ["D202", "D213", "D203", "ISC002"]
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
