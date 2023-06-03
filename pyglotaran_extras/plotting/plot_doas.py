@@ -127,7 +127,7 @@ def plot_doas(
         **time_sel_kwargs
     )
 
-    for oscillation_label in oscillations_to_plot.damped_oscillation.values:
+    for oscillation_label in oscillations_to_plot.damped_oscillation.to_numpy():
         oscillation = oscillations_to_plot.sel(damped_oscillation=[oscillation_label])
         frequency = oscillation.damped_oscillation_frequency.item()
         rate = oscillation.damped_oscillation_rate.item()

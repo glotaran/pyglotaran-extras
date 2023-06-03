@@ -39,12 +39,12 @@ def a_matrix_to_html_table(
     str
         Multi header HTML table representing the a-matrix.
     """
-    species = a_matrix.coords[f"species_{megacomplex_suffix}"].values
+    species = a_matrix.coords[f"species_{megacomplex_suffix}"].to_numpy()
     # Crete a copy so normalization does not mutate the original values
     initial_concentration = np.array(
-        a_matrix.coords[f"initial_concentration_{megacomplex_suffix}"].values
+        a_matrix.coords[f"initial_concentration_{megacomplex_suffix}"].to_numpy()
     )
-    lifetime = a_matrix.coords[f"lifetime_{megacomplex_suffix}"].values
+    lifetime = a_matrix.coords[f"lifetime_{megacomplex_suffix}"].to_numpy()
 
     if normalize_initial_concentration is True:
         initial_concentration /= initial_concentration.sum()
@@ -66,7 +66,7 @@ def a_matrix_to_html_table(
     ]
     data.append(
         pretty_format_numerical_iterable(
-            ("Sum", *a_matrix.values.sum(axis=0), a_matrix.values.sum()),
+            ("Sum", *a_matrix.to_numpy().sum(axis=0), a_matrix.to_numpy().sum()),
             decimal_places=decimal_places,
         )
     )

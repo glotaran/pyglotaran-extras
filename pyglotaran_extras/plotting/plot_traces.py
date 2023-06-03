@@ -84,9 +84,9 @@ def plot_data_and_fits(
     result_map = result_dataset_mapping(result)
     add_cycler_if_not_none(axis, cycler)
     for dataset_name in result_map.keys():
-        if result_map[dataset_name].coords["time"].values.size == 1:
+        if result_map[dataset_name].coords["time"].to_numpy().size == 1:
             continue
-        spectral_coords = result_map[dataset_name].coords["spectral"].values
+        spectral_coords = result_map[dataset_name].coords["spectral"].to_numpy()
         if spectral_coords.min() <= wavelength <= spectral_coords.max():
             result_data = result_map[dataset_name].sel(spectral=[wavelength], method="nearest")
             scale = extract_dataset_scale(result_data, divide_by_scale)

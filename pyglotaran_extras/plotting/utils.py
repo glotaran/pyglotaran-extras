@@ -112,7 +112,7 @@ def extract_irf_dispersion_center(
         irf_dispersion_center = min(res.coords["time"]).item()
 
     if as_dataarray is True:
-        spectral = res.coords["spectral"].values
+        spectral = res.coords["spectral"].to_numpy()
         return xr.DataArray(
             irf_dispersion_center * np.ones(spectral.shape), {"spectral": spectral}
         )
@@ -177,7 +177,7 @@ def maximum_coordinate_range(
     minima = []
     maxima = []
     for dataset in result_map.values():
-        coord = dataset.coords[coord_name].values
+        coord = dataset.coords[coord_name].to_numpy()
         minima.append(coord.min())
         maxima.append(coord.max())
     return min(minima), max(maxima)
@@ -271,7 +271,7 @@ def select_plot_wavelengths(
         (wavelength_range[0] <= spectral_coords) & (spectral_coords <= wavelength_range[1])
     ]
     spectral_indices = np.linspace(0, len(spectral_coords) - 1, num=nr_of_plots, dtype=np.int64)
-    return spectral_coords[spectral_indices].values
+    return spectral_coords[spectral_indices].to_numpy()
 
 
 def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> float:

@@ -102,7 +102,7 @@ def plot_overview(
     """
     res = load_data(result, _stacklevel=3)
 
-    if res.coords["time"].values.size == 1:
+    if res.coords["time"].to_numpy().size == 1:
         fig, axes = plot_guidance(res)
         if figure_only is not None:
             warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
@@ -198,10 +198,10 @@ def plot_simple_overview(
     if title:
         fig.suptitle(title, fontsize=16)
 
-    plot_concentrations(res, ax=axes[0, 0], center_λ=res.coords["spectral"].values[0])
+    plot_concentrations(res, ax=axes[0, 0], center_λ=res.coords["spectral"].to_numpy()[0])
     plot_sas(res, ax=axes[0, 1])
 
-    irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].values[0])
+    irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].to_numpy()[0])
 
     plot_lsv_residual(res, ax=axes[1, 0], irf_location=irf_location)
     plot_rsv_residual(res, ax=axes[1, 1])
