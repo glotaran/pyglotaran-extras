@@ -108,7 +108,7 @@ repos:
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|setup.py$|tests?/)"
-        additional_dependencies: [pydoclint]
+        additional_dependencies: [pydoclint==0.0.8]
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: "v6.1.2"
