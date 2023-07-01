@@ -21,7 +21,7 @@ repos:
       - id: absolufy-imports
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.6.0
+    rev: v3.7.0
     hooks:
       - id: pyupgrade
         args: [--py38-plus]
@@ -79,7 +79,7 @@ repos:
   # Linters
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.3.0
+    rev: v1.4.1
     hooks:
       - id: mypy
         exclude: ^docs
@@ -124,7 +124,7 @@ repos:
       - id: rst-backticks
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: codespell
         types: [file]
