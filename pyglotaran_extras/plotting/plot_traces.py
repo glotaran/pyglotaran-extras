@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import PlotDuplicationWarning
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import add_unique_figure_legend
@@ -97,6 +98,7 @@ def plot_data_and_fits(
             [next(axis._get_lines.prop_cycler) for _ in range(2)]
     if linlog:
         axis.set_xscale("symlog", linthresh=linthresh)
+        axis.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
     if show_zero_line is True:
         axis.axhline(0, color="k", linewidth=1)
     axis.set_ylabel(y_label)

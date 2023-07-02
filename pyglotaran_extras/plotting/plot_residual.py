@@ -7,6 +7,7 @@ import numpy as np
 
 from pyglotaran_extras.plotting.plot_irf_dispersion_center import _plot_irf_dispersion_center
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
@@ -83,4 +84,5 @@ def plot_residual(
         ax.legend()
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
+        ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
     ax.set_title(title)

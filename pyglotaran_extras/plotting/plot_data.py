@@ -12,6 +12,7 @@ from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_sv_data
+from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import not_single_element_dims
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
@@ -109,6 +110,7 @@ def plot_data_overview(
 
     if linlog:
         data_ax.set_xscale("symlog", linthresh=linthresh)
+        data_ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
     return fig, (data_ax, lsv_ax, sv_ax, rsv_ax)
 
 
@@ -150,4 +152,5 @@ def _plot_single_trace(
 
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
+        ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
     return fig, ax

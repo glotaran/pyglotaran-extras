@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import get_shifted_traces
 
@@ -69,3 +70,4 @@ def plot_concentrations(
 
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh, linscale=linscale)
+        ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
