@@ -103,7 +103,7 @@ def plot_coherent_artifact(
         norm_factor = scales.max()
         irf_y_label = f"normalized {irf_y_label}"
 
-    if "spectral" in irf_data:
+    if "spectral" in irf_data.coords:
         irf_data = irf_data.sel(spectral=spectral, method="nearest")
 
     plot_slice_irf = irf_data / irf_max * scales / norm_factor
