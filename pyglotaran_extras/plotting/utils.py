@@ -7,6 +7,7 @@ from warnings import warn
 
 import numpy as np
 import xarray as xr
+from matplotlib.ticker import Locator
 
 from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.io.utils import result_dataset_mapping
@@ -482,3 +483,98 @@ def not_single_element_dims(data_array: xr.DataArray) -> list[Hashable]:
         Names of dimensions in ``data`` which don't have a size equal to one.
     """
     return [dim for dim, values in data_array.coords.items() if values.size != 1]
+
+
+class MinorSymLogLocator(Locator):
+    """Dynamically find minor tick positions based on major ticks for a symlog scaling.
+
+    Ref.: https://stackoverflow.com/a/45696768
+    """
+
+    def __init__(self, linthresh: float, nints: int = 10) -> None:
+        """Ticks will be placed between the major ticks.
+
+        The placement is linear for x between -linthresh and linthresh,
+        otherwise its logarithmically. nints gives the number of
+        intervals that will be bounded by the minor ticks.
+
+        Parameters
+        ----------
+        linthresh : float
+            A single float which defines the range (-x, x), within which the plot is linear.
+        nints : int
+            Number of minor tick between major ticks. Defaults to 10
+        """
+        self.linthresh = linthresh
+        self.nintervals = nints
+
+    def __call__(self) -> list[float]:
+        """Return the locations of the ticks.
+
+        Returns
+        -------
+        list[float]
+            Minor ticks position.
+        """
+        # Return the locations of the ticks
+        majorlocs = self.axis.get_majorticklocs()
+
+        if len(majorlocs) == 1:
+            return self.raise_if_exceeds(np.array([]))
+
+        # add temporary major tick locs at either end of the current range
+        # to fill in minor tick gaps
+        dmlower = majorlocs[1] - majorlocs[0]  # major tick difference at lower end
+        dmupper = majorlocs[-1] - majorlocs[-2]  # major tick difference at upper end
+
+        # add temporary major tick location at the lower end
+        if majorlocs[0] != 0.0 and (
+            (majorlocs[0] != self.linthresh and dmlower > self.linthresh)
+            or (dmlower == self.linthresh and majorlocs[0] < 0)
+        ):
+            majorlocs = np.insert(majorlocs, 0, majorlocs[0] * 10.0)
+        else:
+            majorlocs = np.insert(majorlocs, 0, majorlocs[0] - self.linthresh)
+
+        # add temporary major tick location at the upper end
+        if majorlocs[-1] != 0.0 and (
+            (np.abs(majorlocs[-1]) != self.linthresh and dmupper > self.linthresh)
+            or (dmupper == self.linthresh and majorlocs[-1] > 0)
+        ):
+            majorlocs = np.append(majorlocs, majorlocs[-1] * 10.0)
+        else:
+            majorlocs = np.append(majorlocs, majorlocs[-1] + self.linthresh)
+
+        # iterate through minor locs
+        minorlocs: list[float] = []
+
+        # handle the lowest part
+        for i in range(1, len(majorlocs)):
+            majorstep = majorlocs[i] - majorlocs[i - 1]
+            if abs(majorlocs[i - 1] + majorstep / 2) < self.linthresh:
+                ndivs = self.nintervals
+            else:
+                ndivs = self.nintervals - 1
+
+            minorstep = majorstep / ndivs
+            locs = np.arange(majorlocs[i - 1], majorlocs[i], minorstep)[1:]
+            minorlocs.extend(locs)
+
+        return self.raise_if_exceeds(np.array(minorlocs))
+
+    def tick_values(self, vmin: float, vmax: float) -> None:
+        """Return the values of the located ticks given **vmin** and **vmax** (not implemented).
+
+        Parameters
+        ----------
+        vmin : float
+            Minimum value.
+        vmax : float
+            Maximum value.
+
+        Raises
+        ------
+        NotImplementedError
+            Not used
+        """
+        raise NotImplementedError(f"Cannot get tick locations for a {type(self)} type.")

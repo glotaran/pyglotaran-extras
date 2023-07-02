@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from glotaran.io.prepare_dataset import add_svd_to_dataset
 
 from pyglotaran_extras.plotting.style import PlotStyle
+from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
@@ -140,6 +141,7 @@ def plot_lsv_data(
     ax.set_title("data. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
+        ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
 
 
 def plot_rsv_data(
@@ -240,6 +242,7 @@ def plot_lsv_residual(
     ax.set_title("res. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
+        ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
 
 
 def plot_rsv_residual(
