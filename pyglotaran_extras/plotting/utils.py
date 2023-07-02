@@ -727,12 +727,12 @@ def add_subplot_labels(
         Font size used for the label. Defaults to 16
     """
     axes = ensure_axes_array(axes)
-    label_format_function = get_subplot_label_format_function(label_format_function)
+    format_function = get_subplot_label_format_function(label_format_function)
     if direction == "column":
         axes = axes.T
     for i, ax in enumerate(axes.flatten(), start=1):
         ax.annotate(
-            label_format_template.format(label_format_function(i, axes.size)),
+            label_format_template.format(format_function(i, axes.size)),
             xy=label_position,
             xycoords=label_coords,
             fontsize=fontsize,
