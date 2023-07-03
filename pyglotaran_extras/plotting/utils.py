@@ -1,6 +1,9 @@
 """Module containing plotting utility functionality."""
 from __future__ import annotations
 
+from math import ceil
+from math import log
+from types import MappingProxyType
 from typing import TYPE_CHECKING
 from typing import Iterable
 from warnings import warn
@@ -13,14 +16,19 @@ from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
+    from typing import Callable
     from typing import Hashable
+    from typing import Literal
+    from typing import Mapping
 
     from cycler import Cycler
     from matplotlib.axis import Axis
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
 
+    from pyglotaran_extras.types import BuiltinSubPlotLabelFormatFunctionKey
     from pyglotaran_extras.types import ResultLike
+    from pyglotaran_extras.types import SubPlotLabelCoord
 
 
 class PlotDuplicationWarning(UserWarning):
@@ -365,6 +373,25 @@ def get_shifted_traces(
     return shift_time_axis_by_irf_location(traces, irf_location)
 
 
+def ensure_axes_array(axes: Axis | Axes) -> Axes:
+    """Ensure that axes have flatten method even if it is a single axis.
+
+    Parameters
+    ----------
+    axes: Axis | Axes
+        Axis or Axes to convert for API consistency.
+
+    Returns
+    -------
+    Axes
+        Numpy ndarray of axes.
+    """
+    # We can't use `Axis` in isinstance so we check for the np.ndarray attribute of `Axes`
+    if hasattr(axes, "flatten") is False:
+        axes = np.array([axes])
+    return axes
+
+
 def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
     """Add cycler to and axis if it is not None.
 
@@ -381,9 +408,7 @@ def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
         Plot style cycler to use.
     """
     if cycler is not None:
-        # We can't use `Axis` in isinstance so we check for the np.ndarray attribute of `Axes`
-        if hasattr(axis, "flatten") is False:
-            axis = np.array([axis])
+        axis = ensure_axes_array(axis)
         for ax in axis.flatten():
             ax.set_prop_cycle(cycler)
 
@@ -475,7 +500,7 @@ def not_single_element_dims(data_array: xr.DataArray) -> list[Hashable]:
     Parameters
     ----------
     data_array: xr.DataArray
-        _description_
+        DataArray to check if it has only a single dimension.
 
     Returns
     -------
@@ -578,3 +603,137 @@ class MinorSymLogLocator(Locator):
             Not used
         """
         raise NotImplementedError(f"Cannot get tick locations for a {type(self)} type.")
+
+
+def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: None | int = None) -> str:
+    """Format ``sub_plot_number`` into an upper case letter, that can be used as label.
+
+    Parameters
+    ----------
+    sub_plot_number : int
+        Number of the subplot starting at One.
+    size : None | int
+        Size of the axes array (number of plots). Defaults to None
+
+    Returns
+    -------
+    str
+        Upper case label for a sub plot.
+
+    Examples
+    --------
+    >>> print(format_sub_plot_number_upper_case_letter(1))
+    A
+
+    >>> print(format_sub_plot_number_upper_case_letter(26))
+    Z
+
+    >>> print(format_sub_plot_number_upper_case_letter(27))
+    AA
+
+    >>> print(format_sub_plot_number_upper_case_letter(1, 26))
+    AA
+
+    >>> print(format_sub_plot_number_upper_case_letter(2, 26))
+    AB
+
+    >>> print(format_sub_plot_number_upper_case_letter(26, 26))
+    AZ
+
+    >>> print(format_sub_plot_number_upper_case_letter(27, 50))
+    BA
+
+    See Also
+    --------
+    BuiltinLabelFormatFunctions
+    add_subplot_labels
+    """
+    sub_plot_number -= 1
+    if size is not None and size > 26:
+        return "".join(
+            format_sub_plot_number_upper_case_letter(((sub_plot_number // (26**i)) % 26) + 1)
+            for i in reversed(range(1, ceil(log(size, 26))))
+        ) + format_sub_plot_number_upper_case_letter((sub_plot_number % 26) + 1)
+    if sub_plot_number < 26:
+        return chr(ord("A") + sub_plot_number)
+    return format_sub_plot_number_upper_case_letter(
+        sub_plot_number // 26
+    ) + format_sub_plot_number_upper_case_letter((sub_plot_number % 26) + 1)
+
+
+BuiltinSubPlotLabelFormatFunctions: Mapping[
+    str, Callable[[int, int | None], str]
+] = MappingProxyType(
+    {
+        "number": lambda x, y: f"{x}",
+        "upper_case_letter": format_sub_plot_number_upper_case_letter,
+        "lower_case_letter": lambda x, y: format_sub_plot_number_upper_case_letter(x, y).lower(),
+    }
+)
+
+
+def get_subplot_label_format_function(
+    format_function: BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int | None], str]
+) -> Callable[[int, int | None], str]:
+    """Get subplot label function from ``BuiltinSubPlotLabelFormatFunctions`` if it is a key.
+
+    This function is mainly needed for typing reasons.
+
+    Parameters
+    ----------
+    format_function : BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int  |  None], str]
+        Key ``BuiltinSubPlotLabelFormatFunctions`` to retrieve builtin function or user defined
+        format function.
+
+    Returns
+    -------
+    Callable[[int, int | None], str]
+        Function to format subplot label.
+    """
+    if isinstance(format_function, str) and format_function in BuiltinSubPlotLabelFormatFunctions:
+        return BuiltinSubPlotLabelFormatFunctions[format_function]
+    return format_function  # type:ignore[return-value]
+
+
+def add_subplot_labels(
+    axes: Axis | Axes,
+    *,
+    label_position: tuple[float, float] = (-0.05, 1.05),
+    label_coords: SubPlotLabelCoord = "axes fraction",
+    direction: Literal["row", "column"] = "row",
+    label_format_template: str = "{}",
+    label_format_function: BuiltinSubPlotLabelFormatFunctionKey
+    | Callable[[int, int | None], str] = "number",
+    fontsize: int = 16,
+) -> None:
+    """Add labels to all subplots in ``axes`` in a consistent manner.
+
+    Parameters
+    ----------
+    axes : Axis | Axes
+        Axes (subplots) on which the labels should be added.
+    label_position : tuple[float, float]
+        Position of the label in ``label_coords`` coordinates.
+    label_coords : SubPlotLabelCoord
+        Coordinate system used for ``label_position``. Defaults to "axes fraction"
+    direction : Literal["row", "column"]
+        Direct in which the axes should be iterated in. Defaults to "row"
+    label_format_template : str
+        Template string to inject the return value of ``label_format_function`` into.
+        Defaults to "{}"
+    label_format_function : BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int | None], str]
+        Function to calculate the label for the axis index and ``axes`` size. Defaults to "number"
+    fontsize : int
+        Font size used for the label. Defaults to 16
+    """
+    axes = ensure_axes_array(axes)
+    format_function = get_subplot_label_format_function(label_format_function)
+    if direction == "column":
+        axes = axes.T
+    for i, ax in enumerate(axes.flatten(), start=1):
+        ax.annotate(
+            label_format_template.format(format_function(i, axes.size)),
+            xy=label_position,
+            xycoords=label_coords,
+            fontsize=fontsize,
+        )

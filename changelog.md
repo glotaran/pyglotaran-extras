@@ -7,6 +7,7 @@
 - 🩹 Fix crashes of plot_doas and plot_coherent_artifact for non dispersive IRF (#173, #182)
 - 👌 Add minor ticks to linlog plots (#183)
 - 🚧📦 Remove upper python version limit (#174)
+- ✨ Add add_subplot_labels function (#181)
 
 (changes-0_7_0)=
 
