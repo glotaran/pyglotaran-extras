@@ -16,11 +16,16 @@ repos:
         args: [--remove]
 
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.1
+    rev: v1.7.5
     hooks:
       - id: docformatter
         additional_dependencies: [tomli]
         args: [--in-place, --config, ./pyproject.toml]
+
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: "0.13.0"
+    hooks:
+      - id: pyproject-fmt
 
   - repo: https://github.com/MarcoGorelli/absolufy-imports
     rev: v0.3.1
@@ -28,7 +33,7 @@ repos:
       - id: absolufy-imports
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
       - id: black
         language_version: python3
@@ -45,7 +50,7 @@ repos:
       - id: setup-cfg-fmt
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.9-for-vscode # Use the sha or tag you want to point at
+    rev: v3.0.0 # Use the sha or tag you want to point at
     hooks:
       - id: prettier
 
@@ -60,7 +65,7 @@ repos:
     rev: 1.7.0
     hooks:
       - id: nbqa-black
-        additional_dependencies: [black==22.6.0]
+        additional_dependencies: [black==23.7.0]
         args: [--nbqa-mutate]
       - id: nbqa-pyupgrade
         additional_dependencies: [pyupgrade==2.37.2]
@@ -68,7 +73,7 @@ repos:
       - id: nbqa-flake8
       - id: nbqa-check-ast
       - id: nbqa-isort
-        additional_dependencies: [isort==5.10.1]
+        additional_dependencies: [isort==5.12.0]
         args: [--nbqa-mutate]
 
   # Linters
@@ -90,7 +95,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.0.270
+    rev: v0.0.278
     hooks:
       - id: ruff
 
@@ -108,7 +113,7 @@ repos:
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|setup.py$|tests?/)"
-        additional_dependencies: [pydoclint==0.0.8]
+        additional_dependencies: [pydoclint==0.0.10]
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: "v6.1.2"
@@ -130,7 +135,7 @@ repos:
         types_or: [python, pyi, markdown, rst, jupyter]
         args: ["--ignore-words-list=doas"]
 
-  - repo: https://github.com/s-weigand/pre-commit_mirrors-actionlint
-    rev: "v1.6.24"
+  - repo: https://github.com/rhysd/actionlint
+    rev: "v1.6.25"
     hooks:
       - id: actionlint

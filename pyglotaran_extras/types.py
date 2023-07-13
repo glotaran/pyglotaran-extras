@@ -6,10 +6,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Literal
-from typing import Mapping
-from typing import Sequence
-from typing import Tuple
-from typing import Union
+from typing import TypeAlias
 
 import xarray as xr
 from glotaran.project.result import Result

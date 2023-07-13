@@ -1,10 +1,10 @@
 """Module containing plotting utility functionality."""
 from __future__ import annotations
 
+from collections.abc import Iterable
 from math import ceil
 from math import log
 from types import MappingProxyType
-from collections.abc import Iterable
 from typing import TYPE_CHECKING
 from warnings import warn
 
@@ -16,10 +16,10 @@ from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
-    from typing import Callable
-    from typing import Literal
-    from typing import Mapping
+    from collections.abc import Callable
     from collections.abc import Hashable
+    from collections.abc import Mapping
+    from typing import Literal
 
     from cycler import Cycler
     from matplotlib.axis import Axis
@@ -386,7 +386,7 @@ def ensure_axes_array(axes: Axis | Axes) -> Axes:
 
     Parameters
     ----------
-    axes: Axis | Axes
+    axes : Axis | Axes
         Axis or Axes to convert for API consistency.
 
     Returns
@@ -595,14 +595,14 @@ class MinorSymLogLocator(Locator):
 
         return self.raise_if_exceeds(np.array(minorlocs))
 
-    def tick_values(self, vmin: float, vmax: float) -> None:
-        """Return the values of the located ticks given **vmin** and **vmax** (not implemented).
+    def tick_values(self, _vmin: float, _vmax: float) -> None:
+        """Return the values of the located ticks given **_vmin** and **_vmax** (not implemented).
 
         Parameters
         ----------
-        vmin : float
+        _vmin : float
             Minimum value.
-        vmax : float
+        _vmax : float
             Maximum value.
 
         Raises
@@ -610,7 +610,8 @@ class MinorSymLogLocator(Locator):
         NotImplementedError
             Not used
         """
-        raise NotImplementedError(f"Cannot get tick locations for a {type(self)} type.")
+        msg = f"Cannot get tick locations for a {type(self)} type."
+        raise NotImplementedError(msg)
 
 
 def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: None | int = None) -> str:
@@ -673,7 +674,7 @@ BuiltinSubPlotLabelFormatFunctions: Mapping[
     str, Callable[[int, int | None], str]
 ] = MappingProxyType(
     {
-        "number": lambda x, y: f"{x}",
+        "number": lambda x, _: f"{x}",
         "upper_case_letter": format_sub_plot_number_upper_case_letter,
         "lower_case_letter": lambda x, y: format_sub_plot_number_upper_case_letter(x, y).lower(),
     }
@@ -689,7 +690,7 @@ def get_subplot_label_format_function(
 
     Parameters
     ----------
-    format_function : BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int  |  None], str]
+    format_function : BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int | None], str]
         Key ``BuiltinSubPlotLabelFormatFunctions`` to retrieve builtin function or user defined
         format function.
 
