@@ -161,7 +161,7 @@ def plot_simple_overview(
     figure_only: bool | None = None,
     show_irf_dispersion_center: bool = True,
     show_data: bool | None = False,
-) -> Figure | tuple[Figure, Axes]:
+) -> tuple[Figure, Axes]:
     """Plot simple overview.
 
     Parameters

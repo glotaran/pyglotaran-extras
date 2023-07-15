@@ -64,7 +64,7 @@ def plot_data_overview(
 
     Returns
     -------
-    tuple[Figure, Axes] | tuple[Figure,Axis]
+    tuple[Figure, Axes] | tuple[Figure, Axis]
         Figure and axes which can then be refined by the user.
     """
     dataset = load_data(dataset, _stacklevel=3)

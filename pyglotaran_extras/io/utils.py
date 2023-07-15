@@ -22,7 +22,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
 
     Returns
     -------
-    Mapping[str, Dataset]
+    Mapping[str, xr.Dataset]
         Per dataset mapping of result like data.
 
     Raises
