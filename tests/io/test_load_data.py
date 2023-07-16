@@ -89,6 +89,7 @@ def test_load_data(
         load_data([1, 2])
 
     assert str(excinfo.value) == (
-        "Result needs to be of type typing.Union[xarray.core.dataset.Dataset, "
-        "xarray.core.dataarray.DataArray, str, pathlib.Path], but was [1, 2]."
+        "Result needs to be of type "
+        "xarray.core.dataset.Dataset | xarray.core.dataarray.DataArray | str | pathlib.Path, "
+        "but was [1, 2]."
     )
