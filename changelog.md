@@ -1,8 +1,8 @@
 # Changelog
 
-(changes-0_8_0)=
+(changes-0_7_1)=
 
-## 0.8.0 (Unreleased)
+## 0.7.1 (2023-07-27)
 
 - 🩹 Fix crashes of plot_doas and plot_coherent_artifact for non dispersive IRF (#173, #182)
 - 👌 Add minor ticks to linlog plots (#183)
