@@ -17,8 +17,8 @@ Can be installed as a python package or from sources.
 
 Prerequisites:
 
-- Python 3.8, 3.9 or 3.10
-- Python package `pyglotaran` v0.6.0 (or later)
+- Python 3.10 or 3.11
+- Python package `pyglotaran` v0.7.0 (or later)
 
 ### Stable Release
 
