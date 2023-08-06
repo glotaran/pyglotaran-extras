@@ -50,7 +50,7 @@ repos:
       - id: setup-cfg-fmt
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0 # Use the sha or tag you want to point at
+    rev: v3.0.1 # Use the sha or tag you want to point at
     hooks:
       - id: prettier
 
@@ -95,12 +95,12 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.0.278
+    rev: v0.0.282
     hooks:
       - id: ruff
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
       - id: flake8
         alias: flake8-docs
@@ -113,7 +113,7 @@ repos:
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|setup.py$|tests?/)"
-        additional_dependencies: [pydoclint==0.0.16]
+        additional_dependencies: [pydoclint==0.1.4]
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: "v6.1.2"
