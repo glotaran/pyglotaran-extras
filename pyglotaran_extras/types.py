@@ -4,7 +4,6 @@ from __future__ import annotations
 from collections.abc import Mapping
 from collections.abc import Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
 from typing import Literal
 from typing import TypeAlias
 
@@ -38,6 +37,6 @@ SubPlotLabelCoordStrs: TypeAlias = Literal[
     "polar",
 ]
 
-SubPlotLabelCoord: TypeAlias = Union[
-    SubPlotLabelCoordStrs, Tuple[SubPlotLabelCoordStrs, SubPlotLabelCoordStrs]
-]
+SubPlotLabelCoord: TypeAlias = (
+    SubPlotLabelCoordStrs | tuple[SubPlotLabelCoordStrs, SubPlotLabelCoordStrs]
+)
