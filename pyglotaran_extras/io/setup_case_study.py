@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import inspect
-from os import PathLike
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from os import PathLike
 
 
 def setup_case_study(
@@ -21,7 +24,7 @@ def setup_case_study(
     ----------
     output_folder_name : str
         Name of the base folder for the results. Defaults to "pyglotaran_results".
-    results_folder_root : None
+    results_folder_root : None | str | PathLike[str]
         The folder where the results named ``output_folder_name`` should be saved to.
         Defaults to None, which results in the users Home folder being used.
 
@@ -37,7 +40,7 @@ def setup_case_study(
             Folder the script or Notebook resides in.
     """
     analysis_folder = get_script_dir(nesting=1)
-    print(f"Setting up case study for folder: {analysis_folder}")
+    print(f"Setting up case study for folder: {analysis_folder}")  # noqa: T201
     if results_folder_root is None:
         results_folder_root = Path.home() / output_folder_name
     else:
@@ -45,7 +48,7 @@ def setup_case_study(
     script_folder_rel = analysis_folder.relative_to(analysis_folder.parent)
     results_folder = (results_folder_root / script_folder_rel).resolve()
     results_folder.mkdir(parents=True, exist_ok=True)
-    print(f"Results will be saved in: {results_folder}")
+    print(f"Results will be saved in: {results_folder}")  # noqa: T201
     return results_folder, analysis_folder.resolve()
 
 

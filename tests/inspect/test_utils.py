@@ -1,8 +1,8 @@
 """Tests for ``pyglotaran_extras.inspect.utils``."""
 from __future__ import annotations
 
-from collections.abc import Iterable
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pytest
@@ -11,10 +11,13 @@ from pyglotaran_extras.inspect.utils import pretty_format_numerical
 from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.inspect.utils import wrap_in_details_tag
 
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
 
 @pytest.mark.parametrize(
-    "details_content, summary_content, summary_heading_level,is_open,expected",
-    (
+    ("details_content", "summary_content", "summary_heading_level", "is_open", "expected"),
+    [
         pytest.param(
             "FOO",
             None,
@@ -98,7 +101,7 @@ from pyglotaran_extras.inspect.utils import wrap_in_details_tag
             ),
             id="defaults with heading summary",
         ),
-    ),
+    ],
 )
 def test_wrap_in_details_tag(
     details_content: str,
@@ -120,8 +123,8 @@ def test_wrap_in_details_tag(
 
 
 @pytest.mark.parametrize(
-    "value, decimal_places, expected",
-    (
+    ("value", "decimal_places", "expected"),
+    [
         (0.00000001, 1, "1.0e-08"),
         (-0.00000001, 1, "-1.0e-08"),
         (0.1, 1, "0.1"),
@@ -140,7 +143,7 @@ def test_wrap_in_details_tag(
         (np.nan, 1, "nan"),
         (np.inf, 1, "inf"),
         (-np.inf, 1, "-inf"),
-    ),
+    ],
 )
 def test_pretty_format_numerical(value: float, decimal_places: int, expected: str):
     """Pretty format values depending on decimal_places to show.
@@ -154,13 +157,13 @@ def test_pretty_format_numerical(value: float, decimal_places: int, expected: st
 
 
 @pytest.mark.parametrize(
-    "decimal_places, expected",
-    (
+    ("decimal_places", "expected"),
+    [
         (None, ["Foo", 1, 0.009, -1.0000000000000002, np.nan, np.inf]),
         (2, ["Foo", "1", "9.00e-03", "-1", "nan", "inf"]),
-    ),
+    ],
 )
 def test_pretty_format_numerical_iterable(decimal_places: int, expected: Iterable[str | float]):
-    """Values correct formatted"""
+    """Values correct formatted."""
     values = ("Foo", 1, 0.009, -1.0000000000000002, np.nan, np.inf)
     assert list(pretty_format_numerical_iterable(values, decimal_places)) == expected

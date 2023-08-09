@@ -22,7 +22,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
 
     Returns
     -------
-    Mapping[str, Dataset]
+    Mapping[str, xr.Dataset]
         Per dataset mapping of result like data.
 
     Raises
@@ -35,7 +35,7 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
     result_mapping = {}
     if isinstance(result, Result):
         return result.data
-    if isinstance(result, (xr.Dataset, xr.DataArray, Path, str)):
+    if isinstance(result, xr.Dataset | xr.DataArray | Path | str):
         return {"dataset": load_data(result)}
     if isinstance(result, Sequence):
         for index, value in enumerate(result):
@@ -45,4 +45,5 @@ def result_dataset_mapping(result: ResultLike) -> Mapping[str, xr.Dataset]:
         for key, value in result.items():
             result_mapping[key] = load_data(value)
         return result_mapping
-    raise TypeError(f"Result needs to be of type {ResultLike!r}, but was {result!r}.")
+    msg = f"Result needs to be of type {ResultLike!r}, but was {result!r}."
+    raise TypeError(msg)

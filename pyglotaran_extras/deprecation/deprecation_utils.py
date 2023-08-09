@@ -10,7 +10,7 @@ FIG_ONLY_WARNING = (
 )
 
 
-class OverDueDeprecation(Exception):
+class OverDueDeprecationError(Exception):
     """Error thrown when a deprecation should have been removed.
 
     See Also
@@ -104,11 +104,12 @@ def check_overdue(deprecated_qual_name_usage: str, to_be_removed_in_version: str
         parse_version(pyglotaran_extras_version()) >= parse_version(to_be_removed_in_version)
         and "dev" not in pyglotaran_extras_version()
     ):
-        raise OverDueDeprecation(
-            f"Support for {deprecated_qual_name_usage.partition('(')[0]!r} was "
-            f"supposed to be dropped in version: {to_be_removed_in_version!r}.\n"
+        msg = (
+            f"Support for {deprecated_qual_name_usage.partition('(')[0]!r} "
+            f"was supposed to be dropped in version: {to_be_removed_in_version!r}.\n"
             f"Current version is: {pyglotaran_extras_version()!r}"
         )
+        raise OverDueDeprecationError(msg)
 
 
 def warn_deprecated(
@@ -133,16 +134,13 @@ def warn_deprecated(
     to_be_removed_in_version : str
         Version the support for this usage will be removed.
 
-    stacklevel: int
+    stacklevel : int
         Stack at which the warning should be shown as raise. Default: 2
 
     Raises
     ------
     OverDueDeprecation
         If the current version is greater or equal to ``to_be_removed_in_version``.
-
-
-    -- noqa: DAR402
     """
     check_overdue(deprecated_qual_name_usage, to_be_removed_in_version)
     warn(

@@ -1,6 +1,7 @@
 """Module containing predefined plot styles.
 
-For reference see: https://glotaran.github.io/legacy/plot_styles
+For reference see:
+https://glotaran.github.io/legacy/plot_styles
 """
 from __future__ import annotations
 
@@ -84,10 +85,9 @@ class LineStyle(str, Enum):
 class DataColorCode(str, Enum):
     """Colors used to plot data and fits.
 
-    Pairs of visually similar looking colors whereby the
-    first (lighter) color is used to plot the data,
-    and the second (darker) color is used to represent
-    the fitted trace (that goes 'through' the data).
+    Pairs of visually similar looking colors whereby the first (lighter) color is used to plot the
+    data, and the second (darker) color is used to represent the fitted trace (that goes 'through'
+    the data).
     """
 
     # Name	#Hex
@@ -104,16 +104,15 @@ class DataColorCode(str, Enum):
     brown = "#964b00"
     maroon = "#800000"
     yellow = "#ffff00"
-    # Needs to be added manually to the list in PlotStyle
+    # Adding orange a second time needs to be added manually to the list in PlotStyle
     # since Enum doesn't allow duplicates
-    # orange = "#ff8c00"
 
 
 class DataLineStyle(str, Enum):
     """Data plots can alternate between solid lines for data and dashed lines for fits.
 
-    This is mostly useful for data with very low noise (e.g. simulated data),
-    since data and fir often overlap
+    This is mostly useful for data with very low noise (e.g. simulated data), since data and fit
+    often overlap.
     """
 
     solid = "-"
@@ -128,7 +127,7 @@ class PlotStyle:
         self._line_style = list(LineStyle)
         self._color_codes = list(ColorCode)
         # Since Enum only supports unique values we need to manually add the last one
-        self._data_color_codes = list(DataColorCode) + [DataColorCode.orange]
+        self._data_color_codes = [*list(DataColorCode), DataColorCode.orange]
         # Extend linecycler to same size as colorcycler
         self._data_line_style = list(DataLineStyle) * (len(self._data_color_codes) // 2)
         self.SMALL_SIZE = 12

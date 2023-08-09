@@ -6,7 +6,6 @@ from typing import Literal
 
 import matplotlib.pyplot as plt
 import numpy as np
-from cycler import Cycler
 
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.style import PlotStyle
@@ -17,6 +16,7 @@ from pyglotaran_extras.plotting.utils import extract_irf_location
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 
 if TYPE_CHECKING:
+    from cycler import Cycler
     from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
@@ -43,39 +43,39 @@ def plot_doas(
 
     Parameters
     ----------
-    dataset: DatasetConvertible | Result
+    dataset : DatasetConvertible | Result
         Result dataset from a pyglotaran optimization.
-    damped_oscillation: list[str] | None
+    damped_oscillation : list[str] | None
         List of oscillation names which should be plotted.
         Defaults to None which means that all oscillations will be plotted.
-    time_range: tuple[float, float] | None
+    time_range : tuple[float, float] | None
         Start and end time for the Oscillation plot, if ``main_irf_nr`` is not None the value are
         relative to the IRF location. Defaults to None which means that the full time range is
         used.
-    spectral: float
+    spectral : float
         Value of the spectral axis that should be used to select the data for the Oscillation
         plot this value does not need to be an exact existing value and only has effect if the
         IRF has dispersion. Defaults to 0 which means that the Oscillation plot at lowest
         spectral value will be shown.
-    main_irf_nr: int | None
+    main_irf_nr : int | None
         Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks
         and is used to shift the time axis. If it is none ``None`` the shifting will be
         deactivated. Defaults to 0.
-    normalize: bool
+    normalize : bool
         Whether or not to normalize the DOAS spectra plot. If the DOAS spectra is normalized,
         the Oscillation is scaled with the reciprocal of the normalization to compensate for this.
         Defaults to False.
-    figsize: tuple[float, float]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (20, 5)
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True
-    cycler: Cycler | None
+    cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler
-    oscillation_type: Literal["cos", "sin"]
+    oscillation_type : Literal["cos", "sin"]
         Type of the oscillation to show in the oscillation plot. Defaults to "cos"
-    title: str | None
+    title : str | None
         Title of the figure. Defaults to "Damped oscillations"
-    legend_format_string: str
+    legend_format_string : str
         Format string for each entry in the legend of the oscillation plot. Possible values which
         can be replaced are ``label`` (label of the oscillation in the model definition),
         ``frequency`` (ν) and ``rate`` (γ). Use ``""`` to remove the legend. Defaults to
@@ -127,7 +127,7 @@ def plot_doas(
         **time_sel_kwargs
     )
 
-    for oscillation_label in oscillations_to_plot.damped_oscillation.values:
+    for oscillation_label in oscillations_to_plot.damped_oscillation.to_numpy():
         oscillation = oscillations_to_plot.sel(damped_oscillation=[oscillation_label])
         frequency = oscillation.damped_oscillation_frequency.item()
         rate = oscillation.damped_oscillation_rate.item()

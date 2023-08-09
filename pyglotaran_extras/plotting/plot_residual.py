@@ -40,15 +40,15 @@ def plot_residual(
     linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    show_data: bool | None
+    show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    show_irf_dispersion_center: bool
+    show_irf_dispersion_center : bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
     """

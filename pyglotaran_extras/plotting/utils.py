@@ -1,11 +1,11 @@
 """Module containing plotting utility functionality."""
 from __future__ import annotations
 
+from collections.abc import Iterable
 from math import ceil
 from math import log
 from types import MappingProxyType
 from typing import TYPE_CHECKING
-from typing import Iterable
 from warnings import warn
 
 import numpy as np
@@ -16,10 +16,10 @@ from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.io.utils import result_dataset_mapping
 
 if TYPE_CHECKING:
-    from typing import Callable
-    from typing import Hashable
+    from collections.abc import Callable
+    from collections.abc import Hashable
+    from collections.abc import Mapping
     from typing import Literal
-    from typing import Mapping
 
     from cycler import Cycler
     from matplotlib.axis import Axis
@@ -42,9 +42,9 @@ def select_irf_dispersion_center_by_index(
 
     Parameters
     ----------
-    irf_dispersion: xr.DataArray
+    irf_dispersion : xr.DataArray
         Data Variable from a result dataset which contains the IRF dispersion data.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
 
@@ -60,10 +60,11 @@ def select_irf_dispersion_center_by_index(
     """
     if "irf_nr" in irf_dispersion.sizes:
         if main_irf_nr >= irf_dispersion.sizes["irf_nr"]:
-            raise ValueError(
-                f"The value {main_irf_nr=} is not a valid value for "
-                f"irf_nr, needs to be smaller than {irf_dispersion.sizes['irf_nr']}."
+            msg = (
+                f"The value main_irf_nr={main_irf_nr!r} is not a valid value for irf_nr, needs "
+                f"to be smaller than {irf_dispersion.sizes['irf_nr']}."
             )
+            raise ValueError(msg)
         irf_dispersion = irf_dispersion.sel(irf_nr=main_irf_nr)
     if irf_dispersion.size == 1:
         irf_dispersion = irf_dispersion.item()
@@ -77,12 +78,12 @@ def extract_irf_dispersion_center(
 
     Parameters
     ----------
-    res: xr.Dataset
+    res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
-    as_dataarray: bool
+    as_dataarray : bool
         Ensure that the returned data are xr.DataArray instead of a float, even if the
         dispersion is none existent or constant. Defaults to True
 
@@ -111,7 +112,7 @@ def extract_irf_dispersion_center(
         irf_dispersion_center = min(res.coords["time"]).item()
 
     if as_dataarray is True:
-        spectral = res.coords["spectral"].values
+        spectral = res.coords["spectral"].to_numpy()
         return xr.DataArray(
             irf_dispersion_center * np.ones(spectral.shape), {"spectral": spectral}
         )
@@ -127,9 +128,9 @@ def extract_irf_location(
     ----------
     res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    center_λ: float | None
+    center_λ : float | None
         Center wavelength (λ in nm)
-    main_irf_nr : int
+    main_irf_nr : int | None
         Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks.
         If it is none ``None`` the location will be 0. Defaults to 0.
 
@@ -176,7 +177,7 @@ def maximum_coordinate_range(
     minima = []
     maxima = []
     for dataset in result_map.values():
-        coord = dataset.coords[coord_name].values
+        coord = dataset.coords[coord_name].to_numpy()
         minima.append(coord.min())
         maxima.append(coord.max())
     return min(minima), max(maxima)
@@ -204,9 +205,13 @@ def add_unique_figure_legend(fig: Figure, axes: Axes) -> None:
         ax_handles, ax_labels = ax.get_legend_handles_labels()
         handles += ax_handles
         labels += ax_labels
-    unique = [(h, l) for i, (h, l) in enumerate(zip(handles, labels)) if l not in labels[:i]]
+    unique = [
+        (handle, label)
+        for i, (handle, label) in enumerate(zip(handles, labels, strict=True))
+        if label not in labels[:i]
+    ]
     unique.sort(key=lambda entry: entry[1])
-    fig.legend(*zip(*unique))
+    fig.legend(*zip(*unique, strict=True))
 
 
 def select_plot_wavelengths(
@@ -219,15 +224,15 @@ def select_plot_wavelengths(
 
     Parameters
     ----------
-    result: ResultLike
+    result : ResultLike
         Data structure which can be converted to a mapping of datasets.
-    axes_shape: tuple[int, int]
+    axes_shape : tuple[int, int]
         Shape of the plot grid (N, M). Defaults to (4, 4).
-    wavelength_range: tuple[float, float]
+    wavelength_range : tuple[float, float] | None
         Tuple of minimum and maximum values to calculate the the wavelengths
         used for plotting. If not provided the values will be tetermined over all datasets.
         Defaults to None.
-    equidistant_wavelengths: bool
+    equidistant_wavelengths : bool
         Whether or not wavelengths should be selected based on equidistant values
         or equidistant indices (only supported for a single dataset).
         Since in general multiple datasets will have. Defaults to True.
@@ -266,7 +271,7 @@ def select_plot_wavelengths(
         (wavelength_range[0] <= spectral_coords) & (spectral_coords <= wavelength_range[1])
     ]
     spectral_indices = np.linspace(0, len(spectral_coords) - 1, num=nr_of_plots, dtype=np.int64)
-    return spectral_coords[spectral_indices].values
+    return spectral_coords[spectral_indices].to_numpy()
 
 
 def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> float:
@@ -295,7 +300,8 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
                     "Diving data by dataset scales is only supported by results from "
                     "'pyglotaran>=0.5.0'. Please upgrade pyglotaran and recreate the "
                     "result to plot."
-                )
+                ),
+                stacklevel=2,
             )
     return scale
 
@@ -308,9 +314,9 @@ def shift_time_axis_by_irf_location(
 
     Parameters
     ----------
-    plot_data: xr.DataArray
+    plot_data : xr.DataArray
         Data to plot.
-    irf_location:  float | None
+    irf_location : float | None
         Location of the ``irf``, if the value is None the original ``plot_data`` will be returned.
 
     Returns
@@ -331,7 +337,8 @@ def shift_time_axis_by_irf_location(
         return plot_data
 
     if "time" not in plot_data.coords:
-        raise ValueError("plot_data need to have a 'time' axis.")
+        msg = "plot_data need to have a 'time' axis."
+        raise ValueError(msg)
 
     times_shifted = plot_data.coords["time"] - irf_location
     return plot_data.assign_coords(time=times_shifted)
@@ -344,11 +351,11 @@ def get_shifted_traces(
 
     Parameters
     ----------
-    res: xr.Dataset
+    res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    center_λ: float|None
+    center_λ : float | None
         Center wavelength (λ in nm). Defaults to None.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
 
@@ -367,7 +374,8 @@ def get_shifted_traces(
     elif "species_associated_concentrations" in res:
         traces = res.species_associated_concentrations
     else:
-        raise ValueError(f"No concentrations in result:\n{res}")
+        msg = f"No concentrations in result:\n{res}"
+        raise ValueError(msg)
 
     irf_location = extract_irf_location(res, center_λ, main_irf_nr)
     return shift_time_axis_by_irf_location(traces, irf_location)
@@ -378,7 +386,7 @@ def ensure_axes_array(axes: Axis | Axes) -> Axes:
 
     Parameters
     ----------
-    axes: Axis | Axes
+    axes : Axis | Axes
         Axis or Axes to convert for API consistency.
 
     Returns
@@ -402,9 +410,9 @@ def add_cycler_if_not_none(axis: Axis | Axes, cycler: Cycler | None) -> None:
 
     Parameters
     ----------
-    axis: Axis | Axes
+    axis : Axis | Axes
         Axis to plot on.
-    cycler: Cycler | None
+    cycler : Cycler | None
         Plot style cycler to use.
     """
     if cycler is not None:
@@ -420,9 +428,9 @@ def abs_max(
 
     Parameters
     ----------
-    data: xr.DataArray
+    data : xr.DataArray
         Data for which the absolute maximum should be calculated.
-    result_dims: Hashable | Iterable[Hashable]
+    result_dims : Hashable | Iterable[Hashable]
         Dimensions of ``data`` which should be preserved and part of the resulting DataArray.
         Defaults to () which results in using the absolute maximum of all values.
 
@@ -444,9 +452,9 @@ def calculate_ticks_in_units_of_pi(
 
     Parameters
     ----------
-    values: np.ndarray
+    values : np.ndarray | xr.DataArray
         Values which the ticks should be calculated for.
-    step_size: float
+    step_size : float
         Step size of the ticks in units of pi. Defaults to 0.5
 
     Returns
@@ -499,7 +507,7 @@ def not_single_element_dims(data_array: xr.DataArray) -> list[Hashable]:
 
     Parameters
     ----------
-    data_array: xr.DataArray
+    data_array : xr.DataArray
         DataArray to check if it has only a single dimension.
 
     Returns
@@ -587,14 +595,14 @@ class MinorSymLogLocator(Locator):
 
         return self.raise_if_exceeds(np.array(minorlocs))
 
-    def tick_values(self, vmin: float, vmax: float) -> None:
-        """Return the values of the located ticks given **vmin** and **vmax** (not implemented).
+    def tick_values(self, _vmin: float, _vmax: float) -> None:
+        """Return the values of the located ticks given **_vmin** and **_vmax** (not implemented).
 
         Parameters
         ----------
-        vmin : float
+        _vmin : float
             Minimum value.
-        vmax : float
+        _vmax : float
             Maximum value.
 
         Raises
@@ -602,7 +610,8 @@ class MinorSymLogLocator(Locator):
         NotImplementedError
             Not used
         """
-        raise NotImplementedError(f"Cannot get tick locations for a {type(self)} type.")
+        msg = f"Cannot get tick locations for a {type(self)} type."
+        raise NotImplementedError(msg)
 
 
 def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: None | int = None) -> str:
@@ -665,7 +674,7 @@ BuiltinSubPlotLabelFormatFunctions: Mapping[
     str, Callable[[int, int | None], str]
 ] = MappingProxyType(
     {
-        "number": lambda x, y: f"{x}",
+        "number": lambda x, _: f"{x}",
         "upper_case_letter": format_sub_plot_number_upper_case_letter,
         "lower_case_letter": lambda x, y: format_sub_plot_number_upper_case_letter(x, y).lower(),
     }
@@ -681,7 +690,7 @@ def get_subplot_label_format_function(
 
     Parameters
     ----------
-    format_function : BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int  |  None], str]
+    format_function : BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int | None], str]
         Key ``BuiltinSubPlotLabelFormatFunctions`` to retrieve builtin function or user defined
         format function.
 

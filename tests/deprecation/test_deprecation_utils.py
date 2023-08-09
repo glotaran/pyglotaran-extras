@@ -1,3 +1,4 @@
+"""Tests for ``pyglotaran_extras.deprecation.deprecation_utils``."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -6,7 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 import pyglotaran_extras
-from pyglotaran_extras.deprecation.deprecation_utils import OverDueDeprecation
+from pyglotaran_extras.deprecation.deprecation_utils import OverDueDeprecationError
 from pyglotaran_extras.deprecation.deprecation_utils import PyglotaranExtrasApiDeprecationWarning
 from pyglotaran_extras.deprecation.deprecation_utils import check_overdue
 from pyglotaran_extras.deprecation.deprecation_utils import parse_version
@@ -35,26 +36,24 @@ DEPRECATION_WARN_MESSAGE = (
 )
 
 
-@pytest.fixture
-def pyglotaran_extras_0_3_0(monkeypatch: MonkeyPatch):
+@pytest.fixture()
+def _pyglotaran_extras_0_3_0(monkeypatch: MonkeyPatch):
     """Mock pyglotaran_extras version to always be 0.3.0 for the test."""
     monkeypatch.setattr(
         pyglotaran_extras.deprecation.deprecation_utils,
         "pyglotaran_extras_version",
         lambda: "0.3.0",
     )
-    yield
 
 
-@pytest.fixture
-def pyglotaran_extras_1_0_0(monkeypatch: MonkeyPatch):
+@pytest.fixture()
+def _pyglotaran_extras_1_0_0(monkeypatch: MonkeyPatch):
     """Mock pyglotaran_extras version to always be 1.0.0 for the test."""
     monkeypatch.setattr(
         pyglotaran_extras.deprecation.deprecation_utils,
         "pyglotaran_extras_version",
         lambda: "1.0.0",
     )
-    yield
 
 
 def test_pyglotaran_extras_version():
@@ -63,13 +62,13 @@ def test_pyglotaran_extras_version():
 
 
 @pytest.mark.parametrize(
-    "version_str, expected",
-    (
+    ("version_str", "expected"),
+    [
         ("0.0.1", (0, 0, 1)),
         ("0.0.1.post", (0, 0, 1)),
         ("0.0.1-dev", (0, 0, 1)),
         ("0.0.1-dev.post", (0, 0, 1)),
-    ),
+    ],
 )
 def test_parse_version(version_str: str, expected: tuple[int, int, int]):
     """Valid version strings."""
@@ -78,15 +77,15 @@ def test_parse_version(version_str: str, expected: tuple[int, int, int]):
 
 @pytest.mark.parametrize(
     "version_str",
-    ("1", "0.1", "a.b.c"),
+    ["1", "0.1", "a.b.c"],
 )
 def test_parse_version_errors(version_str: str):
-    """Invalid version strings"""
+    """Invalid version strings."""
     with pytest.raises(ValueError, match=f"'{version_str}'"):
         parse_version(version_str)
 
 
-@pytest.mark.usefixtures("pyglotaran_extras_0_3_0")
+@pytest.mark.usefixtures("_pyglotaran_extras_0_3_0")
 def test_check_overdue_no_raise(monkeypatch: MonkeyPatch):
     """Current version smaller then drop_version."""
     check_overdue(
@@ -95,10 +94,10 @@ def test_check_overdue_no_raise(monkeypatch: MonkeyPatch):
     )
 
 
-@pytest.mark.usefixtures("pyglotaran_extras_1_0_0")
+@pytest.mark.usefixtures("_pyglotaran_extras_1_0_0")
 def test_check_overdue_raises(monkeypatch: MonkeyPatch):
     """Current version is equal or bigger than drop_version."""
-    with pytest.raises(OverDueDeprecation) as excinfo:
+    with pytest.raises(OverDueDeprecationError) as excinfo:
         check_overdue(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,
             to_be_removed_in_version="0.6.0",
@@ -107,7 +106,7 @@ def test_check_overdue_raises(monkeypatch: MonkeyPatch):
     assert str(excinfo.value) == OVERDUE_ERROR_MESSAGE
 
 
-@pytest.mark.usefixtures("pyglotaran_extras_0_3_0")
+@pytest.mark.usefixtures("_pyglotaran_extras_0_3_0")
 def test_warn_deprecated():
     """Warning gets shown when all is in order."""
     with pytest.warns(PyglotaranExtrasApiDeprecationWarning) as record:
@@ -122,11 +121,11 @@ def test_warn_deprecated():
         assert Path(record[0].filename) == Path(__file__)
 
 
-@pytest.mark.usefixtures("pyglotaran_extras_1_0_0")
+@pytest.mark.usefixtures("_pyglotaran_extras_1_0_0")
 def test_warn_deprecated_overdue_deprecation(monkeypatch: MonkeyPatch):
     """Current version is equal or bigger than drop_version."""
 
-    with pytest.raises(OverDueDeprecation) as excinfo:
+    with pytest.raises(OverDueDeprecationError) as excinfo:
         warn_deprecated(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,
             new_qual_name_usage=NEW_QUAL_NAME,
@@ -145,7 +144,7 @@ def test_warn_deprecated_no_overdue_deprecation_on_dev(monkeypatch: MonkeyPatch)
         lambda: "0.6.0-dev",
     )
 
-    with pytest.raises(OverDueDeprecation):
+    with pytest.raises(OverDueDeprecationError):
         warn_deprecated(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,
             new_qual_name_usage=NEW_QUAL_NAME,

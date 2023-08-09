@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-import xarray as xr
 from glotaran.utils.ipython import MarkdownStr
 from tabulate import tabulate
 
@@ -11,7 +12,11 @@ from pyglotaran_extras.inspect.utils import pretty_format_numerical
 from pyglotaran_extras.inspect.utils import pretty_format_numerical_iterable
 from pyglotaran_extras.inspect.utils import wrap_in_details_tag
 from pyglotaran_extras.io.utils import result_dataset_mapping
-from pyglotaran_extras.types import ResultLike
+
+if TYPE_CHECKING:
+    import xarray as xr
+
+    from pyglotaran_extras.types import ResultLike
 
 
 def a_matrix_to_html_table(
@@ -25,13 +30,13 @@ def a_matrix_to_html_table(
 
     Parameters
     ----------
-    a_matrix: xr.DataArray
+    a_matrix : xr.DataArray
         DataArray containing the a-matrix values and coordinates.
-    megacomplex_suffix: str
+    megacomplex_suffix : str
         Megacomplex suffix used for the a-matrix data variable and coordinate names.
-    normalize_initial_concentration: bool
+    normalize_initial_concentration : bool
         Whether or not to normalize the initial concentration. Defaults to False.
-    decimal_places: int
+    decimal_places : int
         Decimal places to display. Defaults to 3.
 
     Returns
@@ -39,12 +44,12 @@ def a_matrix_to_html_table(
     str
         Multi header HTML table representing the a-matrix.
     """
-    species = a_matrix.coords[f"species_{megacomplex_suffix}"].values
+    species = a_matrix.coords[f"species_{megacomplex_suffix}"].to_numpy()
     # Crete a copy so normalization does not mutate the original values
     initial_concentration = np.array(
-        a_matrix.coords[f"initial_concentration_{megacomplex_suffix}"].values
+        a_matrix.coords[f"initial_concentration_{megacomplex_suffix}"].to_numpy()
     )
-    lifetime = a_matrix.coords[f"lifetime_{megacomplex_suffix}"].values
+    lifetime = a_matrix.coords[f"lifetime_{megacomplex_suffix}"].to_numpy()
 
     if normalize_initial_concentration is True:
         initial_concentration /= initial_concentration.sum()
@@ -53,7 +58,7 @@ def a_matrix_to_html_table(
         ["species<br>initial concentration<br>lifetime↓"]
         + [
             f"{sp}<br>{pretty_format_numerical(ic,decimal_places)}<br>&nbsp;"
-            for sp, ic in zip(species, initial_concentration)
+            for sp, ic in zip(species, initial_concentration, strict=True)
         ]
         + ["Sum"]
     )
@@ -62,11 +67,11 @@ def a_matrix_to_html_table(
         pretty_format_numerical_iterable(
             (lifetime, *amps, amps.sum()), decimal_places=decimal_places
         )
-        for lifetime, amps in zip(lifetime, a_matrix.values)
+        for lifetime, amps in zip(lifetime, a_matrix.values, strict=True)
     ]
     data.append(
         pretty_format_numerical_iterable(
-            ("Sum", *a_matrix.values.sum(axis=0), a_matrix.values.sum()),
+            ("Sum", *a_matrix.to_numpy().sum(axis=0), a_matrix.to_numpy().sum()),
             decimal_places=decimal_places,
         )
     )
@@ -96,18 +101,18 @@ def show_a_matrixes(
 
     Parameters
     ----------
-    result: ResultLike
+    result : ResultLike
         Result or result dataset.
-    normalize_initial_concentration: bool
+    normalize_initial_concentration : bool
         Whether or not to normalize the initial concentration. Defaults to False.
-    decimal_places: int
+    decimal_places : int
         Decimal places to display. Defaults to 3.
-    a_matrix_min_size: int
+    a_matrix_min_size : int | None
         Defaults to None.
-    expanded_datasets: tuple[str, ...]
+    expanded_datasets : tuple[str, ...]
         Names of dataset to expand the details view for. Defaults to empty tuple () which means no
         dataset is expanded.
-    heading_offset: int
+    heading_offset : int
         Number of heading level to offset the headings. Defaults to 2 which means that the
         first/top most heading is h3.
 

@@ -20,10 +20,10 @@ def load_data(
     ----------
     result : DatasetConvertible | Result
         Result class instance, xarray Dataset or path to a dataset file.
-    dataset_name : str, optional
+    dataset_name : str | None
         Name of a specific dataset contained in ``result``, if not provided
         the first dataset will be extracted. Defaults to None.
-    _stacklevel: int
+    _stacklevel : int
         Stacklevel of the warning which is raised when ``result`` is of class ``Result``,
         contains multiple datasets and no ``dataset_name`` is provided. Changing this value is
         only required if you use this function inside of another function. Defaults to 2
@@ -56,6 +56,7 @@ def load_data(
                 stacklevel=_stacklevel,
             )
         return result.data[keys[0]]
-    if isinstance(result, (str, Path)):
+    if isinstance(result, str | Path):
         return load_data(load_dataset(result))
-    raise TypeError(f"Result needs to be of type {DatasetConvertible!r}, but was {result!r}.")
+    msg = f"Result needs to be of type {DatasetConvertible!r}, but was {result!r}."
+    raise TypeError(msg)

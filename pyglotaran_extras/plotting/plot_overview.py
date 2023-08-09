@@ -53,46 +53,46 @@ def plot_overview(
 
     Parameters
     ----------
-    result: DatasetConvertible | Result
+    result : DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
-    center_λ: float | None
+    center_λ : float | None
         Center wavelength (λ in nm)
-    linlog: bool
+    linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
-    linthresh: float
+    linthresh : float
         A single float which defines the range (-x, x), within which the plot is linear.
         This avoids having the plot go to infinity around zero. Defaults to 1.
-    linscale: float
+    linscale : float
         This allows the linear range (-linthresh to linthresh) to be stretched
         relative to the logarithmic range.
         Its value is the number of decades to use for each half of the linear range.
         For example, when linscale == 1.0 (the default), the space used for the
         positive and negative halves of the linear range will be equal to one
         decade in the logarithmic range. Defaults to 1.
-    show_data: bool | None
+    show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
-    main_irf_nr: int
+    main_irf_nr : int
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
-    figsize : tuple[int, int]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    figure_only: bool | None
+    figure_only : bool | None
         Deprecated please remove this argument for you function calls. Defaults to None.
-    nr_of_data_svd_vectors: int
+    nr_of_data_svd_vectors : int
         Number of data SVD vector to plot. Defaults to 4.
-    nr_of_residual_svd_vectors: int
+    nr_of_residual_svd_vectors : int
         Number of residual SVD vector to plot. Defaults to 2.
-    show_data_svd_legend: bool
+    show_data_svd_legend : bool
         Whether or not to show the data SVD legend. Defaults to True.
-    show_residual_svd_legend: bool
+    show_residual_svd_legend : bool
         Whether or not to show the residual SVD legend. Defaults to True.
-    show_irf_dispersion_center: bool
+    show_irf_dispersion_center : bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
-    show_zero_line: bool
+    show_zero_line : bool
         Whether or not to add a horizontal line at zero to the plots of the spectra.
         Defaults to True.
 
@@ -102,15 +102,12 @@ def plot_overview(
     """
     res = load_data(result, _stacklevel=3)
 
-    if res.coords["time"].values.size == 1:
+    if res.coords["time"].to_numpy().size == 1:
         fig, axes = plot_guidance(res)
         if figure_only is not None:
             warn(PyglotaranExtrasApiDeprecationWarning(FIG_ONLY_WARNING), stacklevel=2)
         return fig, axes
-    # Plot dimensions
-    M = 4
-    N = 3
-    fig, axes = plt.subplots(M, N, figsize=figsize, constrained_layout=True)
+    fig, axes = plt.subplots(4, 3, figsize=figsize, constrained_layout=True)
 
     irf_location = extract_irf_location(res, center_λ, main_irf_nr)
 
@@ -164,25 +161,25 @@ def plot_simple_overview(
     figure_only: bool | None = None,
     show_irf_dispersion_center: bool = True,
     show_data: bool | None = False,
-) -> Figure | tuple[Figure, Axes]:
+) -> tuple[Figure, Axes]:
     """Plot simple overview.
 
     Parameters
     ----------
-    result: DatasetConvertible | Result
+    result : DatasetConvertible | Result
         Result from a pyglotaran optimization as dataset, Path or Result object.
-    title: str | None
+    title : str | None
         Title of the figure. Defaults to None.
-    figsize : tuple[int, int]
+    figsize : tuple[float, float]
         Size of the figure (N, M) in inches. Defaults to (18, 16).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
-    figure_only: bool | None
+    figure_only : bool | None
         Deprecated please remove this argument for you function calls. Defaults to None.
-    show_irf_dispersion_center: bool
+    show_irf_dispersion_center : bool
         Whether to show the the IRF dispersion center as overlay on the residual/data plot.
         Defaults to True.
-    show_data: bool | None
+    show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
 
@@ -198,10 +195,10 @@ def plot_simple_overview(
     if title:
         fig.suptitle(title, fontsize=16)
 
-    plot_concentrations(res, ax=axes[0, 0], center_λ=res.coords["spectral"].values[0])
+    plot_concentrations(res, ax=axes[0, 0], center_λ=res.coords["spectral"].to_numpy()[0])
     plot_sas(res, ax=axes[0, 1])
 
-    irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].values[0])
+    irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].to_numpy()[0])
 
     plot_lsv_residual(res, ax=axes[1, 0], irf_location=irf_location)
     plot_rsv_residual(res, ax=axes[1, 1])
@@ -231,12 +228,12 @@ if __name__ == "__main__":
 
     result_path = Path(sys.argv[1])
     res = load_data(result_path)
-    print(res)
+    print(res)  # noqa: T201
 
     fig, axes = plot_overview(res)
     if len(sys.argv) > 2:
         fig.savefig(sys.argv[2], bbox_inches="tight")
-        print(f"Saved figure to: {sys.argv[2]}")
+        print(f"Saved figure to: {sys.argv[2]}")  # noqa: T201
     else:
         plt.show(block=False)
         input("press <ENTER> to continue")

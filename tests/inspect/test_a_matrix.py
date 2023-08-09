@@ -1,24 +1,27 @@
 """Tests for ``pyglotaran_extras.inspect.a_matrix``."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from typing import Any
 
 import pytest
 import xarray as xr
-from glotaran.project import Result
 from tests import TEST_DATA
 
 from pyglotaran_extras.inspect.a_matrix import a_matrix_to_html_table
 from pyglotaran_extras.inspect.a_matrix import show_a_matrixes
 
+if TYPE_CHECKING:
+    from glotaran.project import Result
+
 
 @pytest.mark.parametrize(
-    "kwargs, compare_file_suffix",
-    (
+    ("kwargs", "compare_file_suffix"),
+    [
         ({}, "default"),
         ({"normalize_initial_concentration": True}, "normalized"),
         ({"decimal_places": 2}, "decimal_2"),
-    ),
+    ],
 )
 def test_a_matrix_to_html_table(
     result_parallel_spectral_decay: Result, kwargs: dict[str, Any], compare_file_suffix: str
@@ -35,14 +38,14 @@ def test_a_matrix_to_html_table(
 
 
 @pytest.mark.parametrize(
-    "kwargs, compare_file_suffix",
-    (
+    ("kwargs", "compare_file_suffix"),
+    [
         ({}, "default"),
         ({"normalize_initial_concentration": True}, "normalized"),
         ({"decimal_places": 2}, "decimal_2"),
         ({"expanded_datasets": ("dataset_2",)}, "expanded_dataset_2"),
         ({"heading_offset": 0}, "heading_offset_0"),
-    ),
+    ],
 )
 def test_show_a_matrixes(
     result_parallel_spectral_decay: Result,

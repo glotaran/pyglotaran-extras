@@ -1,1 +1,1 @@
-"""Tests for pyglotaran_extras.plotting"""
+"""Tests for pyglotaran_extras.plotting."""
