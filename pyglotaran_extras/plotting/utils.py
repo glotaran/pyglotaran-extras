@@ -307,8 +307,7 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
 
 
 def shift_time_axis_by_irf_location(
-    plot_data: xr.DataArray,
-    irf_location: float | None,
+    plot_data: xr.DataArray, irf_location: float | None, *, _internal_call: bool = False
 ) -> xr.DataArray:
     """Shift ``plot_data`` 'time' axis  by the position of the main ``irf``.
 
@@ -318,6 +317,9 @@ def shift_time_axis_by_irf_location(
         Data to plot.
     irf_location : float | None
         Location of the ``irf``, if the value is None the original ``plot_data`` will be returned.
+    _internal_call : bool
+        This indicates internal use stripping away user help and silently skipping execution.
+        Defaults to False.
 
     Returns
     -------
@@ -333,7 +335,7 @@ def shift_time_axis_by_irf_location(
     --------
     extract_irf_location
     """
-    if irf_location is None:
+    if irf_location is None or ("time" not in plot_data.coords and _internal_call is True):
         return plot_data
 
     if "time" not in plot_data.coords:

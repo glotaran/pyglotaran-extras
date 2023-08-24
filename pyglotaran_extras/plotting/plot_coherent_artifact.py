@@ -88,7 +88,9 @@ def plot_coherent_artifact(
         return fig, axes
 
     irf_location = extract_irf_location(dataset, spectral, main_irf_nr)
-    irf_data = shift_time_axis_by_irf_location(dataset.coherent_artifact_response, irf_location)
+    irf_data = shift_time_axis_by_irf_location(
+        dataset.coherent_artifact_response, irf_location, _internal_call=True
+    )
 
     irf_max = abs_max(irf_data, result_dims=("coherent_artifact_order"))
     irfas_max = abs_max(
