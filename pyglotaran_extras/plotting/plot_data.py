@@ -68,7 +68,7 @@ def plot_data_overview(
         Figure and axes which can then be refined by the user.
     """
     dataset = load_data(dataset, _stacklevel=3)
-    data = shift_time_axis_by_irf_location(dataset.data, irf_location)
+    data = shift_time_axis_by_irf_location(dataset.data, irf_location, _internal_call=True)
 
     if len(not_single_element_dims(data)) == 1:
         return _plot_single_trace(

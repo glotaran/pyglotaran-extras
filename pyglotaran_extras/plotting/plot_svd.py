@@ -78,6 +78,7 @@ def plot_svd(
         cycler=cycler,
         indices=range(nr_of_residual_svd_vectors),
         show_legend=show_residual_svd_legend,
+        irf_location=irf_location,
     )
     plot_sv_residual(res, axes[0, 2], cycler=cycler)
     add_svd_to_dataset(dataset=res, name="data")
@@ -97,6 +98,7 @@ def plot_svd(
         cycler=cycler,
         indices=range(nr_of_data_svd_vectors),
         show_legend=show_data_svd_legend,
+        irf_location=irf_location,
     )
     plot_sv_data(res, axes[1, 2], cycler=cycler)
 
@@ -136,8 +138,7 @@ def plot_lsv_data(
     """
     add_cycler_if_not_none(ax, cycler)
     dLSV = res.data_left_singular_vectors  # noqa: N806
-    dLSV = shift_time_axis_by_irf_location(dLSV, irf_location)  # noqa: N806
-    _plot_svd_vectors(dLSV, indices, "left_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(dLSV, indices, "left_singular_value_index", ax, show_legend, irf_location)
     ax.set_title("data. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -150,6 +151,7 @@ def plot_rsv_data(
     indices: Sequence[int] = range(4),
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
+    irf_location: float | None = None,
 ) -> None:
     """Plot right singular vectors (spectra) of the data matrix.
 
@@ -165,10 +167,13 @@ def plot_rsv_data(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_legend : bool
         Whether or not to show the legend. Defaults to True.
+    irf_location : float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     dRSV = res.data_right_singular_vectors  # noqa: N806
-    _plot_svd_vectors(dRSV, indices, "right_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(dRSV, indices, "right_singular_value_index", ax, show_legend, irf_location)
     ax.set_title("data. RSV")
 
 
@@ -237,8 +242,7 @@ def plot_lsv_residual(
         rLSV = res.weighted_residual_left_singular_vectors  # noqa: N806
     else:
         rLSV = res.residual_left_singular_vectors  # noqa: N806
-    rLSV = shift_time_axis_by_irf_location(rLSV, irf_location)  # noqa: N806
-    _plot_svd_vectors(rLSV, indices, "left_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(rLSV, indices, "left_singular_value_index", ax, show_legend, irf_location)
     ax.set_title("res. LSV")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
@@ -251,6 +255,7 @@ def plot_rsv_residual(
     indices: Sequence[int] = range(2),
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
+    irf_location: float | None = None,
 ) -> None:
     """Plot right singular vectors (spectra) of the residual matrix.
 
@@ -266,13 +271,16 @@ def plot_rsv_residual(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_legend : bool
         Whether or not to show the legend. Defaults to True.
+    irf_location : float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     if "weighted_residual_right_singular_vectors" in res:
         rRSV = res.weighted_residual_right_singular_vectors  # noqa: N806
     else:
         rRSV = res.residual_right_singular_vectors  # noqa: N806
-    _plot_svd_vectors(rRSV, indices, "right_singular_value_index", ax, show_legend)
+    _plot_svd_vectors(rRSV, indices, "right_singular_value_index", ax, show_legend, irf_location)
     ax.set_title("res. RSV")
 
 
@@ -312,6 +320,7 @@ def _plot_svd_vectors(
     sv_index_dim: str,
     ax: Axis,
     show_legend: bool,
+    irf_location: float | None,
 ) -> None:
     """Plot SVD vectors with decreasing zorder on axis ``ax``.
 
@@ -327,6 +336,9 @@ def _plot_svd_vectors(
         Axis to plot on.
     show_legend : bool
         Whether or not to show the legend.
+    irf_location : float | None
+        Location of the ``irf`` by which the time axis will get shifted. If it is None the time
+        axis will not be shifted. Defaults to None.
 
     See Also
     --------
@@ -336,7 +348,9 @@ def _plot_svd_vectors(
     plot_rsv_residual
     """
     max_index = len(getattr(vector_data, sv_index_dim))
-    values = vector_data.isel(**{sv_index_dim: indices[:max_index]})
+    values = shift_time_axis_by_irf_location(
+        vector_data.isel(**{sv_index_dim: indices[:max_index]}), irf_location, _internal_call=True
+    )
     x_dim = vector_data.dims[1]
     if x_dim == sv_index_dim:
         values = values.T

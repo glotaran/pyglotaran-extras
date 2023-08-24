@@ -111,7 +111,7 @@ def plot_doas(
         oscillations = oscillations.sel(spectral=spectral, method="nearest")
 
     oscillations = shift_time_axis_by_irf_location(
-        oscillations.sel(**osc_sel_kwargs), irf_location
+        oscillations.sel(**osc_sel_kwargs), irf_location, _internal_call=True
     )
     oscillations_spectra = dataset["damped_oscillation_associated_spectra"].sel(**osc_sel_kwargs)
 
