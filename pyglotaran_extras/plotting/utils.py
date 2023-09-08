@@ -450,7 +450,7 @@ def abs_max(
 def calculate_ticks_in_units_of_pi(
     values: np.ndarray | xr.DataArray, *, step_size: float = 0.5
 ) -> tuple[Iterable[float], Iterable[str]]:
-    """Calculate tick values and labels in units of Pi.
+    r"""Calculate tick values and labels in units of Pi.
 
     Parameters
     ----------
@@ -475,6 +475,7 @@ def calculate_ticks_in_units_of_pi(
     dataset is saved under ``dataset.nc``.
 
     .. code-block:: python
+
         import matplotlib.pyplot as plt
 
         from glotaran.io import load_dataset
