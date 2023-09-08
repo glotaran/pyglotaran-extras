@@ -95,8 +95,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip wheel
-          python -m pip install -U -e .
           python -m pip install -r requirements_pinned.txt
+          python -m pip install -U -e .[test]
       - name: Run tests
         run: |
           py.test --nbval --cov=./ --cov-report term --cov-report xml --cov-config pyproject.toml tests
@@ -122,8 +122,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip wheel
-          python -m pip install -U -e .
           python -m pip install -r requirements_pinned.txt
+          python -m pip install -U -e .[test]
           python -m pip install git+https://github.com/glotaran/pyglotaran
       - name: Show installed dependencies
         run: |
