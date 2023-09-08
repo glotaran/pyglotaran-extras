@@ -121,6 +121,7 @@ repos:
       - id: rstcheck
         additional_dependencies: [sphinx]
         exclude: "^docs/_templates"
+        args: [--ignore-directives=autosummary]
 
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0

@@ -43,8 +43,7 @@ jobs:
         run: |
           conda install -y pandoc
           python -m pip install -U pip wheel
-          pip install .
-          python -m pip install -U -r docs/requirements.txt
+          pip install .[docs]
       - name: Show installed dependencies
         run: |
           pip freeze
@@ -70,8 +69,7 @@ jobs:
         run: |
           conda install -y pandoc
           python -m pip install -U pip wheel
-          pip install .
-          python -m pip install -U -r docs/requirements.txt
+          pip install .[docs]
       - name: Show installed dependencies
         run: |
           pip freeze
@@ -98,7 +96,7 @@ jobs:
         run: |
           python -m pip install -U pip wheel
           python -m pip install -U -e .
-          python -m pip install -r requirements_dev.txt
+          python -m pip install -r requirements_pinned.txt
       - name: Run tests
         run: |
           py.test --nbval --cov=./ --cov-report term --cov-report xml --cov-config pyproject.toml tests
@@ -125,7 +123,7 @@ jobs:
         run: |
           python -m pip install -U pip wheel
           python -m pip install -U -e .
-          python -m pip install -r requirements_dev.txt
+          python -m pip install -r requirements_pinned.txt
           python -m pip install git+https://github.com/glotaran/pyglotaran
       - name: Show installed dependencies
         run: |
@@ -147,10 +145,9 @@ jobs:
           python-version: "3.10"
       - name: Install dependencies
         run: |
-          python -m pip install -U pip wheel
+          python -m pip install -U hatch
       - name: Build dist
-        run: |
-          python setup.py sdist bdist_wheel
+        run: hatch build
 
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@v1.8.10
