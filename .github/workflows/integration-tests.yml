@@ -32,20 +32,24 @@ jobs:
         example_name: ${{fromJson(needs.create-example-list.outputs.example-list)}}
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
       - name: Install pyglotaran-extras
         run: |
           pip install wheel
           pip install .
+
       - name: ${{ matrix.example_name }}
         id: example-run
         uses: glotaran/pyglotaran-examples@main
         with:
           example_name: ${{ matrix.example_name }}
           install_extras: false
+
       - name: Upload Example Plots Artifact
         uses: actions/upload-artifact@v3
         with:

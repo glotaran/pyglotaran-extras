@@ -12,6 +12,6 @@ build:
 
 python:
   install:
-    - requirements: docs/requirements.txt
+    - requirements: requirements_pinned.txt
     - method: pip
-      path: .
+      path: .[docs]
