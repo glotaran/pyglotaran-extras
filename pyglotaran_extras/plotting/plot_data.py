@@ -37,7 +37,9 @@ def plot_data_overview(
     figsize: tuple[float, float] = (15, 10),
     nr_of_data_svd_vectors: int = 4,
     show_data_svd_legend: bool = True,
-    irf_location: float | None = None,
+    irf_location: float | None = None,cmap='PuRd',
+    datamin: float | None = None,datamax: float | None = None,
+    model_label: str = "Time (ps)", global_label: str = "Wavelength (nm)"
 ) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
     """Plot data as filled contour plot and SVD components.
 
@@ -61,6 +63,16 @@ def plot_data_overview(
     irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
+    cmap : str
+        Colormap to use for the filled contour plot. Defaults to "PuRd" (which is most suitable for emission data).
+    datamin: float | None = None
+        minimum of the data. Defaults to None.
+    datamax: float | None = None
+        maximum of the data. Defaults to None.
+    model_label: str
+        Axes label for model axis. Defaults to "Time (ps)".
+    global_label: str
+        Axes label for model axis. Defaults to "Wavelength (nm)".
 
     Returns
     -------
@@ -88,7 +100,7 @@ def plot_data_overview(
     rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
 
     if len(data.time) > 1:
-        data.plot(x="time", ax=data_ax, center=False)
+        data.plot(x="time", ax=data_ax, center=False,cmap=cmap,vmin=datamin,vmax=datamax)
     else:
         data.plot(ax=data_ax)
 
@@ -104,6 +116,13 @@ def plot_data_overview(
     )
     plot_sv_data(dataset, sv_ax)
     plot_rsv_data(dataset, rsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
+    sv_ax.set_ylabel("")
+    lsv_ax.set_ylabel("")
+    rsv_ax.set_ylabel("")
+    lsv_ax.set_xlabel(model_label)
+    rsv_ax.set_xlabel(global_label)
+    data_ax.set_xlabel(model_label)
+    data_ax.set_ylabel(global_label)
     if show_data_svd_legend is True:
         rsv_ax.legend(title="singular value index", loc="lower right", bbox_to_anchor=(1.13, 1))
     fig.suptitle(title, fontsize=16)
