@@ -1,6 +1,6 @@
 # Runtime dependencies
 
-cycler==0.11.0
+cycler==0.12.1
 matplotlib==3.7.2
 numpy==1.24.4
 pyglotaran==0.7.1
