@@ -6,10 +6,10 @@ from typing import Any
 
 import pytest
 import xarray as xr
-from tests import TEST_DATA
 
 from pyglotaran_extras.inspect.a_matrix import a_matrix_to_html_table
 from pyglotaran_extras.inspect.a_matrix import show_a_matrixes
+from tests import TEST_DATA
 
 if TYPE_CHECKING:
     from glotaran.project import Result
