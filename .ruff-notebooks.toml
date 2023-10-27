@@ -1,0 +1,6 @@
+extend = "pyproject.toml"
+extend-ignore = ["D"]
+
+[isort]
+required-imports = []
+force-single-line = false
