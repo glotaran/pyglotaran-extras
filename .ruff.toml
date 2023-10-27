@@ -43,7 +43,7 @@ ignore = [
   "RUF002",
   "RUF003",
   "B008",
-  # Coverwed by formatter
+  # Covered by formatter
   "ISC001",
 ]
 
