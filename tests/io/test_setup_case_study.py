@@ -7,10 +7,9 @@ from pathlib import Path
 from textwrap import dedent
 from typing import TYPE_CHECKING
 
-from tests.conftest import wrapped_get_script_dir
-
 from pyglotaran_extras.io.setup_case_study import get_script_dir
 from pyglotaran_extras.io.setup_case_study import setup_case_study
+from tests.conftest import wrapped_get_script_dir
 
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch

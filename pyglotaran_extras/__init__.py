@@ -1,4 +1,6 @@
 """Pyglotaran extension package with convenience functionality such as plotting."""
+from __future__ import annotations
+
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.io.setup_case_study import setup_case_study
 from pyglotaran_extras.plotting.plot_coherent_artifact import plot_coherent_artifact
