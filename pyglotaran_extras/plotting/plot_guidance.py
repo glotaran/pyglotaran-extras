@@ -53,7 +53,10 @@ def plot_guidance(
 
     res.data.plot(x="spectral", ax=axes[0], label="data")
     res.fitted_data.plot(x="spectral", ax=axes[0], label="fit")
-    res.residual.plot(x="spectral", ax=axes[1], label="residual")
+    if "weighted_residual" in res:
+        res.weighted_residual.plot(x="spectral", ax=axes[1], label="weighted_residual")
+    else:
+        res.residual.plot(x="spectral", ax=axes[1], label="residual")
 
     for axis in axes:
         axis.set_ylabel(y_label)

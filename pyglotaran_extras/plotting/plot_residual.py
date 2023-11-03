@@ -64,9 +64,21 @@ def plot_residual(
         return
 
     add_cycler_if_not_none(ax, cycler)
-    data = res.data if show_data else res.residual
+    data = (
+        res.data
+        if show_data
+        else res.weighted_residual
+        if "weighted_residual" in res
+        else res.residual
+    )
     data = shift_time_axis_by_irf_location(data, irf_location, _internal_call=True)
-    title = "dataset" if show_data else "residual"
+    title = (
+        "dataset"
+        if show_data
+        else "weighted residual"
+        if "weighted_residual" in res
+        else "residual"
+    )
     shape = np.array(data.shape)
     # Handle different dimensionality of data
     if min(shape) == 1:
