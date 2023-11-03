@@ -41,8 +41,6 @@ def plot_data_overview(
     cmap: str = "PuRd",
     datamin: float | None = None,
     datamax: float | None = None,
-    model_label: str = "Time (ps)",
-    global_label: str = "Wavelength (nm)",
 ) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
     """Plot data as filled contour plot and SVD components.
 
@@ -73,10 +71,6 @@ def plot_data_overview(
         minimum of the data. Defaults to None.
     datamax : float | None
         maximum of the data. Defaults to None.
-    model_label : str
-        Axes label for model axis. Defaults to "Time (ps)".
-    global_label : str
-        Axes label for model axis. Defaults to "Wavelength (nm)".
 
     Returns
     -------
@@ -120,13 +114,6 @@ def plot_data_overview(
     )
     plot_sv_data(dataset, sv_ax)
     plot_rsv_data(dataset, rsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
-    sv_ax.set_ylabel("")
-    lsv_ax.set_ylabel("")
-    rsv_ax.set_ylabel("")
-    lsv_ax.set_xlabel(model_label)
-    rsv_ax.set_xlabel(global_label)
-    data_ax.set_xlabel(model_label)
-    data_ax.set_ylabel(global_label)
     if show_data_svd_legend is True:
         rsv_ax.legend(title="singular value index", loc="lower right", bbox_to_anchor=(1.13, 1))
     fig.suptitle(title, fontsize=16)
