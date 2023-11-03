@@ -37,9 +37,12 @@ def plot_data_overview(
     figsize: tuple[float, float] = (15, 10),
     nr_of_data_svd_vectors: int = 4,
     show_data_svd_legend: bool = True,
-    irf_location: float | None = None,cmap='PuRd',
-    datamin: float | None = None,datamax: float | None = None,
-    model_label: str = "Time (ps)", global_label: str = "Wavelength (nm)"
+    irf_location: float | None = None,
+    cmap: str = "PuRd",
+    datamin: float | None = None,
+    datamax: float | None = None,
+    model_label: str = "Time (ps)",
+    global_label: str = "Wavelength (nm)",
 ) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
     """Plot data as filled contour plot and SVD components.
 
@@ -64,14 +67,15 @@ def plot_data_overview(
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
     cmap : str
-        Colormap to use for the filled contour plot. Defaults to "PuRd" (which is most suitable for emission data).
-    datamin: float | None = None
+        Colormap to use for the filled contour plot. Defaults to "PuRd" (which is most suitable
+        for emission data).
+    datamin : float | None
         minimum of the data. Defaults to None.
-    datamax: float | None = None
+    datamax : float | None
         maximum of the data. Defaults to None.
-    model_label: str
+    model_label : str
         Axes label for model axis. Defaults to "Time (ps)".
-    global_label: str
+    global_label : str
         Axes label for model axis. Defaults to "Wavelength (nm)".
 
     Returns
@@ -100,7 +104,7 @@ def plot_data_overview(
     rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
 
     if len(data.time) > 1:
-        data.plot(x="time", ax=data_ax, center=False,cmap=cmap,vmin=datamin,vmax=datamax)
+        data.plot(x="time", ax=data_ax, center=False, cmap=cmap, vmin=datamin, vmax=datamax)
     else:
         data.plot(ax=data_ax)
 
