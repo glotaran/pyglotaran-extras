@@ -41,9 +41,11 @@ def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycl
     ax = plt.subplot()
     add_cycler_if_not_none(ax, cycler)
 
+    ax_cycler = iter(ax._get_lines._cycler_items)
+
     for _ in range(10):
         expected = next(expected_cycler)
-        assert next(ax._get_lines.prop_cycler) == expected
+        assert next(ax_cycler) == expected
 
 
 @pytest.mark.parametrize(
@@ -55,10 +57,13 @@ def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cy
     _, axes = plt.subplots(1, 2)
     add_cycler_if_not_none(axes, cycler)
 
+    ax0_cycler = iter(axes[0]._get_lines._cycler_items)
+    ax1_cycler = iter(axes[1]._get_lines._cycler_items)
+
     for _ in range(10):
         expected = next(expected_cycler)
-        assert next(axes[0]._get_lines.prop_cycler) == expected
-        assert next(axes[1]._get_lines.prop_cycler) == expected
+        assert next(ax0_cycler) == expected
+        assert next(ax1_cycler) == expected
 
 
 @pytest.mark.parametrize(
