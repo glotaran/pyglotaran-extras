@@ -38,6 +38,9 @@ def plot_data_overview(
     nr_of_data_svd_vectors: int = 4,
     show_data_svd_legend: bool = True,
     irf_location: float | None = None,
+    cmap: str = "PuRd",
+    vmin: float | None = None,
+    vmax: float | None = None,
 ) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
     """Plot data as filled contour plot and SVD components.
 
@@ -61,6 +64,13 @@ def plot_data_overview(
     irf_location : float | None
         Location of the ``irf`` by which the time axis will get shifted. If it is None the time
         axis will not be shifted. Defaults to None.
+    cmap : str
+        Colormap to use for the filled contour plot. Defaults to "PuRd" which is most suitable
+        for emission data (previous default was "viridis").
+    vmin : float | None
+        Lower value to anchor the colormap. Defaults to None meaning it inferred from the data.
+    vmax : float | None
+        Lower value to anchor the colormap. Defaults to None meaning it inferred from the data.
 
     Returns
     -------
@@ -88,7 +98,7 @@ def plot_data_overview(
     rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
 
     if len(data.time) > 1:
-        data.plot(x="time", ax=data_ax, center=False)
+        data.plot(x="time", ax=data_ax, center=False, cmap=cmap, vmin=vmin, vmax=vmax)
     else:
         data.plot(ax=data_ax)
 
