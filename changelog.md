@@ -4,6 +4,15 @@
 
 ## 0.8.0 (Unreleased)
 
+- 🧰👌 Switch tooling to ruff (#197)
+- 🩹 Fix crash when plotting spectral model result (#200)
+- 👷♻️ Use hatch as build backend (#204)
+- 🧰 Use black-pre-commit-mirror for 2x speedup (#205)
+- 🧰🚀 Use ruff for formatting (#214)
+- 👌 Use weighted residual instead of residual plots if present (#216)
+- 👌 Add color map arguments to plot_data_overview (#217)
+- 👌 Add das_cycler and svd_cycler to plot collection functions (#218)
+
 (changes-0_7_1)=
 
 ## 0.7.1 (2023-07-27)

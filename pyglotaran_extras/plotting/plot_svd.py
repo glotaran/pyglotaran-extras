@@ -5,10 +5,13 @@ from typing import TYPE_CHECKING
 
 from glotaran.io.prepare_dataset import add_svd_to_dataset
 
+from pyglotaran_extras.deprecation import warn_deprecated
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
+from pyglotaran_extras.types import Unset
+from pyglotaran_extras.types import UnsetType
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -80,7 +83,7 @@ def plot_svd(
         show_legend=show_residual_svd_legend,
         irf_location=irf_location,
     )
-    plot_sv_residual(res, axes[0, 2], cycler=cycler)
+    plot_sv_residual(res, axes[0, 2])
     add_svd_to_dataset(dataset=res, name="data")
     plot_lsv_data(
         res,
@@ -100,7 +103,7 @@ def plot_svd(
         show_legend=show_data_svd_legend,
         irf_location=irf_location,
     )
-    plot_sv_data(res, axes[1, 2], cycler=cycler)
+    plot_sv_data(res, axes[1, 2])
 
 
 def plot_lsv_data(
@@ -181,7 +184,7 @@ def plot_sv_data(
     res: xr.Dataset,
     ax: Axis,
     indices: Sequence[int] = range(10),
-    cycler: Cycler | None = PlotStyle().cycler,
+    cycler: Cycler | None | UnsetType = Unset,
 ) -> None:
     """Plot singular values of the data matrix.
 
@@ -193,10 +196,15 @@ def plot_sv_data(
         Axis to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to range(10).
-    cycler : Cycler | None
-        Plot style cycler to use. Defaults to PlotStyle().cycler.
+    cycler : Cycler | None | UnsetType
+        Deprecated since it has no effect. Defaults to Unset.
     """
-    add_cycler_if_not_none(ax, cycler)
+    if cycler is not Unset:
+        warn_deprecated(
+            deprecated_qual_name_usage="'cycler' argument in 'plot_sv_data'",
+            new_qual_name_usage="matplotlib on the axis directly",
+            to_be_removed_in_version="0.9.0",
+        )
     dSV = res.data_singular_values  # noqa: N806
     dSV.sel(singular_value_index=indices[: len(dSV.singular_value_index)]).plot.line(
         "ro-", yscale="log", ax=ax
@@ -288,7 +296,7 @@ def plot_sv_residual(
     res: xr.Dataset,
     ax: Axis,
     indices: Sequence[int] = range(10),
-    cycler: Cycler | None = PlotStyle().cycler,
+    cycler: Cycler | None | UnsetType = Unset,
 ) -> None:
     """Plot singular values of the residual matrix.
 
@@ -300,10 +308,15 @@ def plot_sv_residual(
         Axis to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to range(10).
-    cycler : Cycler | None
-        Plot style cycler to use. Defaults to PlotStyle().cycler.
+    cycler : Cycler | None | UnsetType
+        Deprecated since it has no effect. Defaults to Unset.
     """
-    add_cycler_if_not_none(ax, cycler)
+    if cycler is not Unset:
+        warn_deprecated(
+            deprecated_qual_name_usage="'cycler' argument in 'plot_sv_residual'",
+            new_qual_name_usage="matplotlib on the axis directly",
+            to_be_removed_in_version="0.9.0",
+        )
     if "weighted_residual_singular_values" in res:
         rSV = res.weighted_residual_singular_values  # noqa: N806
     else:

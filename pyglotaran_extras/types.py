@@ -10,6 +10,21 @@ from typing import TypeAlias
 import xarray as xr
 from glotaran.project.result import Result
 
+
+class UnsetType:
+    """Type for the ``Unset`` singleton."""
+
+    def __repr__(self) -> str:  # noqa: DOC
+        """Representation of instances in editors."""
+        return "Unset"
+
+
+Unset = UnsetType()
+"""Value to use as default for an arguments where None is a meaningful value.
+
+This way we can prevent regressions.
+"""
+
 DatasetConvertible: TypeAlias = xr.Dataset | xr.DataArray | str | Path
 """Types of data which can be converted to a dataset."""
 ResultLike: TypeAlias = (

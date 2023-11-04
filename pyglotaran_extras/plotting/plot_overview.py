@@ -21,6 +21,7 @@ from pyglotaran_extras.plotting.plot_svd import plot_svd
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import extract_irf_location
+from pyglotaran_extras.types import Unset
 
 if TYPE_CHECKING:
     from cycler import Cycler
@@ -29,6 +30,7 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
     from pyglotaran_extras.types import DatasetConvertible
+    from pyglotaran_extras.types import UnsetType
 
 
 def plot_overview(
@@ -48,6 +50,8 @@ def plot_overview(
     show_residual_svd_legend: bool = True,
     show_irf_dispersion_center: bool = True,
     show_zero_line: bool = True,
+    das_cycler: Cycler | None | UnsetType = Unset,
+    svd_cycler: Cycler | None | UnsetType = Unset,
 ) -> tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
@@ -95,12 +99,23 @@ def plot_overview(
     show_zero_line : bool
         Whether or not to add a horizontal line at zero to the plots of the spectra.
         Defaults to True.
+    das_cycler : Cycler | None | UnsetType
+        Plot style cycler to use for DAS plots. Defaults to ``Unset`` which means that the value
+        of ``cycler`` is used.
+    svd_cycler : Cycler | None | UnsetType
+        Plot style cycler to use for SVD plots. Defaults to ``Unset`` which means that the value
+        of ``cycler`` is used.
 
     Returns
     -------
     tuple[Figure, Axes]
     """
     res = load_data(result, _stacklevel=3)
+
+    if das_cycler is Unset:
+        das_cycler = cycler
+    if svd_cycler is Unset:
+        svd_cycler = cycler
 
     if res.coords["time"].to_numpy().size == 1:
         fig, axes = plot_guidance(res)
@@ -125,13 +140,15 @@ def plot_overview(
         main_irf_nr=main_irf_nr,
         cycler=cycler,
     )
-    plot_spectra(res, axes[0:2, 1:3], cycler=cycler, show_zero_line=show_zero_line)
+    plot_spectra(
+        res, axes[0:2, 1:3], cycler=cycler, show_zero_line=show_zero_line, das_cycler=das_cycler
+    )
     plot_svd(
         res,
         axes[2:4, 0:3],
         linlog=linlog,
         linthresh=linthresh,
-        cycler=cycler,
+        cycler=svd_cycler,
         nr_of_data_svd_vectors=nr_of_data_svd_vectors,
         nr_of_residual_svd_vectors=nr_of_residual_svd_vectors,
         show_data_svd_legend=show_data_svd_legend,
@@ -161,6 +178,7 @@ def plot_simple_overview(
     figure_only: bool | None = None,
     show_irf_dispersion_center: bool = True,
     show_data: bool | None = False,
+    svd_cycler: Cycler | None | UnsetType = Unset,
 ) -> tuple[Figure, Axes]:
     """Plot simple overview.
 
@@ -182,12 +200,17 @@ def plot_simple_overview(
     show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
+    svd_cycler : Cycler | None | UnsetType
+        Plot style cycler to use for SVD plots. Defaults to ``Unset`` which means that the value
+        of ``cycler`` is used.
 
     Returns
     -------
     tuple[Figure, Axes]
     """
     res = load_data(result, _stacklevel=3)
+    if svd_cycler is Unset:
+        svd_cycler = cycler
 
     fig, axes = plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
     for ax in axes.flatten():
@@ -200,8 +223,8 @@ def plot_simple_overview(
 
     irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].to_numpy()[0])
 
-    plot_lsv_residual(res, ax=axes[1, 0], irf_location=irf_location)
-    plot_rsv_residual(res, ax=axes[1, 1])
+    plot_lsv_residual(res, ax=axes[1, 0], irf_location=irf_location, cycler=svd_cycler)
+    plot_rsv_residual(res, ax=axes[1, 1], cycler=svd_cycler)
 
     plot_residual(
         res,
