@@ -20,7 +20,10 @@ class UnsetType:
 
 
 Unset = UnsetType()
-"""Singleton to use when arguments are not provided where None is a valid value."""
+"""Value to use as default for an arguments where None is a meaningful value.
+
+This way we can prevent regressions.
+"""
 
 DatasetConvertible: TypeAlias = xr.Dataset | xr.DataArray | str | Path
 """Types of data which can be converted to a dataset."""
