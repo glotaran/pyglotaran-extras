@@ -12,6 +12,7 @@ from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_sv_data
+from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import not_single_element_dims
 from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from collections.abc import Hashable
 
     import xarray as xr
+    from cycler import Cycler
     from glotaran.project.result import Result
     from matplotlib.figure import Figure
     from matplotlib.pyplot import Axes
@@ -41,6 +43,7 @@ def plot_data_overview(
     cmap: str = "PuRd",
     vmin: float | None = None,
     vmax: float | None = None,
+    svd_cycler: Cycler | None = PlotStyle().cycler,
 ) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
     """Plot data as filled contour plot and SVD components.
 
@@ -71,6 +74,8 @@ def plot_data_overview(
         Lower value to anchor the colormap. Defaults to None meaning it inferred from the data.
     vmax : float | None
         Lower value to anchor the colormap. Defaults to None meaning it inferred from the data.
+    svd_cycler : Cycler | None
+        Plot style cycler to use for SVD plots. Defaults to ``PlotStyle().cycler``.
 
     Returns
     -------
@@ -111,9 +116,16 @@ def plot_data_overview(
         linlog=linlog,
         linthresh=linthresh,
         irf_location=irf_location,
+        cycler=svd_cycler,
     )
     plot_sv_data(dataset, sv_ax)
-    plot_rsv_data(dataset, rsv_ax, indices=range(nr_of_data_svd_vectors), show_legend=False)
+    plot_rsv_data(
+        dataset,
+        rsv_ax,
+        indices=range(nr_of_data_svd_vectors),
+        show_legend=False,
+        cycler=svd_cycler,
+    )
     if show_data_svd_legend is True:
         rsv_ax.legend(title="singular value index", loc="lower right", bbox_to_anchor=(1.13, 1))
     fig.suptitle(title, fontsize=16)

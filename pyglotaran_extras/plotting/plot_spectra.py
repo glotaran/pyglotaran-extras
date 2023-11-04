@@ -7,6 +7,7 @@ import numpy as np
 
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
+from pyglotaran_extras.types import Unset
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -14,12 +15,15 @@ if TYPE_CHECKING:
     from matplotlib.axis import Axis
     from matplotlib.pyplot import Axes
 
+    from pyglotaran_extras.types import UnsetType
+
 
 def plot_spectra(
     res: xr.Dataset,
     axes: Axes,
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
+    das_cycler: Cycler | None | UnsetType = Unset,
 ) -> None:
     """Plot spectra such as SAS and DAS as well as their normalize version on ``axes``.
 
@@ -33,11 +37,17 @@ def plot_spectra(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
+    das_cycler : Cycler | None | UnsetType
+        Plot style cycler to use for DAS plots. Defaults to ``Unset`` which means that the value
+        of ``cycler`` is used.
     """
+    if das_cycler is Unset:
+        das_cycler = cycler
+
     plot_sas(res, axes[0, 0], cycler=cycler, show_zero_line=show_zero_line)
-    plot_das(res, axes[0, 1], cycler=cycler, show_zero_line=show_zero_line)
+    plot_das(res, axes[0, 1], cycler=das_cycler, show_zero_line=show_zero_line)
     plot_norm_sas(res, axes[1, 0], cycler=cycler, show_zero_line=show_zero_line)
-    plot_norm_das(res, axes[1, 1], cycler=cycler, show_zero_line=show_zero_line)
+    plot_norm_das(res, axes[1, 1], cycler=das_cycler, show_zero_line=show_zero_line)
 
 
 def plot_sas(
