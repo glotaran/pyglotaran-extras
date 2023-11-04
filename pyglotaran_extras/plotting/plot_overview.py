@@ -52,6 +52,7 @@ def plot_overview(
     show_zero_line: bool = True,
     das_cycler: Cycler | None | UnsetType = Unset,
     svd_cycler: Cycler | None | UnsetType = Unset,
+    use_svd_number: bool = False,
 ) -> tuple[Figure, Axes]:
     """Plot overview of the optimization result.
 
@@ -105,6 +106,9 @@ def plot_overview(
     svd_cycler : Cycler | None | UnsetType
         Plot style cycler to use for SVD plots. Defaults to ``Unset`` which means that the value
         of ``cycler`` is used.
+    use_svd_number : bool
+        Whether to use singular value number (starts at 1) instead of singular value index
+        (starts at 0) for labeling in plot. Defaults to False.
 
     Returns
     -------
@@ -154,6 +158,7 @@ def plot_overview(
         show_data_svd_legend=show_data_svd_legend,
         show_residual_svd_legend=show_residual_svd_legend,
         irf_location=irf_location,
+        use_svd_number=use_svd_number,
     )
     plot_residual(
         res,
@@ -179,6 +184,7 @@ def plot_simple_overview(
     show_irf_dispersion_center: bool = True,
     show_data: bool | None = False,
     svd_cycler: Cycler | None | UnsetType = Unset,
+    use_svd_number: bool = False,
 ) -> tuple[Figure, Axes]:
     """Plot simple overview.
 
@@ -203,6 +209,9 @@ def plot_simple_overview(
     svd_cycler : Cycler | None | UnsetType
         Plot style cycler to use for SVD plots. Defaults to ``Unset`` which means that the value
         of ``cycler`` is used.
+    use_svd_number : bool
+        Whether to use singular value number (starts at 1) instead of singular value index
+        (starts at 0) for labeling in plot. Defaults to False.
 
     Returns
     -------
@@ -223,8 +232,14 @@ def plot_simple_overview(
 
     irf_location = extract_irf_location(res, center_λ=res.coords["spectral"].to_numpy()[0])
 
-    plot_lsv_residual(res, ax=axes[1, 0], irf_location=irf_location, cycler=svd_cycler)
-    plot_rsv_residual(res, ax=axes[1, 1], cycler=svd_cycler)
+    plot_lsv_residual(
+        res,
+        ax=axes[1, 0],
+        irf_location=irf_location,
+        cycler=svd_cycler,
+        use_svd_number=use_svd_number,
+    )
+    plot_rsv_residual(res, ax=axes[1, 1], cycler=svd_cycler, use_svd_number=use_svd_number)
 
     plot_residual(
         res,

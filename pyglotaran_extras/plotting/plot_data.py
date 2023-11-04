@@ -44,6 +44,7 @@ def plot_data_overview(
     vmin: float | None = None,
     vmax: float | None = None,
     svd_cycler: Cycler | None = PlotStyle().cycler,
+    use_svd_number: bool = False,
 ) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
     """Plot data as filled contour plot and SVD components.
 
@@ -76,6 +77,9 @@ def plot_data_overview(
         Lower value to anchor the colormap. Defaults to None meaning it inferred from the data.
     svd_cycler : Cycler | None
         Plot style cycler to use for SVD plots. Defaults to ``PlotStyle().cycler``.
+    use_svd_number : bool
+        Whether to use singular value number (starts at 1) instead of singular value index
+        (starts at 0) for labeling in plot. Defaults to False.
 
     Returns
     -------
@@ -117,6 +121,7 @@ def plot_data_overview(
         linthresh=linthresh,
         irf_location=irf_location,
         cycler=svd_cycler,
+        use_svd_number=use_svd_number,
     )
     plot_sv_data(dataset, sv_ax)
     plot_rsv_data(
@@ -125,9 +130,14 @@ def plot_data_overview(
         indices=range(nr_of_data_svd_vectors),
         show_legend=False,
         cycler=svd_cycler,
+        use_svd_number=use_svd_number,
     )
     if show_data_svd_legend is True:
-        rsv_ax.legend(title="singular value index", loc="lower right", bbox_to_anchor=(1.13, 1))
+        rsv_ax.legend(
+            title="singular value number" if use_svd_number else "singular_value_index",
+            loc="lower right",
+            bbox_to_anchor=(1.13, 1),
+        )
     fig.suptitle(title, fontsize=16)
 
     if linlog:
