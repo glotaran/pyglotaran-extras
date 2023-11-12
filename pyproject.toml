@@ -75,6 +75,11 @@ include = ["/pyglotaran_extras"]
 [tool.hatch.envs.default]
 features = ["dev"]
 
+[tool.docformatter]
+black = true
+wrap-summaries = 99
+wrap-descriptions = 99
+
 [tool.coverage.run]
 branch = true
 include = ['pyglotaran_extras/*']
@@ -119,11 +124,6 @@ warn_unused_configs = true
 module = "tests.*"
 disallow_incomplete_defs = false
 disallow_untyped_defs = false
-
-[tool.docformatter]
-black = true
-wrap-summaries = 99
-wrap-descriptions = 99
 
 [tool.interrogate]
 exclude = ["docs", "tests/*"]
