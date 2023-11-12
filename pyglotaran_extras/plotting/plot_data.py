@@ -123,7 +123,7 @@ def plot_data_overview(
         cycler=svd_cycler,
         use_svd_number=use_svd_number,
     )
-    plot_sv_data(dataset, sv_ax)
+    plot_sv_data(dataset, sv_ax, use_svd_number=use_svd_number)
     plot_rsv_data(
         dataset,
         rsv_ax,
