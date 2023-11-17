@@ -14,6 +14,7 @@
 - 👌 Add das_cycler and svd_cycler to plot collection functions (#218)
 - 👌 Add use_svd_number switch to use SV number instead of index as label (#219)
 - 🩹 Fix use_svd_number not being passed on to plot_sv_data in plot_data_overview (#221)
+- 📦 Use trusted publisher workflow for publishing to PyPI (#222)
 
 (changes-0_7_1)=
 
