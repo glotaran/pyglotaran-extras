@@ -75,15 +75,12 @@ include = ["/pyglotaran_extras"]
 [tool.hatch.envs.default]
 features = ["dev"]
 
-[tool.nbqa.addopts]
-flake8 = ["--extend-ignore=E402,F404"]
-
-# For now this is not used because pydoclint does not support toml when used with flake8
-
 [tool.docformatter]
 black = true
 wrap-summaries = 99
 wrap-descriptions = 99
+
+# For now this is not used because pydoclint does not support toml when used with flake8
 
 [tool.pydoclint]
 skip-checking-short-docstrings = false
