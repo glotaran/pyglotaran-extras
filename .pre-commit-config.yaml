@@ -23,7 +23,7 @@ repos:
         args: [--in-place, --config, ./pyproject.toml]
 
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "1.4.1"
+    rev: "1.5.1"
     hooks:
       - id: pyproject-fmt
 
@@ -33,7 +33,7 @@ repos:
       - id: absolufy-imports
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.3 # Use the sha or tag you want to point at
+    rev: v3.1.0 # Use the sha or tag you want to point at
     hooks:
       - id: prettier
 
@@ -46,9 +46,10 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.1.4
+    rev: v0.1.6
     hooks:
       - id: ruff
+        name: "ruff sort imports notebooks"
         args:
           - "--fix"
           - "--select=I"
@@ -56,11 +57,13 @@ repos:
         alias: isort-notebooks
         types_or: [jupyter]
       - id: ruff-format
+        name: "ruff format notebooks"
         types_or: [jupyter]
         args:
           - "--config=.ruff-notebooks.toml"
         alias: format-notebooks
       - id: ruff
+        name: "ruff lint notebooks"
         types_or: [jupyter]
         args:
           - "--config=.ruff-notebooks.toml"
@@ -69,7 +72,7 @@ repos:
   # Linters
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.6.1
+    rev: v1.7.0
     hooks:
       - id: mypy
         exclude: ^docs
@@ -85,9 +88,10 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.1.4
+    rev: v0.1.6
     hooks:
       - id: ruff
+        name: "ruff sort imports"
         args:
           - "--fix"
           - "--select=I"
@@ -96,6 +100,7 @@ repos:
       # Commands above are both formatters an not linters
       # See also: https://github.com/astral-sh/ruff/discussions/7310#discussioncomment-7102010
       - id: ruff
+        name: "ruff lint"
 
   - repo: https://github.com/PyCQA/flake8
     rev: 6.1.0
@@ -106,25 +111,12 @@ repos:
           - "--select=DOC"
           - "--extend-ignore=DOC502"
           - "--color=always"
-          - "--require-return-section-when-returning-none=False"
+          - "--require-return-section-when-returning-nothing=False"
           - "--allow-init-docstring=True"
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|tests?/)"
-        additional_dependencies: [pydoclint==0.1.4]
-
-  - repo: https://github.com/rstcheck/rstcheck
-    rev: "v6.2.0"
-    hooks:
-      - id: rstcheck
-        additional_dependencies: [sphinx]
-        exclude: "^docs/_templates"
-        args: [--ignore-directives=autosummary]
-
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-      - id: rst-backticks
+        additional_dependencies: [pydoclint==0.3.8]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6

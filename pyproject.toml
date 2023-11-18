@@ -80,6 +80,15 @@ black = true
 wrap-summaries = 99
 wrap-descriptions = 99
 
+# For now this is not used because pydoclint does not support toml when used with flake8
+
+[tool.pydoclint]
+skip-checking-short-docstrings = false
+style = 'numpy'
+exclude = '^(docs/|tests?/)'
+require-return-section-when-returning-none = false
+allow-init-docstring = true
+
 [tool.coverage.run]
 branch = true
 include = ['pyglotaran_extras/*']
@@ -129,15 +138,3 @@ disallow_untyped_defs = false
 exclude = ["docs", "tests/*"]
 ignore-init-module = true
 fail-under = 100
-
-[tool.nbqa.addopts]
-flake8 = ["--extend-ignore=E402,F404"]
-
-# For now this is not used because pydoclint does not support toml when used with flake8
-
-[tool.pydoclint]
-skip-checking-short-docstrings = false
-style = 'numpy'
-exclude = '^(docs/|tests?/)'
-require-return-section-when-returning-none = false
-allow-init-docstring = true
