@@ -46,7 +46,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.1.5
+    rev: v0.1.6
     hooks:
       - id: ruff
         args:
@@ -85,7 +85,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.1.5
+    rev: v0.1.6
     hooks:
       - id: ruff
         args:
@@ -106,25 +106,12 @@ repos:
           - "--select=DOC"
           - "--extend-ignore=DOC502"
           - "--color=always"
-          - "--require-return-section-when-returning-none=False"
+          - "--require-return-section-when-returning-nothing=False"
           - "--allow-init-docstring=True"
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
         exclude: "^(docs/|tests?/)"
-        additional_dependencies: [pydoclint==0.1.4]
-
-  - repo: https://github.com/rstcheck/rstcheck
-    rev: "v6.2.0"
-    hooks:
-      - id: rstcheck
-        additional_dependencies: [sphinx]
-        exclude: "^docs/_templates"
-        args: [--ignore-directives=autosummary]
-
-  - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
-    hooks:
-      - id: rst-backticks
+        additional_dependencies: [pydoclint==0.3.8]
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
