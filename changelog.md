@@ -1,8 +1,8 @@
 # Changelog
 
-(changes-0_8_0)=
+(changes-0_7_2)=
 
-## 0.8.0 (Unreleased)
+## 0.7.2 (Unreleased)
 
 - 🧰👌 Switch tooling to ruff (#197)
 - 🩹 Fix crash when plotting spectral model result (#200)
