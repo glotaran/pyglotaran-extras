@@ -2,7 +2,7 @@
 
 (changes-0_7_2)=
 
-## 0.7.2 (Unreleased)
+## 0.7.2 (2023-12-07)
 
 - 🧰👌 Switch tooling to ruff (#197)
 - 🩹 Fix crash when plotting spectral model result (#200)
