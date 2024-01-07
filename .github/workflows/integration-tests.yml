@@ -51,7 +51,7 @@ jobs:
           install_extras: false
 
       - name: Upload Example Plots Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: example-plots
           path: ${{ steps.example-run.outputs.plots-path }}
