@@ -53,5 +53,29 @@ jobs:
       - name: Upload Example Plots Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: example-plots
+          name: example-plots-${{ matrix.example_name }}
           path: ${{ steps.example-run.outputs.plots-path }}
+
+  collect-artifacts:
+    name: "Collect artifacts and reupload as bundel"
+    runs-on: ubuntu-latest
+    needs: [run-examples]
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: example-plots
+          pattern: example-plots-*
+          merge-multiple: true
+
+      - name: Delete Intermediate artifacts
+        uses: geekyeggo/delete-artifact@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: example-plots-*
+
+      - name: Upload Example Plots Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-plots
+          path: example-plots
