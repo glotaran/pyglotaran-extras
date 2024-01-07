@@ -93,7 +93,7 @@ def plot_residual(
             res, ax=ax, spectral_axis="y", cycler=cycler, irf_location=irf_location
         )
         ax.set_xlabel("time")
-        ax.legend()
+        ax.legend(loc="upper right")
     if linlog:
         ax.set_xscale("symlog", linthresh=linthresh)
         ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
