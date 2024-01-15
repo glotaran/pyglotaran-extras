@@ -685,7 +685,7 @@ BuiltinSubPlotLabelFormatFunctions: Mapping[
 
 
 def get_subplot_label_format_function(
-    format_function: BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int | None], str]
+    format_function: BuiltinSubPlotLabelFormatFunctionKey | Callable[[int, int | None], str],
 ) -> Callable[[int, int | None], str]:
     """Get subplot label function from ``BuiltinSubPlotLabelFormatFunctions`` if it is a key.
 
