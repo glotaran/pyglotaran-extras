@@ -70,14 +70,15 @@ jobs:
           pattern: example-plots-*
           merge-multiple: true
 
-      - name: Delete Intermediate artifacts
-        uses: geekyeggo/delete-artifact@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          name: example-plots-*
-
       - name: Upload Example Plots Artifact
         uses: actions/upload-artifact@v4
         with:
           name: example-plots
           path: example-plots
+          overwrite: true
+
+      - name: Delete Intermediate artifacts
+        uses: geekyeggo/delete-artifact@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: example-plots-*
