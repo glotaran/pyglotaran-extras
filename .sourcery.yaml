@@ -1,7 +1,9 @@
 ignore: []
 
-refactor:
-  skip: [simplify-boolean-comparison]
+rule_settings:
+  disable:
+    - simplify-boolean-comparison
+    - simplify-len-comparison
 
 metrics:
   quality_threshold: 25.0
