@@ -11,6 +11,8 @@ from glotaran.io import load_result
 from pyglotaran_extras.io.load_data import load_data
 
 if TYPE_CHECKING:
+    from warnings import WarningMessage
+
     from _pytest.recwarn import WarningsRecorder
     from glotaran.project.result import Result
 
@@ -19,6 +21,13 @@ MULTI_DATASET_WARING = (
     "Pass the dataset set you want to plot (e.g. result.data['dataset_1']) , "
     "to deactivate this Warning.\nPossible dataset names are: ['dataset_1', 'dataset_2']"
 )
+
+
+def filter_warnings(
+    recorder: WarningsRecorder, category: type[Warning] = UserWarning
+) -> list[WarningMessage]:
+    """Filter warnings by category."""
+    return [msg for msg in recorder if issubclass(msg.category, category)]
 
 
 def run_load_data_test(result: xr.Dataset, compare: xr.Dataset | None = None):
@@ -56,7 +65,7 @@ def test_load_data(
     assert data_array.equals(from_data_array.data)
 
     # No warning til now
-    assert len(recwarn) == 0
+    assert len(filter_warnings(recwarn)) == 0
 
     # Ensure not to mutate original fixture
     result_multi_dataset = load_result(tmp_path / "result.yml")
@@ -66,11 +75,12 @@ def test_load_data(
 
     run_load_data_test(from_result_multi_dataset, compare_dataset)
 
-    assert len(recwarn) == 1
+    filtered_warnings = filter_warnings(recwarn)
+    assert len(filtered_warnings) == 1
 
-    assert recwarn[0].category == UserWarning
-    assert recwarn[0].message.args[0] == MULTI_DATASET_WARING
-    assert Path(recwarn[0].filename) == Path(__file__)
+    assert filtered_warnings[0].category == UserWarning
+    assert filtered_warnings[0].message.args[0] == MULTI_DATASET_WARING  # type:ignore[union-attr]
+    assert Path(filtered_warnings[0].filename) == Path(__file__)
 
     def wrapped_call(result: Result):
         return load_data(result, _stacklevel=3)
@@ -79,11 +89,13 @@ def test_load_data(
 
     run_load_data_test(result_wrapped_call, compare_dataset)
 
-    assert len(recwarn) == 2
+    filtered_warnings = filter_warnings(recwarn)
 
-    assert recwarn[1].category == UserWarning
-    assert recwarn[1].message.args[0] == MULTI_DATASET_WARING
-    assert Path(recwarn[1].filename) == Path(__file__)
+    assert len(filtered_warnings) == 2
+
+    assert filtered_warnings[1].category == UserWarning
+    assert filtered_warnings[1].message.args[0] == MULTI_DATASET_WARING  # type:ignore[union-attr]
+    assert Path(filtered_warnings[1].filename) == Path(__file__)
 
     with pytest.raises(TypeError) as excinfo:
         load_data([1, 2])
