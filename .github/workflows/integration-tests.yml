@@ -59,6 +59,8 @@ jobs:
   collect-artifacts:
     name: "Collect artifacts and reupload as bundel"
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
     needs: [run-examples]
     steps:
       - name: Download All Artifacts
