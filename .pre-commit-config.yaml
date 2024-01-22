@@ -23,7 +23,7 @@ repos:
         args: [--in-place, --config, ./pyproject.toml]
 
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "1.6.0"
+    rev: "1.7.0"
     hooks:
       - id: pyproject-fmt
 
