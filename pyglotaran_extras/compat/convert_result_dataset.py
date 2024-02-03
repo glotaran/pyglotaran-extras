@@ -1,4 +1,5 @@
 """Convert a new pyglotaran (result) dataset to a version compatible with pyglotaran-extras."""
+
 import copy
 import xarray as xr
 from glotaran.project.result import Result
@@ -47,10 +48,28 @@ def _adjust_activation_to_irf(ds: xr.Dataset, *, cleanup: bool = False) -> None:
             # ds = ds.drop_vars("gaussian_activation_scale")  # noqa: ERA001
             pass
     if "gaussian_activation_function" in ds:
-        values = ds.gaussian_activation_function.to_numpy().flatten()
-        ds["irf"] = values
+        values = ds.gaussian_activation_function.to_numpy()
+        ds["irf"] = xr.DataArray(
+            values,
+            coords={
+                "irf_nr": ds["gaussian_activation"].to_numpy() - 1,
+                "time": ds["time"].to_numpy(),
+            },
+        )
         if cleanup:
             # ds = ds.drop_vars("gaussian_activation_function")  # noqa: ERA001
+            pass
+    if "gaussian_activation_dispersion" in ds:
+        values = ds.gaussian_activation_dispersion.to_numpy()[0]
+        ds["irf_center_location"] = xr.DataArray(
+            values,
+            coords={
+                "irf_nr": ds["gaussian_activation_part"].to_numpy(),
+                "spectral": ds["spectral"].to_numpy(),
+            },
+        )
+        if cleanup:
+            # ds = ds.drop_vars("gaussian_activation_dispersion")  # noqa: ERA001
             pass
 
 
@@ -112,7 +131,9 @@ def convert_result(result: Result, cleanup: bool = False) -> Result:
 
     # convert the datasets
     for key in converted_result.data:
-        converted_result.data[key] = convert_dataset(converted_result.data[key], cleanup=cleanup)
+        converted_result.data[key] = convert_dataset(
+            converted_result.data[key], cleanup=cleanup
+        )
 
     # convert the parameters
     return converted_result
