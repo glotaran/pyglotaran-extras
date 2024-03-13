@@ -1,4 +1,5 @@
 """Module containing IRF dispersion plotting functionality."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

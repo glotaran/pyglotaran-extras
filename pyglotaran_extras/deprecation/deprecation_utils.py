@@ -1,4 +1,5 @@
 """Module containing deprecation functionality."""
+
 from __future__ import annotations
 
 from importlib.metadata import distribution

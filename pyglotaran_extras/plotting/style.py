@@ -3,6 +3,7 @@
 For reference see:
 https://glotaran.github.io/legacy/plot_styles
 """
+
 from __future__ import annotations
 
 from enum import Enum

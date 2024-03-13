@@ -1,4 +1,5 @@
 """Tests for pyglotaran_extras.plotting.utils."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

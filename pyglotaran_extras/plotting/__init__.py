@@ -1,4 +1,5 @@
 """Package containing plotting functionality."""
+
 from __future__ import annotations
 
 from pyglotaran_extras.plotting.plot_data import plot_data_overview
