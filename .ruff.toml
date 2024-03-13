@@ -1,4 +1,18 @@
+# Exclude a variety of commonly ignored directories.
+extend-exclude = [
+  "venv",
+  "docs/conf.py",
+]
+# Same as Black.
+line-length = 99
 
+# Assume Python 3.10.
+target-version = "py310"
+
+# Enable using ruff with notebooks
+extend-include = ["*.ipynb"]
+
+[lint]
 select = [
   "E", # pycodestyle
   "W", # pycodestyle
@@ -47,27 +61,13 @@ ignore = [
   "ISC001",
 ]
 
-# Exclude a variety of commonly ignored directories.
-extend-exclude = [
-  "venv",
-  "docs/conf.py",
-]
-# Same as Black.
-line-length = 99
-
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-# Assume Python 3.10.
-target-version = "py310"
-
-# Enable using ruff with notebooks
-extend-include = ["*.ipynb"]
-
-[per-file-ignores]
+[lint.per-file-ignores]
 "tests/*" = ["ARG001"]
 
-[isort]
+[lint.isort]
 required-imports = ["from __future__ import annotations"]
 known-first-party = ["pyglotaran_extras"]
 force-single-line = true
