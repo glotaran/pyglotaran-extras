@@ -71,3 +71,6 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 required-imports = ["from __future__ import annotations"]
 known-first-party = ["pyglotaran_extras"]
 force-single-line = true
+
+[lint.pydocstyle]
+convention = "numpy"
