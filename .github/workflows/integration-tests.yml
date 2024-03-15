@@ -80,6 +80,4 @@ jobs:
       - name: Delete Intermediate artifacts
         uses: geekyeggo/delete-artifact@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           name: example-plots-*
-          failOnError: false
