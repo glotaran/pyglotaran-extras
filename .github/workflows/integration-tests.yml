@@ -82,3 +82,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: example-plots-*
+          failOnError: false
