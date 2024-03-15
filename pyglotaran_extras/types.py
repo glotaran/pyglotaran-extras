@@ -1,4 +1,5 @@
 """Module containing type definitions."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping

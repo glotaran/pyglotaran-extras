@@ -1,4 +1,5 @@
 """Module containing plotting utility functionality."""
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -673,14 +674,16 @@ def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: None | 
     ) + format_sub_plot_number_upper_case_letter((sub_plot_number % 26) + 1)
 
 
-BuiltinSubPlotLabelFormatFunctions: Mapping[
-    str, Callable[[int, int | None], str]
-] = MappingProxyType(
-    {
-        "number": lambda x, _: f"{x}",
-        "upper_case_letter": format_sub_plot_number_upper_case_letter,
-        "lower_case_letter": lambda x, y: format_sub_plot_number_upper_case_letter(x, y).lower(),
-    }
+BuiltinSubPlotLabelFormatFunctions: Mapping[str, Callable[[int, int | None], str]] = (
+    MappingProxyType(
+        {
+            "number": lambda x, _: f"{x}",
+            "upper_case_letter": format_sub_plot_number_upper_case_letter,
+            "lower_case_letter": lambda x, y: format_sub_plot_number_upper_case_letter(
+                x, y
+            ).lower(),
+        }
+    )
 )
 
 

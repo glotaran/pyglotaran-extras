@@ -1,4 +1,5 @@
 """Module containing deprecation functionality."""
+
 from __future__ import annotations
 
 from pyglotaran_extras.deprecation.deprecation_utils import warn_deprecated

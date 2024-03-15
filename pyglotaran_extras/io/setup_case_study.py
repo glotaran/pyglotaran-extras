@@ -1,4 +1,5 @@
 """Module containing functionality to initialize a case study."""
+
 from __future__ import annotations
 
 import inspect

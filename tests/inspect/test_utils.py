@@ -1,4 +1,5 @@
 """Tests for ``pyglotaran_extras.inspect.utils``."""
+
 from __future__ import annotations
 
 from textwrap import dedent

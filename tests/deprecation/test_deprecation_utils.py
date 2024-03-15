@@ -1,4 +1,5 @@
 """Tests for ``pyglotaran_extras.deprecation.deprecation_utils``."""
+
 from __future__ import annotations
 
 from pathlib import Path
