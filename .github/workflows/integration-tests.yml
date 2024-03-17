@@ -59,8 +59,6 @@ jobs:
   collect-artifacts:
     name: "Collect artifacts and reupload as bundel"
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
     needs: [run-examples]
     steps:
       - name: Download All Artifacts
@@ -78,7 +76,8 @@ jobs:
           overwrite: true
 
       - name: Delete Intermediate artifacts
-        uses: geekyeggo/delete-artifact@v4
+        #  TODO: Switc back to GeekyEggo/delete-artifact after
+        #  https://github.com/GeekyEggo/delete-artifact/pull/24 is merged
+        uses: s-weigand/delete-artifact@use-actions-artifact
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           name: example-plots-*
