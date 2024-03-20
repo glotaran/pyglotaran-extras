@@ -76,8 +76,6 @@ jobs:
           overwrite: true
 
       - name: Delete Intermediate artifacts
-        #  TODO: Switc back to GeekyEggo/delete-artifact after
-        #  https://github.com/GeekyEggo/delete-artifact/pull/24 is merged
-        uses: s-weigand/delete-artifact@use-actions-artifact
+        uses: GeekyEggo/delete-artifact@v5
         with:
           name: example-plots-*
