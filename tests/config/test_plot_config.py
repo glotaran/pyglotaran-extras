@@ -14,8 +14,10 @@ from pydantic import ValidationError as PydanticValidationError
 from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
+from pyglotaran_extras.config.plot_config import PlotConfig
 from pyglotaran_extras.config.plot_config import PlotLabelOverRideMap
 from pyglotaran_extras.config.plot_config import PlotLabelOverRideValue
+from tests import TEST_DATA
 
 
 def test_plot_label_over_ride_value_serialization():
@@ -241,3 +243,94 @@ def test_per_function_plot_update_axes_labels():
     assert iterable_axes[0].get_ylabel() == "y-keep"
     assert iterable_axes[1].get_xlabel() == "x-keep"
     assert iterable_axes[1].get_ylabel() == "new y"
+
+
+def test_plot_config():
+    """Initialize with correct defaults and validate correctly."""
+    plot_config_values: dict[str, Any] = YAML().load(
+        StringIO(
+            dedent(
+                """
+                general:
+                    default_args_override:
+                        test_arg: true
+                    axis_label_override:
+                        "Old Label": "New Label"
+
+                test_func:
+                    default_args_override:
+                        test_arg: false
+                    axis_label_override:
+                        "Old Y Label":
+                            target_name: "New Y Label"
+                            axis: y
+                """
+            )
+        )
+    )
+    plot_config = PlotConfig.model_validate(plot_config_values)
+
+    assert plot_config.model_extra is not None
+
+    assert plot_config.general == PerFunctionPlotConfig(
+        default_args_override={"test_arg": True},
+        axis_label_override={"Old Label": "New Label"},
+    )
+    assert plot_config.model_extra["test_func"] == PerFunctionPlotConfig(
+        default_args_override={"test_arg": False},
+        axis_label_override={"Old Y Label": {"target_name": "New Y Label", "axis": "y"}},
+    )
+
+    with pytest.raises(PydanticValidationError) as execinfo:
+        PerFunctionPlotConfig.model_validate({"test_func": {"unknown": 1}})
+
+    assert (
+        "1 validation error for PerFunctionPlotConfig\n"
+        "test_func\n"
+        "  Extra inputs are not permitted "
+        "[type=extra_forbidden, input_value={'unknown': 1}, input_type=dict]"
+        in str(execinfo.value)
+    )
+
+
+def test_plot_config_merge():
+    """Merging creates the expected output.
+
+    - Update fields that are present in original and update
+    - Keep fields that are not present in the update
+    - Add field that is only present in update
+    """
+    original_values, update_values, expected_values = tuple(
+        YAML().load_all(StringIO((TEST_DATA / "config/plot_config_merge.yml").read_text()))
+    )
+    original = PlotConfig.model_validate(original_values)
+    update = PlotConfig.model_validate(update_values)
+    expected = PlotConfig.model_validate(expected_values)
+
+    assert original.merge(update) == expected
+
+
+def test_plot_config_get_function_config():
+    """The generated config updates the general config with the test func config.
+
+    - Update fields that are present in general and test_fun config
+    - Keep fields that are not present in the test_func config
+    - Add field that is only present in test_func config
+    """
+    plot_config_values = YAML().load(
+        StringIO((TEST_DATA / "config/pyglotaran_extras_config.yml").read_text())
+    )
+    plot_config = PlotConfig.model_validate(plot_config_values["plotting"])
+
+    assert plot_config.get_function_config("test_func") == PerFunctionPlotConfig(
+        default_args_override={
+            "will_update_arg": "test_func arg",
+            "will_be_kept_arg": "general arg",
+            "will_be_added_arg": "new arg",
+        },
+        axis_label_override={
+            "will_update_label": "test_func label",
+            "will_be_kept_label": "general label",
+            "will_be_added_label": "new label",
+        },
+    )

@@ -7,6 +7,7 @@ from collections.abc import Iterator
 from collections.abc import Mapping
 from typing import Any
 from typing import Literal
+from typing import cast
 
 import numpy as np
 from matplotlib.axes import Axes
@@ -175,3 +176,85 @@ class PerFunctionPlotConfig(BaseModel):
         else:
             for ax in axes:
                 self.update_axes_labels(ax)
+
+
+class PlotConfig(BaseModel):
+    """Config for plot functions including default args and label overrides."""
+
+    model_config = ConfigDict(extra="allow")
+
+    general: PerFunctionPlotConfig = Field(
+        default_factory=PerFunctionPlotConfig,
+        description="Config that gets applied to all functions if not specified otherwise.",
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def parse(cls, values: dict[str, Any]) -> dict[str, PerFunctionPlotConfig]:
+        """Ensure the extra values are converted to ``PerFunctionPlotConfig``.
+
+        Parameters
+        ----------
+        values : dict[str, Any]
+            Dict that initializes the class.
+
+        Returns
+        -------
+        dict[str, PerFunctionPlotConfig]
+        """
+        for key, value in values.items():
+            values[key] = PerFunctionPlotConfig.model_validate(value)
+        return values
+
+    def get_function_config(self, function_name: str) -> PerFunctionPlotConfig:
+        """Get config for a specific function.
+
+        Parameters
+        ----------
+        function_name : str
+            Name of the function to get the config for.
+
+        Returns
+        -------
+        PerFunctionPlotConfig
+        """
+        function_config = self.general if self.general is not None else PerFunctionPlotConfig()
+        if self.model_extra is not None and function_name in self.model_extra:
+            function_config = function_config.merge(self.model_extra[function_name])
+        return function_config
+
+    def merge(self, other: PlotConfig) -> PlotConfig:  # noqa: C901
+        """Merge two ``PlotConfig``'s where ``other`` overrides values.
+
+        Parameters
+        ----------
+        other : PlotConfig
+            Other ``PlotConfig`` to merge in.
+
+        Returns
+        -------
+        PlotConfig
+        """
+        updated: dict[str, PerFunctionPlotConfig] = {}
+        # Update general field
+        for key in self.model_fields_set:
+            updated[key] = cast(PerFunctionPlotConfig, getattr(self, key))
+            if key in other.model_fields_set:
+                updated[key] = updated[key].merge(cast(PerFunctionPlotConfig, getattr(other, key)))
+        for key in other.model_fields_set:
+            if key not in updated:
+                updated[key] = getattr(other, key)
+        # Update model_extra
+        if self.model_extra is not None:
+            for key, value in self.model_extra.items():
+                updated[key] = cast(PerFunctionPlotConfig, value)
+                if other.model_extra is not None and key in other.model_extra:
+                    updated[key] = updated[key].merge(
+                        cast(PerFunctionPlotConfig, other.model_extra[key])
+                    )
+        if other.model_extra is not None:
+            for key, value in other.model_extra.items():
+                if key not in updated:
+                    updated[key] = value
+
+        return PlotConfig.model_validate(updated)
