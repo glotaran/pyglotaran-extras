@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import wraps
 from io import StringIO
 from textwrap import dedent
 from typing import Any
@@ -17,6 +18,9 @@ from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
 from pyglotaran_extras.config.plot_config import PlotConfig
 from pyglotaran_extras.config.plot_config import PlotLabelOverRideMap
 from pyglotaran_extras.config.plot_config import PlotLabelOverRideValue
+from pyglotaran_extras.config.plot_config import extract_default_kwargs
+from pyglotaran_extras.config.plot_config import find_axes
+from pyglotaran_extras.config.plot_config import find_not_user_provided_kwargs
 from tests import TEST_DATA
 
 
@@ -334,3 +338,111 @@ def test_plot_config_get_function_config():
             "will_be_added_label": "new label",
         },
     )
+
+
+def test_extract_default_kwargs():
+    """Extract argument that can be passed as kwargs."""
+
+    def func(
+        pos_arg: str,
+        pos_arg_default: str = "pos_arg_default",
+        /,
+        normal_arg: str = "normal_arg",
+        *,
+        kw_only_arg: int = 1,
+    ):
+        r"""Test function.
+
+        Parameters
+        ----------
+        pos_arg : str
+            Not extracted
+        pos_arg_default : str
+            Not extracted. Defaults to "pos_arg_default"
+        normal_arg : str
+            A normal arg. Defaults to "normal_arg".
+        kw_only_arg : int
+            A keyword only arg with new line and escaped character in the docstring (\\nu).
+            Defaults to 1.
+        """
+
+    assert extract_default_kwargs(func) == {
+        "normal_arg": {
+            "default": "normal_arg",
+            "annotation": "str",
+            "docstring": 'A normal arg. Defaults to "normal_arg".',
+        },
+        "kw_only_arg": {
+            "default": 1,
+            "annotation": "int",
+            "docstring": (
+                r"A keyword only arg with new line and escaped character in the docstring (\\nu)."
+                " Defaults to 1."
+            ),
+        },
+    }
+
+    def no_annotation(foo="bar"):
+        pass
+
+    assert extract_default_kwargs(no_annotation) == {
+        "foo": {"default": "bar", "annotation": "Any", "docstring": None}
+    }
+
+
+def test_find_not_user_provided_kwargs():
+    """Only find kwarg names for none user passed kwargs."""
+    result = None
+
+    def dec(func):
+        default_kwargs = extract_default_kwargs(func)
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            nonlocal result
+            arg_names = func.__code__.co_varnames[: len(args)]
+            result = find_not_user_provided_kwargs(default_kwargs, arg_names, kwargs)
+            return func(*args, *kwargs)
+
+        return wrapper
+
+    @dec
+    def func(
+        pos_arg: str,
+        arg1: str = "arg1",
+        arg2: str = "arg2",
+        *,
+        kwarg1: int = 1,
+        kwarg2: int = 1,
+    ):
+        return 1
+
+    assert func("foo", "bar", kwarg2=2) == 1
+    assert result == {"arg2", "kwarg1"}
+
+
+def test_find_axes():
+    """Get axes value from iterable of values."""
+
+    base_values = ["foo", True, 1.5]
+
+    assert find_axes(base_values) is None
+
+    _, ax = plt.subplots()
+
+    assert find_axes([*base_values, ax]) is ax
+
+    _, ax = plt.subplots()
+
+    assert find_axes([*base_values, ax]) is ax
+
+    _, np_axes = plt.subplots(1, 2)
+
+    assert np_axes.shape == (2,)
+    assert find_axes([*base_values, np_axes]) is np_axes
+
+    _, ax1 = plt.subplots()
+
+    iterable_axes = (ax, ax1)
+
+    assert find_axes([*base_values, iterable_axes]) is iterable_axes

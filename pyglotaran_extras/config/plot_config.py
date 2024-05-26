@@ -5,11 +5,18 @@ from __future__ import annotations
 from collections.abc import Iterable
 from collections.abc import Iterator
 from collections.abc import Mapping
+from collections.abc import MutableMapping
+from inspect import Parameter
+from inspect import signature
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Literal
+from typing import TypeAlias
+from typing import TypedDict
 from typing import cast
 
 import numpy as np
+from docstring_parser import parse as parse_docstring
 from matplotlib.axes import Axes
 from pydantic import BaseModel
 from pydantic import ConfigDict
@@ -18,6 +25,35 @@ from pydantic import RootModel
 from pydantic import model_serializer
 from pydantic import model_validator
 from pydantic_core import PydanticUndefined
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+
+EXCLUDE_DEFAULT_KWARGS = [
+    "cycler",
+    "das_cycler",
+    "svd_cycler",
+    "ax",
+    "oscillation_type",
+    "indices",
+]
+"""Function kwargs to ignore when building schema.
+
+For now this is a workaround ``ForwardRef`` types that are not known when creating the schema
+"""
+
+
+class DefaultKwarg(TypedDict):
+    """Default value and type annotation of a kwarg extracted from the function signature."""
+
+    default: Any
+    annotation: str
+    docstring: str | None
+
+
+DefaultKwargs: TypeAlias = Mapping[str, DefaultKwarg]
+__PlotFunctionRegistry: MutableMapping[str, DefaultKwargs] = {}
 
 
 class PlotLabelOverRideValue(BaseModel):
@@ -258,3 +294,105 @@ class PlotConfig(BaseModel):
                     updated[key] = value
 
         return PlotConfig.model_validate(updated)
+
+
+def create_parameter_docstring_mapping(func: Callable[..., Any]) -> Mapping[str, str]:
+    """Create a mapping of parameter names and they docstrings.
+
+    Parameters
+    ----------
+    func : Callable[..., Any]
+        Function to create the parameter docstring mapping for.
+
+    Returns
+    -------
+    Mapping[str, str]
+    """
+    param_docstring_mapping = {}
+    for param in parse_docstring(func.__doc__ if func.__doc__ is not None else "").params:
+        if param.description is not None:
+            param_docstring_mapping[param.arg_name] = " ".join(param.description.splitlines())
+    return param_docstring_mapping
+
+
+def extract_default_kwargs(func: Callable[..., Any]) -> DefaultKwargs:
+    """Extract the default kwargs of ``func`` from its signature.
+
+    Parameters
+    ----------
+    func : Callable[..., Any]
+        Function to extract the default args from.
+
+    Returns
+    -------
+    DefaultKwargs
+    """
+    sig = signature(func)
+    param_docstring_mapping = create_parameter_docstring_mapping(func)
+    return {
+        k: {
+            "default": v.default,
+            "annotation": v.annotation if v.annotation is not Parameter.empty else "Any",
+            "docstring": param_docstring_mapping.get(k, None),
+        }
+        for k, v in sig.parameters.items()
+        if k not in EXCLUDE_DEFAULT_KWARGS
+        and v.default is not Parameter.empty
+        and v.kind is not Parameter.POSITIONAL_ONLY
+    }
+
+
+def find_not_user_provided_kwargs(
+    default_kwargs: DefaultKwargs, arg_names: Iterable[str], kwargs: Mapping[str, Any]
+) -> set[str]:
+    """Find which kwargs of a function were not provided by the user.
+
+    Those kwargs can be overridden by config value.
+
+    Parameters
+    ----------
+    default_kwargs : DefaultKwargs
+        Default keyword arguments to the function.
+    arg_names : Iterable[str]
+        Names of the positional arguments passed when calling the function.
+    kwargs : Mapping[str, Any]
+        Kwargs passed when calling the function.
+
+    Returns
+    -------
+    set[str]
+
+    See Also
+    --------
+    extract_default_kwargs
+    """
+    return {k for k in default_kwargs if k not in kwargs and k not in arg_names}
+
+
+def find_axes(
+    values: Iterable[Any],
+) -> Axes | Iterable[Axes] | np.ndarray[Axes, np.dtype[Any]] | None:
+    """Iterate over values and return the value that is ``Axes`` like.
+
+    Parameters
+    ----------
+    values : Iterable[Any]
+        Values to look for an ``Axes`` like value in.
+
+    Returns
+    -------
+    Axes | Iterable[Axes] | np.ndarray[Axes, np.dtype[Any]] | None
+        None if no ``Axes`` like value was found, else ``Axes`` like value.
+    """
+    for value in values:
+        if isinstance(value, Axes):
+            return value
+        if (
+            isinstance(value, np.ndarray)
+            and len(value) > 0
+            and all(isinstance(val, Axes) for val in value.flatten())
+        ):
+            return value
+        if isinstance(value, Iterable) and all(isinstance(val, Axes) for val in value):
+            return value
+    return None
