@@ -69,7 +69,7 @@ __all__ = [
     "use_plot_config",
 ]
 
-__version__ = "0.7.5"
+__version__ = "0.8.0.dev0"
 
 SCRIPT_DIR = _find_script_dir_at_import(__file__)
 """User script dir determined during import."""
