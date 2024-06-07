@@ -2,8 +2,13 @@
 
 from __future__ import annotations
 
+import json
+import subprocess
+import sys
 from pathlib import Path
+from shutil import copyfile
 
+import pytest
 from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.config import CONFIG_FILE_STAM
@@ -235,3 +240,87 @@ def test_load_config(tmp_path: Path, mock_home: Path):
         == Config.model_validate(additional_update_values).model_dump()
     )
     assert minimal_lookup_config._source_files == [sub_project_config_path]
+
+
+@pytest.fixture()
+def import_load_script(tmp_path: Path):
+    """Copy import load script into tmp_path."""
+    src_path = TEST_DATA / "config/run_load_config_on_import.py"
+    dest_path = tmp_path / "run_load_config_on_import.py"
+    copyfile(src_path, dest_path)
+    return dest_path
+
+
+def test_load_config_on_import_no_local_config(tmp_path: Path, import_load_script: Path):
+    """No local config found."""
+    subprocess.run([sys.executable, import_load_script])
+
+    assert (tmp_path / "source_files.json").is_file() is True
+    assert (tmp_path / "plotting.json").is_file() is True
+
+    source_files = json.loads((tmp_path / "source_files.json").read_text())
+    assert (
+        any(tmp_path in Path(source_file).parents for source_file in source_files) is False
+    ), f"{tmp_path=}, {source_files=}"
+
+
+def check_config(tmp_path: Path, plot_config_path: Path):
+    """Only testing specific aspects makes this test resilient against config pollution.
+
+    Since the config uses a locality hierarchy even if a user has a user config it will be
+    overridden.
+    """
+    assert (tmp_path / "source_files.json").is_file() is True
+    assert (tmp_path / "plotting.json").is_file() is True
+
+    source_files = json.loads((tmp_path / "source_files.json").read_text())
+    assert (
+        any(plot_config_path == Path(source_file) for source_file in source_files) is True
+    ), f"{tmp_path=}, {source_files=}"
+
+    plotting_dict = json.loads((tmp_path / "plotting.json").read_text())
+
+    assert (
+        plotting_dict["general"]["default_args_override"]["will_update_arg"] == "will change arg"
+    )
+    assert plotting_dict["general"]["default_args_override"]["will_be_kept_arg"] == "general arg"
+    assert (
+        plotting_dict["general"]["axis_label_override"]["will_update_label"] == "will change label"
+    )
+    assert plotting_dict["general"]["axis_label_override"]["will_be_kept_label"] == "general label"
+
+    assert (
+        plotting_dict["test_func"]["default_args_override"]["will_update_arg"] == "test_func arg"
+    )
+    assert plotting_dict["test_func"]["default_args_override"]["will_be_added_arg"] == "new arg"
+    assert (
+        plotting_dict["test_func"]["axis_label_override"]["will_update_label"] == "test_func label"
+    )
+    assert plotting_dict["test_func"]["axis_label_override"]["will_be_added_label"] == "new label"
+
+
+def test_load_config_on_import_local_config(tmp_path: Path, import_load_script: Path):
+    """Check that config is properly loaded at import."""
+    src_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
+    dest_path = tmp_path / "pyglotaran_extras_config.yml"
+    copyfile(src_path, dest_path)
+
+    subprocess.run([sys.executable, import_load_script])
+
+    check_config(tmp_path, dest_path)
+
+
+def test_load_config_on_import_none_root_import(tmp_path: Path, import_load_script: Path):
+    """Also works something from non root ``pyglotaran_extras`` was imported first."""
+    src_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
+    dest_path = tmp_path / "pyglotaran_extras_config.yml"
+    copyfile(src_path, dest_path)
+
+    import_load_script.write_text(
+        "from pyglotaran_extras.inspect.a_matrix import show_a_matrixes\n"
+        f"{import_load_script.read_text()}"
+    )
+
+    subprocess.run([sys.executable, import_load_script])
+
+    check_config(tmp_path, dest_path)
