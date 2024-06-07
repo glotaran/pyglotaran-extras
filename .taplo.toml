@@ -1,3 +1,3 @@
 [formatting]
-align_comments = false
+align_comments = true
 array_auto_collapse = false

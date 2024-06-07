@@ -9,7 +9,9 @@ name = "pyglotaran-extras"
 description = "Supplementary package for pyglotaran with (example) plotting code."
 readme = "README.md"
 license = { file = "LICENSE" }
-authors = [{ name = "Joris Snellenburg", email = "j.snellenburg@gmail.com" }]
+authors = [
+  { name = "Joris Snellenburg", email = "j.snellenburg@gmail.com" },
+]
 requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -36,44 +38,46 @@ dependencies = [
   "tabulate>=0.8.9",
   "xarray>=2022.3",
 ]
-[project.optional-dependencies]
-dev = [
-  "pyglotaran_extras[docs,test]",
+optional-dependencies.dev = [
+  "pyglotaran-extras[docs,test]",
 ]
-docs = [
+optional-dependencies.docs = [
   "jupyterlab>=3",
   "myst-parser>=0.12",
-  "nbsphinx>=0.8.1", # notebook docs
+  "nbsphinx>=0.8.1",                 # notebook docs
   "numpydoc>=0.8",
-  "Sphinx>=3.2",
+  "sphinx>=3.2",
   "sphinx-copybutton>=0.3",
   "sphinx-last-updated-by-git>=0.3",
   "sphinx-rtd-theme>=1.2",
-  "sphinxcontrib-jquery>=4.1", # Needed for the search to work Ref.: https://github.com/readthedocs/sphinx_rtd_theme/issues/1434
+  "sphinxcontrib-jquery>=4.1",       # Needed for the search to work Ref.: https://github.com/readthedocs/sphinx_rtd_theme/issues/1434
 ]
-test = [
+optional-dependencies.test = [
   "coverage[toml]",
   "nbval>=0.9.6",
   "pluggy>=0.7",
   "pytest>=3.7.1",
   "pytest-cov>=2.5.1",
 ]
-[project.urls]
-Changelog = "https://pyglotaran-extras.readthedocs.io/en/latest/changelog.html"
-Documentation = "https://pyglotaran-extras.readthedocs.io"
-"GloTarAn Ecosystem" = "https://glotaran.org"
-Homepage = "https://github.com/glotaran/pyglotaran-extras"
-Source = "https://github.com/glotaran/pyglotaran-extras"
-Tracker = "https://github.com/glotaran/pyglotaran-extras/issues"
+urls.Changelog = "https://pyglotaran-extras.readthedocs.io/en/latest/changelog.html"
+urls.Documentation = "https://pyglotaran-extras.readthedocs.io"
+urls."GloTarAn Ecosystem" = "https://glotaran.org"
+urls.Homepage = "https://github.com/glotaran/pyglotaran-extras"
+urls.Source = "https://github.com/glotaran/pyglotaran-extras"
+urls.Tracker = "https://github.com/glotaran/pyglotaran-extras/issues"
 
 [tool.hatch.version]
 path = "pyglotaran_extras/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-include = ["/pyglotaran_extras"]
+include = [
+  "/pyglotaran_extras",
+]
 
 [tool.hatch.envs.default]
-features = ["dev"]
+features = [
+  "dev",
+]
 
 [tool.docformatter]
 black = true
@@ -91,7 +95,9 @@ allow-init-docstring = true
 
 [tool.coverage.run]
 branch = true
-include = ['pyglotaran_extras/*']
+include = [
+  'pyglotaran_extras/*',
+]
 omit = [
   'tests/*',
   # comment the above line if you want to see if all tests did run
@@ -135,6 +141,9 @@ disallow_incomplete_defs = false
 disallow_untyped_defs = false
 
 [tool.interrogate]
-exclude = ["docs", "tests/*"]
+exclude = [
+  "docs",
+  "tests/*",
+]
 ignore-init-module = true
 fail-under = 100
