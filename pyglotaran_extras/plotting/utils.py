@@ -147,7 +147,7 @@ def extract_irf_location(
     )
     if isinstance(irf_dispersion_center, xr.DataArray):
         if center_λ is None:  # center wavelength (λ in nm)
-            center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
+            center_λ = min(res.sizes["spectral"], round(res.sizes["spectral"] / 2))
         return irf_dispersion_center.sel(spectral=center_λ, method="nearest").item()
 
     return irf_dispersion_center
