@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -10,6 +11,7 @@ from pydantic import PrivateAttr
 from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.plot_config import PlotConfig
+from pyglotaran_extras.io.setup_case_study import get_script_dir
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -163,3 +165,33 @@ def load_config(
     configs = load_config_files(config_paths)
     config = merge_configs(configs)
     return config if config is not None else Config()
+
+
+def _find_script_dir_at_import(package_root_file: str) -> Path:
+    """Find the script dir when importing ``pyglotaran_extras``.
+
+    The assumption is that the first file not inside of ``pyglotaran_extras`` or importlib
+    is the script in question.
+    The max ``nesting_offset`` of 20 was chosen semi arbitrarily (typically ``nesting + offset``
+    is around 9-13 depending on the import) to ensure that there won't be an infinite loop.
+
+    Parameters
+    ----------
+    package_root_file : str
+        The dunder file attribute (``__file__``) in the package root file.
+
+    Returns
+    -------
+    Path
+    """
+    nesting_offset = 0
+    importlib_path = Path(sys.executable).parent / "lib/importlib"
+    package_root = Path(package_root_file).parent
+    script_dir = get_script_dir(nesting=2)
+    while (
+        importlib_path in (script_dir / "dummy").parents
+        or package_root in (script_dir / "dummy").parents
+    ) and nesting_offset < 20:
+        nesting_offset += 1
+        script_dir = get_script_dir(nesting=2 + nesting_offset)
+    return script_dir

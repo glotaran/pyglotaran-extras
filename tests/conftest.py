@@ -5,8 +5,8 @@ from __future__ import annotations
 import sys
 from contextlib import contextmanager
 from pathlib import Path
+from typing import TYPE_CHECKING
 from typing import Any
-from typing import Generator
 
 # isort: off
 # Hack around https://github.com/pydata/xarray/issues/7259 which also affects pyglotaran <= 0.7.0
@@ -22,6 +22,9 @@ from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SC
 from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
 
 from pyglotaran_extras.io.setup_case_study import get_script_dir
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 @contextmanager
