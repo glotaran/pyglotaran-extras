@@ -26,6 +26,10 @@ def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> 
         ds["species_associated_spectra"] = ds["species_associated_estimation"]
         if cleanup:
             ds = ds.drop_vars("species_associated_estimation")
+    if "damped_oscillation_associated_estimation" in ds:
+        ds["damped_oscillation_associated_spectra"] = ds["damped_oscillation_associated_estimation"]
+        if cleanup:
+            ds = ds.drop_vars("damped_oscillation_associated_estimation")
 
 
 def _adjust_activation_to_irf(ds: xr.Dataset, *, cleanup: bool = False) -> None:
