@@ -238,9 +238,10 @@ class PlotConfig(BaseModel):
         -------
         dict[str, PerFunctionPlotConfig]
         """
+        parsed_values = {}
         for key, value in values.items():
-            values[key] = PerFunctionPlotConfig.model_validate(value)
-        return values
+            parsed_values[key] = PerFunctionPlotConfig.model_validate(value)
+        return parsed_values
 
     def get_function_config(self, function_name: str) -> PerFunctionPlotConfig:
         """Get config for a specific function.
