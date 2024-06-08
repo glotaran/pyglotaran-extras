@@ -119,6 +119,8 @@ jobs:
         with:
           file: ./coverage.xml
           name: ${{ matrix.os }}-py${{ matrix.python-version }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-pyglotaran-dev:
     name: Test pyglotaran dev
