@@ -62,6 +62,67 @@ def test_config_merge():
     assert config_with_paths.merge(update)._source_files == [Path("bar"), Path("baz"), Path("foo")]
 
 
+def test_config_reset(tmp_path: Path):
+    """All config values but the source files get reset."""
+    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
+
+    test_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    test_config = Config.model_validate(test_config_values)
+    test_config._source_files = [test_config_path]
+
+    test_config._reset()
+
+    assert test_config.plotting == PlotConfig()
+    assert test_config._source_files == [test_config_path]
+
+
+def test_config_reload(tmp_path: Path):
+    """Config values get reloaded from file."""
+    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
+
+    test_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    test_config = Config.model_validate(test_config_values)
+    test_config._source_files = [test_config_path]
+
+    test_config_values["plotting"]["general"]["default_args_override"]["will_update_arg"] = (
+        "file got updated"
+    )
+
+    YAML().dump(test_config_values, test_config_path)
+
+    expected_plot_config = test_config.plotting.model_copy(deep=True)
+    expected_plot_config.general.default_args_override["will_update_arg"] = "file got updated"
+
+    test_config.reload()
+
+    assert test_config.plotting.model_dump() == expected_plot_config.model_dump()
+    assert test_config._source_files == [test_config_path]
+
+
+def test_config_load(tmp_path: Path):
+    """Loading config replaces its values and and source files."""
+    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
+
+    test_config = Config()
+    test_config._source_files = [TEST_DATA / "config/pyglotaran_extras_config.yml"]
+    test_config.reload()
+
+    test_config_values["plotting"]["general"]["default_args_override"]["will_update_arg"] = (
+        "from new file"
+    )
+
+    test_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    YAML().dump(test_config_values, test_config_path)
+
+    expected_plot_config = test_config.plotting.model_copy(deep=True)
+    expected_plot_config.general.default_args_override["will_update_arg"] = "from new file"
+
+    test_config.load(test_config_path)
+
+    assert test_config.plotting.model_dump() == expected_plot_config.model_dump()
+    assert test_config._source_files == [test_config_path]
+
+
 def test_find_config_in_dir(tmp_path: Path):
     """Find one or two config files if present."""
     assert len(list(find_config_in_dir(tmp_path))) == 0

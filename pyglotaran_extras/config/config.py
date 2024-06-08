@@ -46,6 +46,45 @@ class Config(BaseModel):
             merged._source_files.append(source_file)
         return merged
 
+    def _reset(self) -> Config:
+        """Reset self to default initialization.
+
+        Returns
+        -------
+        Config
+        """
+        self.plotting = PlotConfig()
+        return self
+
+    def reload(self) -> Config:
+        """Reset and reload config from files.
+
+        Returns
+        -------
+        Config
+        """
+        self._reset()
+        merged = Config()
+        for config in load_config_files(self._source_files):
+            merged = merged.merge(config)
+        self.plotting = merged.plotting
+        return self
+
+    def load(self, config_file_path: Path | str) -> Config:
+        """Disregard current config and config file paths, and reload from ``config_file_path``.
+
+        Parameters
+        ----------
+        config_file_path : Path | str
+            Path to the config file to load.
+
+        Returns
+        -------
+        Config
+        """
+        self._source_files = [Path(config_file_path)]
+        return self.reload()
+
 
 def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:
     """Find the config file inside of dir ``dir_path``.
