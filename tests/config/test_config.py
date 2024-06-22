@@ -11,7 +11,7 @@ from shutil import copyfile
 import pytest
 from ruamel.yaml import YAML
 
-from pyglotaran_extras.config.config import CONFIG_FILE_STAM
+from pyglotaran_extras.config.config import CONFIG_FILE_STEM
 from pyglotaran_extras.config.config import Config
 from pyglotaran_extras.config.config import discover_config_files
 from pyglotaran_extras.config.config import find_config_in_dir
@@ -127,13 +127,13 @@ def test_find_config_in_dir(tmp_path: Path):
     """Find one or two config files if present."""
     assert len(list(find_config_in_dir(tmp_path))) == 0
 
-    yml_config_path = tmp_path / f"yml/{CONFIG_FILE_STAM}.yml"
+    yml_config_path = tmp_path / f"yml/{CONFIG_FILE_STEM}.yml"
     yml_config_path.parent.mkdir()
     yml_config_path.touch()
 
     assert next(find_config_in_dir(yml_config_path.parent)) == yml_config_path
 
-    yaml_config_path = tmp_path / f"yaml/{CONFIG_FILE_STAM}.yaml"
+    yaml_config_path = tmp_path / f"yaml/{CONFIG_FILE_STEM}.yaml"
     yaml_config_path.parent.mkdir()
     yaml_config_path.touch()
 
@@ -141,17 +141,17 @@ def test_find_config_in_dir(tmp_path: Path):
 
     multi_config_dir = tmp_path / "multi"
     multi_config_dir.mkdir()
-    (multi_config_dir / f"{CONFIG_FILE_STAM}.yml").touch()
-    (multi_config_dir / f"{CONFIG_FILE_STAM}.yaml").touch()
-    (multi_config_dir / f"{CONFIG_FILE_STAM}.json").touch()
-    (multi_config_dir / f"{CONFIG_FILE_STAM}1.yml").touch()
+    (multi_config_dir / f"{CONFIG_FILE_STEM}.yml").touch()
+    (multi_config_dir / f"{CONFIG_FILE_STEM}.yaml").touch()
+    (multi_config_dir / f"{CONFIG_FILE_STEM}.json").touch()
+    (multi_config_dir / f"{CONFIG_FILE_STEM}1.yml").touch()
 
     assert len(list(find_config_in_dir(multi_config_dir))) == 2
 
 
 def test_discover_config_files(tmp_path: Path, mock_home: Path):
     """Discover all config files in the correct order."""
-    file_name = f"{CONFIG_FILE_STAM}.yml"
+    file_name = f"{CONFIG_FILE_STEM}.yml"
     script_dir = tmp_path / "top_project/project/sub_project"
     script_dir.mkdir(parents=True)
 
@@ -197,7 +197,7 @@ def test_discover_config_files(tmp_path: Path, mock_home: Path):
 
 def test_load_config_files(tmp_path: Path):
     """Read configs and add source path."""
-    empty_config_file = tmp_path / f"{CONFIG_FILE_STAM}.yml"
+    empty_config_file = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     empty_config_file.touch()
     test_config_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
 
@@ -272,7 +272,7 @@ def test_load_config(tmp_path: Path, mock_home: Path):
         "additional update"
     )
 
-    file_name = f"{CONFIG_FILE_STAM}.yml"
+    file_name = f"{CONFIG_FILE_STEM}.yml"
     script_dir = tmp_path / "top_project/project/sub_project"
     script_dir.mkdir(parents=True)
 
