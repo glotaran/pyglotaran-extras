@@ -17,6 +17,7 @@ import netCDF4  # noqa: F401
 
 from dataclasses import replace
 
+import matplotlib.pyplot as plt
 import pytest
 from glotaran.optimization.optimize import optimize
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
@@ -59,6 +60,12 @@ def generator_is_exhausted(generator: Generator) -> bool:
 def wrapped_get_script_dir() -> Path:
     """Test function for calls to get_script_dir used inside of other functions."""
     return get_script_dir(nesting=1)
+
+
+@pytest.fixture(autouse=True)
+def _close_matplotlib_figures():
+    """Close all figures after each test function."""
+    plt.close()
 
 
 @pytest.fixture(scope="session")

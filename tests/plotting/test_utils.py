@@ -197,8 +197,6 @@ def test_add_subplot_labels_assignment(
     assert [ax.texts[0].get_anncoords() for ax in axes.flatten()] == [label_coords] * 4
     assert [ax.texts[0].get_fontsize() for ax in axes.flatten()] == [fontsize] * 4
 
-    plt.close()
-
 
 @pytest.mark.parametrize(("label_format_template", "expected"), [("{})", "1)"), ("({})", "(1)")])
 def test_add_subplot_labels_label_format_template(label_format_template: str, expected: str):
