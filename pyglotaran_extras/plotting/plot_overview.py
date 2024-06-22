@@ -132,7 +132,7 @@ def plot_overview(
     irf_location = extract_irf_location(res, center_λ, main_irf_nr)
 
     if center_λ is None:  # center wavelength (λ in nm)
-        center_λ = min(res.dims["spectral"], round(res.dims["spectral"] / 2))
+        center_λ = min(res.sizes["spectral"], round(res.sizes["spectral"] / 2))
 
     # First and second row: concentrations - SAS/EAS - DAS
     plot_concentrations(
