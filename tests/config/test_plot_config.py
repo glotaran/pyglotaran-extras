@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import wraps
 from io import StringIO
 from textwrap import dedent
+from typing import TYPE_CHECKING
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -21,7 +22,13 @@ from pyglotaran_extras.config.plot_config import PlotLabelOverRideValue
 from pyglotaran_extras.config.plot_config import extract_default_kwargs
 from pyglotaran_extras.config.plot_config import find_axes
 from pyglotaran_extras.config.plot_config import find_not_user_provided_kwargs
+from pyglotaran_extras.config.plot_config import use_plot_config
 from tests import TEST_DATA
+
+if TYPE_CHECKING:
+    from matplotlib.axes import Axes
+
+    from pyglotaran_extras.config.config import Config
 
 
 def test_plot_label_over_ride_value_serialization():
@@ -446,3 +453,75 @@ def test_find_axes():
     iterable_axes = (ax, ax1)
 
     assert find_axes([*base_values, iterable_axes]) is iterable_axes
+
+
+def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
+    """Config is applied to functions with the ``use_plot_config`` decorator."""
+    _, registry = mock_config
+
+    assert registry == {}
+
+    @use_plot_config
+    def test_func(
+        will_update_arg="default update",
+        will_be_kept_arg="default keep",
+        will_be_added_arg="default add",
+        not_in_config="not_in_config",
+    ):
+        kwargs = {
+            "will_update_arg": will_update_arg,
+            "will_be_kept_arg": will_be_kept_arg,
+            "will_be_added_arg": will_be_added_arg,
+            "not_in_config": not_in_config,
+        }
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        ax1.set_xlabel("will_update_label")
+        ax1.set_ylabel("will_be_kept_label")
+        ax2.set_xlabel("will_be_added_label")
+        ax2.set_ylabel("default")
+        return fig, (ax1, ax2), kwargs
+
+    assert "test_func" in registry
+
+    _, (ax1_test_func, ax2_test_func), kwargs_test_func_no_user_args = test_func()
+
+    assert ax1_test_func.get_xlabel() == "test_func label"
+    assert ax1_test_func.get_ylabel() == "general label"
+    assert ax2_test_func.get_xlabel() == "new label"
+    assert ax2_test_func.get_ylabel() == "default"
+
+    assert kwargs_test_func_no_user_args["will_update_arg"] == "test_func arg"
+    assert kwargs_test_func_no_user_args["will_be_kept_arg"] == "general arg"
+    assert kwargs_test_func_no_user_args["will_be_added_arg"] == "new arg"
+    assert kwargs_test_func_no_user_args["not_in_config"] == "not_in_config"
+
+    _, _, kwargs_test_func_user_args = test_func(
+        will_update_arg="set by user", will_be_added_arg="added by user"
+    )
+
+    assert kwargs_test_func_user_args["will_update_arg"] == "set by user"
+    assert kwargs_test_func_user_args["will_be_kept_arg"] == "general arg"
+    assert kwargs_test_func_user_args["will_be_added_arg"] == "added by user"
+    assert kwargs_test_func_no_user_args["not_in_config"] == "not_in_config"
+
+    _, (ax1_arg, ax2_arg) = plt.subplots(1, 2)
+
+    @use_plot_config
+    def axes_iterable_arg(
+        axes: tuple[Axes, Axes],
+    ):
+        (ax1, ax2) = axes
+        ax1.set_xlabel("will_update_label")
+        ax1.set_ylabel("will_be_kept_label")
+        ax2.set_xlabel("will_be_added_label")
+        ax2.set_ylabel("default")
+        return (ax1, ax2)
+
+    assert "axes_iterable_arg" in registry
+
+    axes_iterable_arg((ax1_arg, ax2_arg))
+
+    assert ax1_arg.get_xlabel() == "will change label"
+    assert ax1_arg.get_ylabel() == "general label"
+    assert ax2_arg.get_xlabel() == "will_be_added_label"
+    assert ax2_arg.get_ylabel() == "default"

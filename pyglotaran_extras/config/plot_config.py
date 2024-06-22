@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import inspect
 from collections.abc import Iterable
 from collections.abc import Iterator
 from collections.abc import Mapping
 from collections.abc import MutableMapping
+from functools import wraps
 from inspect import Parameter
 from inspect import signature
 from typing import TYPE_CHECKING
@@ -29,6 +31,8 @@ from pydantic_core import PydanticUndefined
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from pyglotaran_extras.types import Param
+    from pyglotaran_extras.types import RetType
 
 EXCLUDE_DEFAULT_KWARGS = [
     "cycler",
@@ -397,3 +401,31 @@ def find_axes(
         if isinstance(value, Iterable) and all(isinstance(val, Axes) for val in value):
             return value
     return None
+
+
+def use_plot_config(func: Callable[Param, RetType]) -> Callable[Param, RetType]:  # noqa: DOC
+    """Decorate plot functions to register it and enables auto use of config."""
+    default_kwargs = extract_default_kwargs(func)
+    __PlotFunctionRegistry[func.__name__] = default_kwargs
+
+    @wraps(func)
+    def wrapper(*args: Param.args, **kwargs: Param.kwargs) -> RetType:  # noqa: DOC
+        """Wrap function and apply config."""
+        import pyglotaran_extras
+
+        arg_names = func.__code__.co_varnames[: len(args)]
+        not_user_provided_kwargs = find_not_user_provided_kwargs(default_kwargs, arg_names, kwargs)
+        function_config = pyglotaran_extras.CONFIG.plotting.get_function_config(func.__name__)
+        override_kwargs = function_config.find_override_kwargs(not_user_provided_kwargs)
+        updated_kwargs = kwargs | override_kwargs
+        arg_axes = find_axes(inspect.getcallargs(func, *args, **updated_kwargs).values())
+        return_values = func(*args, **updated_kwargs)
+        function_config.update_axes_labels(arg_axes)
+
+        if isinstance(return_values, Iterable):
+            return_axes = find_axes(return_values)
+            function_config.update_axes_labels(return_axes)
+
+        return return_values
+
+    return wrapper

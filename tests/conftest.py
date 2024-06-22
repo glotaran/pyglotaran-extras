@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 from contextlib import contextmanager
 from pathlib import Path
+from shutil import copyfile
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -21,7 +22,9 @@ from glotaran.optimization.optimize import optimize
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
 from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
 
+from pyglotaran_extras.config.config import Config
 from pyglotaran_extras.io.setup_case_study import get_script_dir
+from tests import TEST_DATA
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -86,3 +89,21 @@ def mock_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
 
     with monkeypatch_all(monkeypatch, "Path", MockPath):
         yield mock_home_path
+
+
+@pytest.fixture()
+def mock_config(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> Generator[tuple[Config, dict[str, Any]], None, None]:
+    """Mock config with test config and empty function registry."""
+    src_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
+    dest_path = tmp_path / "pyglotaran_extras_config.yml"
+    copyfile(src_path, dest_path)
+    config = Config()
+    config.load(dest_path)
+    mock_registry: dict[str, Any] = {}
+    with (
+        monkeypatch_all(monkeypatch, "CONFIG", config),
+        monkeypatch_all(monkeypatch, "__PlotFunctionRegistry", mock_registry),
+    ):
+        yield config, mock_registry
