@@ -25,6 +25,7 @@ from pyglotaran_extras.config.plot_config import find_not_user_provided_kwargs
 from pyglotaran_extras.config.plot_config import plot_config_context
 from pyglotaran_extras.config.plot_config import use_plot_config
 from tests import TEST_DATA
+from tests.conftest import generator_is_exhausted
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
@@ -188,8 +189,6 @@ def test_per_function_plot_update_axes_labels():
         return ax
 
     simple_config = PerFunctionPlotConfig(axis_label_override={"x": "new x", "y": "new y"})
-
-    simple_config.update_axes_labels(None)
 
     ax_both = create_test_ax()
     simple_config.update_axes_labels(ax_both)
@@ -434,26 +433,37 @@ def test_find_axes():
 
     base_values = ["foo", True, 1.5]
 
-    assert find_axes(base_values) is None
+    assert generator_is_exhausted(find_axes(base_values)) is True
 
     _, ax = plt.subplots()
+    single_ax_gen = find_axes([*base_values, ax])
 
-    assert find_axes([*base_values, ax]) is ax
-
-    _, ax = plt.subplots()
-
-    assert find_axes([*base_values, ax]) is ax
+    assert next(single_ax_gen) is ax
+    assert generator_is_exhausted(single_ax_gen) is True
 
     _, np_axes = plt.subplots(1, 2)
 
     assert np_axes.shape == (2,)
-    assert find_axes([*base_values, np_axes]) is np_axes
+
+    np_axes_gen = find_axes([*base_values, np_axes])
+
+    assert next(np_axes_gen) is np_axes[0]
+    assert next(np_axes_gen) is np_axes[1]
+    assert generator_is_exhausted(np_axes_gen) is True
 
     _, ax1 = plt.subplots()
-
     iterable_axes = (ax, ax1)
+    iterable_axes_gen = find_axes([*base_values, iterable_axes])
 
-    assert find_axes([*base_values, iterable_axes]) is iterable_axes
+    assert next(iterable_axes_gen) is ax
+    assert next(iterable_axes_gen) is ax1
+    assert generator_is_exhausted(iterable_axes_gen) is True
+
+    multiple_axes_gen = find_axes([*base_values, ax, ax1])
+
+    assert next(multiple_axes_gen) is ax
+    assert next(multiple_axes_gen) is ax1
+    assert generator_is_exhausted(multiple_axes_gen) is True
 
 
 def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
@@ -505,7 +515,7 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
     assert kwargs_test_func_user_args["will_be_added_arg"] == "added by user"
     assert kwargs_test_func_no_user_args["not_in_config"] == "not_in_config"
 
-    _, (ax1_arg, ax2_arg) = plt.subplots(1, 2)
+    _, axes = plt.subplots(1, 2)
 
     @use_plot_config
     def axes_iterable_arg(
@@ -520,7 +530,29 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
 
     assert "axes_iterable_arg" in registry
 
-    axes_iterable_arg((ax1_arg, ax2_arg))
+    axes_iterable_arg((axes[0], axes[1]))
+
+    assert axes[0].get_xlabel() == "will change label"
+    assert axes[0].get_ylabel() == "general label"
+    assert axes[1].get_xlabel() == "will_be_added_label"
+    assert axes[1].get_ylabel() == "default"
+
+    _, (ax1_arg, ax2_arg) = plt.subplots(1, 2)
+
+    @use_plot_config
+    def multiple_axes_args(
+        ax1: Axes,
+        ax2: Axes,
+    ):
+        ax1.set_xlabel("will_update_label")
+        ax1.set_ylabel("will_be_kept_label")
+        ax2.set_xlabel("will_be_added_label")
+        ax2.set_ylabel("default")
+        return (ax1, ax2)
+
+    assert "multiple_axes_args" in registry
+
+    multiple_axes_args(ax1_arg, ax2_arg)
 
     assert ax1_arg.get_xlabel() == "will change label"
     assert ax1_arg.get_ylabel() == "general label"

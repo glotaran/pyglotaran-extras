@@ -187,37 +187,35 @@ class PerFunctionPlotConfig(BaseModel):
             if k in not_user_provided_kwargs
         }
 
-    def update_axes_labels(
-        self, axes: Axes | Iterable[Axes] | np.ndarray[Axes, np.dtype[Any]] | None
-    ) -> None:
+    def update_axes_labels(self, axes: Axes | Iterable[Axes]) -> None:
         """Apply label overrides to ``axes``.
 
         Parameters
         ----------
-        axes : Axes | Iterable[Axes] | np.ndarray[Axes, np.dtype[Any]] | None
+        axes : Axes | Iterable[Axes]
             Axes to apply the override to.
         """
-        if axes is None:
-            return
         if isinstance(axes, Axes):
-            orig_x_label = axes.get_xlabel()
-            orig_y_label = axes.get_ylabel()
+            self.update_axes_labels((axes,))
+            return
+        for ax in axes:
+            if isinstance(ax, Axes):
+                orig_x_label = ax.get_xlabel()
+                orig_y_label = ax.get_ylabel()
 
-            if orig_x_label in self.axis_label_override and (
-                override_item := self.axis_label_override[orig_x_label]
-            ).axis in ("x", "both"):
-                axes.set_xlabel(override_item.target_name)
+                if orig_x_label in self.axis_label_override and (
+                    override_item := self.axis_label_override[orig_x_label]
+                ).axis in ("x", "both"):
+                    ax.set_xlabel(override_item.target_name)
 
-            if orig_y_label in self.axis_label_override and (
-                override_item := self.axis_label_override[orig_y_label]
-            ).axis in ("y", "both"):
-                axes.set_ylabel(override_item.target_name)
+                if orig_y_label in self.axis_label_override and (
+                    override_item := self.axis_label_override[orig_y_label]
+                ).axis in ("y", "both"):
+                    ax.set_ylabel(override_item.target_name)
 
-        elif isinstance(axes, np.ndarray):
-            for ax in axes.flatten():
-                self.update_axes_labels(ax)
-        else:
-            for ax in axes:
+            elif isinstance(ax, np.ndarray):
+                self.update_axes_labels(ax.flatten())
+            else:
                 self.update_axes_labels(ax)
 
 
@@ -381,31 +379,27 @@ def find_not_user_provided_kwargs(
 
 def find_axes(
     values: Iterable[Any],
-) -> Axes | Iterable[Axes] | np.ndarray[Axes, np.dtype[Any]] | None:
-    """Iterate over values and return the value that is ``Axes`` like.
+) -> Generator[Axes, None, None]:
+    """Iterate over values and yield the values that are ``Axes``.
 
     Parameters
     ----------
     values : Iterable[Any]
-        Values to look for an ``Axes`` like value in.
+        Values to look for an ``Axes`` values in.
 
-    Returns
-    -------
-    Axes | Iterable[Axes] | np.ndarray[Axes, np.dtype[Any]] | None
-        None if no ``Axes`` like value was found, else ``Axes`` like value.
+    Yields
+    ------
+    Axes
     """
     for value in values:
-        if isinstance(value, Axes):
-            return value
-        if (
-            isinstance(value, np.ndarray)
-            and len(value) > 0
-            and all(isinstance(val, Axes) for val in value.flatten())
-        ):
-            return value
-        if isinstance(value, Iterable) and all(isinstance(val, Axes) for val in value):
-            return value
-    return None
+        if isinstance(value, str):
+            continue
+        elif isinstance(value, Axes):
+            yield value
+        elif isinstance(value, np.ndarray):
+            yield from find_axes(value.flatten())
+        elif isinstance(value, Iterable):
+            yield from find_axes(value)
 
 
 def use_plot_config(func: Callable[Param, RetType]) -> Callable[Param, RetType]:  # noqa: DOC
