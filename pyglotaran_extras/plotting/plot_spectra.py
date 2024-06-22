@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.types import Unset
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import UnsetType
 
 
+@use_plot_config
 def plot_spectra(
     res: xr.Dataset,
     axes: Axes,
@@ -51,6 +53,7 @@ def plot_spectra(
     plot_norm_das(res, axes[1, 1], cycler=das_cycler, show_zero_line=show_zero_line)
 
 
+@use_plot_config
 def plot_sas(
     res: xr.Dataset,
     ax: Axis,
@@ -86,6 +89,7 @@ def plot_sas(
         ax.axhline(0, color="k", linewidth=1)
 
 
+@use_plot_config
 def plot_norm_sas(
     res: xr.Dataset,
     ax: Axis,
@@ -123,6 +127,7 @@ def plot_norm_sas(
         ax.axhline(0, color="k", linewidth=1)
 
 
+@use_plot_config
 def plot_das(
     res: xr.Dataset,
     ax: Axis,
@@ -158,6 +163,7 @@ def plot_das(
         ax.axhline(0, color="k", linewidth=1)
 
 
+@use_plot_config
 def plot_norm_das(
     res: xr.Dataset,
     ax: Axis,

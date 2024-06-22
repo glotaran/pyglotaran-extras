@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.plotting.plot_irf_dispersion_center import _plot_irf_dispersion_center
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from matplotlib.axis import Axis
 
 
+@use_plot_config
 def plot_residual(
     res: xr.Dataset,
     ax: Axis,
