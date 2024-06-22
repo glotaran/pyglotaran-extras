@@ -56,7 +56,7 @@ def generator_is_exhausted(generator: Generator) -> bool:
     return next(generator, is_empty) is is_empty
 
 
-def wrapped_get_script_dir():
+def wrapped_get_script_dir() -> Path:
     """Test function for calls to get_script_dir used inside of other functions."""
     return get_script_dir(nesting=1)
 
