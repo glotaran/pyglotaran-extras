@@ -26,6 +26,7 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import RootModel
+from pydantic import field_validator
 from pydantic import model_serializer
 from pydantic import model_validator
 from pydantic_core import PydanticUndefined
@@ -143,7 +144,17 @@ class PerFunctionPlotConfig(BaseModel):
         default_factory=dict,
         description="Default arguments to use if not specified in function call.",
     )
-    axis_label_override: PlotLabelOverRideMap = Field(default_factory=PlotLabelOverRideMap)
+    axis_label_override: PlotLabelOverRideMap | dict[str, str] = Field(
+        default_factory=PlotLabelOverRideMap
+    )
+
+    @field_validator("axis_label_override", mode="before")
+    @classmethod
+    def validate_axis_label_override(  # noqa: DOC
+        cls, value: PlotLabelOverRideMap | dict[str, str]
+    ) -> PlotLabelOverRideMap:
+        """Ensure that ``axis_label_override`` gets converted into ``PlotLabelOverRideMap``."""
+        return PlotLabelOverRideMap.model_validate(value)
 
     def merge(self, other: PerFunctionPlotConfig) -> PerFunctionPlotConfig:
         """Merge two ``PerFunctionPlotConfig``'s where ``other`` overrides values.
@@ -204,12 +215,16 @@ class PerFunctionPlotConfig(BaseModel):
                 orig_y_label = ax.get_ylabel()
 
                 if orig_x_label in self.axis_label_override and (
-                    override_item := self.axis_label_override[orig_x_label]
+                    override_item := cast(
+                        PlotLabelOverRideValue, self.axis_label_override[orig_x_label]
+                    )
                 ).axis in ("x", "both"):
                     ax.set_xlabel(override_item.target_name)
 
                 if orig_y_label in self.axis_label_override and (
-                    override_item := self.axis_label_override[orig_y_label]
+                    override_item := cast(
+                        PlotLabelOverRideValue, self.axis_label_override[orig_y_label]
+                    )
                 ).axis in ("y", "both"):
                     ax.set_ylabel(override_item.target_name)
 
