@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from collections.abc import Iterable
 
-CONFIG_FILE_STAM = "pyglotaran_extras_config"
+CONFIG_FILE_STEM = "pyglotaran_extras_config"
 
 
 class Config(BaseModel):
@@ -99,7 +99,7 @@ def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:
     Path
     """
     for extension in (".yaml", ".yml"):
-        config_file = (dir_path / CONFIG_FILE_STAM).with_suffix(extension)
+        config_file = (dir_path / CONFIG_FILE_STEM).with_suffix(extension)
         if config_file.is_file():
             yield config_file
 
