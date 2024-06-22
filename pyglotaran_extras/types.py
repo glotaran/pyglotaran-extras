@@ -7,7 +7,9 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Literal
+from typing import ParamSpec
 from typing import TypeAlias
+from typing import TypeVar
 from typing import TypedDict
 
 import xarray as xr
@@ -68,3 +70,7 @@ SubPlotLabelCoordStrs: TypeAlias = Literal[
 SubPlotLabelCoord: TypeAlias = (
     SubPlotLabelCoordStrs | tuple[SubPlotLabelCoordStrs, SubPlotLabelCoordStrs]
 )
+
+
+Param = ParamSpec("Param")
+RetType = TypeVar("RetType")
