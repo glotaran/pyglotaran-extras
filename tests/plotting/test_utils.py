@@ -41,7 +41,7 @@ DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
 )
 def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycler: cycle):
     """Default cycler if None and cycler otherwise on a single axis."""
-    ax = plt.subplot()
+    _, ax = plt.subplots()
     add_cycler_if_not_none(ax, cycler)
 
     for _ in range(10):

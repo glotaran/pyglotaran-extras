@@ -182,8 +182,8 @@ def test_per_function_plot_find_override_kwargs():
 def test_per_function_plot_update_axes_labels():
     """Only labels where the axis and current label match get updated."""
 
-    def create_test_ax():
-        ax = plt.subplot()
+    def create_test_ax() -> Axes:
+        _, ax = plt.subplots()
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         return ax
