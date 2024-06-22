@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from glotaran.io.prepare_dataset import add_svd_to_dataset
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.deprecation import warn_deprecated
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
 
+@use_plot_config
 def plot_svd(
     res: xr.Dataset,
     axes: Axes,
@@ -115,6 +117,7 @@ def plot_svd(
     plot_sv_data(res, axes[1, 2], use_svd_number=use_svd_number)
 
 
+@use_plot_config
 def plot_lsv_data(
     res: xr.Dataset,
     ax: Axis,
@@ -169,6 +172,7 @@ def plot_lsv_data(
         ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
 
 
+@use_plot_config
 def plot_rsv_data(
     res: xr.Dataset,
     ax: Axis,
@@ -213,6 +217,7 @@ def plot_rsv_data(
     ax.set_title("data. RSV")
 
 
+@use_plot_config
 def plot_sv_data(
     res: xr.Dataset,
     ax: Axis,
@@ -255,6 +260,7 @@ def plot_sv_data(
     ax.set_title("data. log(SV)")
 
 
+@use_plot_config
 def plot_lsv_residual(
     res: xr.Dataset,
     ax: Axis,
@@ -314,6 +320,7 @@ def plot_lsv_residual(
         ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
 
 
+@use_plot_config
 def plot_rsv_residual(
     res: xr.Dataset,
     ax: Axis,
@@ -362,6 +369,7 @@ def plot_rsv_residual(
     ax.set_title("res. RSV")
 
 
+@use_plot_config
 def plot_sv_residual(
     res: xr.Dataset,
     ax: Axis,

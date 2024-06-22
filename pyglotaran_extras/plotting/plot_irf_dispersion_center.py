@@ -10,6 +10,7 @@ import xarray as xr
 from matplotlib.axis import Axis
 from matplotlib.figure import Figure
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import ResultLike
 
 
+@use_plot_config
 def plot_irf_dispersion_center(
     result: ResultLike,
     ax: Axis | None = None,

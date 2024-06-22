@@ -8,6 +8,7 @@ from warnings import warn
 import matplotlib.pyplot as plt
 import numpy as np
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
+@use_plot_config
 def plot_coherent_artifact(
     dataset: DatasetConvertible | Result,
     *,

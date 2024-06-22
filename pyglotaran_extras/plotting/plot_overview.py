@@ -8,6 +8,7 @@ from warnings import warn
 
 import matplotlib.pyplot as plt
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.deprecation.deprecation_utils import FIG_ONLY_WARNING
 from pyglotaran_extras.deprecation.deprecation_utils import PyglotaranExtrasApiDeprecationWarning
 from pyglotaran_extras.io.load_data import load_data
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import UnsetType
 
 
+@use_plot_config
 def plot_overview(
     result: DatasetConvertible | Result,
     center_λ: float | None = None,
@@ -176,6 +178,7 @@ def plot_overview(
     return fig, axes
 
 
+@use_plot_config
 def plot_simple_overview(
     result: DatasetConvertible | Result,
     title: str | None = None,
