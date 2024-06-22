@@ -32,12 +32,12 @@ dynamic = [
 ]
 dependencies = [
   "cycler>=0.10",
-  "docstring_parser>=0.16",
+  "docstring-parser>=0.16",
   "matplotlib>=3.3",
   "numpy>=1.22",
   "pydantic>=2.7",
   "pyglotaran>=0.7",
-  "ruamel.yaml>=0.18.6",
+  "ruamel-yaml>=0.18.6",
   "tabulate>=0.8.9",
   "xarray>=2022.3",
 ]
@@ -97,11 +97,13 @@ exclude = '^(docs/|tests?/)'
 require-return-section-when-returning-none = false
 allow-init-docstring = true
 
+[tool.coverage.paths]
+source = [
+  "pyglotaran_extras",
+  "*/site-packages/pyglotaran_extras",
+]
 [tool.coverage.run]
 branch = true
-include = [
-  'pyglotaran_extras/*',
-]
 omit = [
   'tests/*',
   # comment the above line if you want to see if all tests did run
