@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import inspect
+from collections.abc import Generator
 from collections.abc import Iterable
 from collections.abc import Iterator
 from collections.abc import Mapping
 from collections.abc import MutableMapping
+from contextlib import contextmanager
 from functools import wraps
 from inspect import Parameter
 from inspect import signature
@@ -31,6 +33,7 @@ from pydantic_core import PydanticUndefined
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from pyglotaran_extras.config.config import Config
     from pyglotaran_extras.types import Param
     from pyglotaran_extras.types import RetType
 
@@ -262,6 +265,8 @@ class PlotConfig(BaseModel):
         function_config = self.general if self.general is not None else PerFunctionPlotConfig()
         if self.model_extra is not None and function_name in self.model_extra:
             function_config = function_config.merge(self.model_extra[function_name])
+        if hasattr(self, "__context_config"):
+            function_config = function_config.merge(getattr(self, "__context_config"))
         return function_config
 
     def merge(self, other: PlotConfig) -> PlotConfig:  # noqa: C901
@@ -429,3 +434,26 @@ def use_plot_config(func: Callable[Param, RetType]) -> Callable[Param, RetType]:
         return return_values
 
     return wrapper
+
+
+@contextmanager
+def plot_config_context(plot_config: PerFunctionPlotConfig) -> Generator[Config, None, None]:
+    """Context manager to override parts of the resolved functions ``PlotConfig``.
+
+    Parameters
+    ----------
+    plot_config : PerFunctionPlotConfig
+        Function plot config override to update plot config for functions run inside of context.
+
+    Yields
+    ------
+    Config
+    """
+    import pyglotaran_extras
+
+    orig_config = pyglotaran_extras.CONFIG.model_copy(deep=True)
+    pyglotaran_extras.CONFIG.plotting.__context_config = PerFunctionPlotConfig.model_validate(
+        plot_config
+    )
+    yield pyglotaran_extras.CONFIG
+    pyglotaran_extras.CONFIG = orig_config

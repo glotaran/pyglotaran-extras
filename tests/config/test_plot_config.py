@@ -22,6 +22,7 @@ from pyglotaran_extras.config.plot_config import PlotLabelOverRideValue
 from pyglotaran_extras.config.plot_config import extract_default_kwargs
 from pyglotaran_extras.config.plot_config import find_axes
 from pyglotaran_extras.config.plot_config import find_not_user_provided_kwargs
+from pyglotaran_extras.config.plot_config import plot_config_context
 from pyglotaran_extras.config.plot_config import use_plot_config
 from tests import TEST_DATA
 
@@ -525,3 +526,37 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
     assert ax1_arg.get_ylabel() == "general label"
     assert ax2_arg.get_xlabel() == "will_be_added_label"
     assert ax2_arg.get_ylabel() == "default"
+
+
+def test_plot_config_context(mock_config: tuple[Config, dict[str, Any]]):
+    """Context overrides resolved config values of the function."""
+    config, _ = mock_config
+
+    plot_config = PerFunctionPlotConfig(
+        default_args_override={
+            "will_be_added_arg": "test_func arg overridden by context arg",
+            "added_by_context_arg": "added by context arg",
+        },
+        axis_label_override={
+            "will_be_added_label": "test_func arg overridden by context label",
+            "added_by_context_label": "added by context label",
+        },
+    )
+
+    with plot_config_context(plot_config):
+        test_func_config = config.plotting.get_function_config("test_func")
+
+    assert test_func_config == PerFunctionPlotConfig(
+        default_args_override={
+            "will_update_arg": "test_func arg",
+            "will_be_kept_arg": "general arg",
+            "will_be_added_arg": "test_func arg overridden by context arg",
+            "added_by_context_arg": "added by context arg",
+        },
+        axis_label_override={
+            "will_update_label": "test_func label",
+            "will_be_kept_label": "general label",
+            "will_be_added_label": "test_func arg overridden by context label",
+            "added_by_context_label": "added by context label",
+        },
+    )
