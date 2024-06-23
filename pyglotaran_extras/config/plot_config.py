@@ -26,9 +26,11 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 from pydantic import RootModel
+from pydantic import ValidationError
 from pydantic import field_validator
 from pydantic import model_serializer
 from pydantic import model_validator
+from pydantic_core import ErrorDetails
 from pydantic_core import PydanticUndefined
 
 if TYPE_CHECKING:
@@ -66,6 +68,8 @@ __PlotFunctionRegistry: MutableMapping[str, DefaultKwargs] = {}
 
 class PlotLabelOverRideValue(BaseModel):
     """Value of ``PlotLabelOverRideMap``."""
+
+    model_config = ConfigDict(extra="forbid")
 
     target_name: str
     axis: Literal["x", "y", "both"] = "both"
@@ -114,12 +118,18 @@ class PlotLabelOverRideMap(RootModel, Mapping):
         """
         if values is PydanticUndefined or values is None:
             return {}
+        errors: dict[str, ErrorDetails] = {}
         parsed_values: dict[str, PlotLabelOverRideValue] = {}
         for key, value in values.items():
-            if isinstance(value, str):
-                parsed_values[key] = PlotLabelOverRideValue(target_name=value)
-            else:
-                parsed_values[key] = PlotLabelOverRideValue.model_validate(value)
+            try:
+                if isinstance(value, str):
+                    parsed_values[key] = PlotLabelOverRideValue(target_name=value)
+                else:
+                    parsed_values[key] = PlotLabelOverRideValue.model_validate(value)
+            except ValidationError as error:
+                errors |= {str(e): e for e in error.errors()}
+        if len(errors) > 0:
+            raise ValidationError.from_exception_data(cls.__name__, line_errors=[*errors.values()])
         return parsed_values
 
     def __iter__(self) -> Iterator[str]:  # noqa: DOC
@@ -170,13 +180,15 @@ class PerFunctionPlotConfig(BaseModel):
         """
         self_dict = self.model_dump()
         other_dict = other.model_dump()
-        return PerFunctionPlotConfig(
-            default_args_override=(
-                self_dict["default_args_override"] | other_dict["default_args_override"]
-            ),
-            axis_label_override=(
-                self_dict["axis_label_override"] | other_dict["axis_label_override"]
-            ),
+        return PerFunctionPlotConfig.model_validate(
+            {
+                "default_args_override": (
+                    self_dict["default_args_override"] | other_dict["default_args_override"]
+                ),
+                "axis_label_override": (
+                    self_dict["axis_label_override"] | other_dict["axis_label_override"]
+                ),
+            }
         )
 
     def find_override_kwargs(self, not_user_provided_kwargs: set[str]) -> dict[str, Any]:
@@ -257,10 +269,20 @@ class PlotConfig(BaseModel):
         Returns
         -------
         dict[str, PerFunctionPlotConfig]
+
+        Raises
+        ------
+        ValidationError
         """
         parsed_values = {}
+        errors: dict[str, ErrorDetails] = {}
         for key, value in values.items():
-            parsed_values[key] = PerFunctionPlotConfig.model_validate(value)
+            try:
+                parsed_values[key] = PerFunctionPlotConfig.model_validate(value)
+            except ValidationError as error:
+                errors |= {str(e): {**e, "loc": (key, *e["loc"])} for e in error.errors()}
+        if len(errors) > 0:
+            raise ValidationError.from_exception_data(cls.__name__, line_errors=[*errors.values()])
         return parsed_values
 
     def get_function_config(self, function_name: str) -> PerFunctionPlotConfig:

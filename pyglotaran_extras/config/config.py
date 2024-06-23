@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import PrivateAttr
 from ruamel.yaml import YAML
 
@@ -22,6 +23,8 @@ CONFIG_FILE_STEM = "pyglotaran_extras_config"
 
 class Config(BaseModel):
     """Main configuration class."""
+
+    model_config = ConfigDict(extra="forbid")
 
     plotting: PlotConfig = PlotConfig()
     _source_files: list[Path] = PrivateAttr(default_factory=list)
@@ -147,13 +150,24 @@ def load_config_files(config_paths: Iterable[Path]) -> Generator[Config, None, N
     """
     yaml = YAML()
     for config_path in config_paths:
-        config_dict = yaml.load(config_path)
-        config = Config.model_validate(config_dict) if config_dict is not None else Config()
-        config._source_files.append(config_path)
-        yield config
+        try:
+            config_dict = yaml.load(config_path)
+            config = Config.model_validate(config_dict) if config_dict is not None else Config()
+            config._source_files.append(config_path)
+            yield config
+        # We use a very broad range of exception to ensure the config loading at import never
+        # breaks importing
+        except Exception as error:  # noqa: BLE001
+            print(  # noqa: T201
+                "Error loading the config:\n",
+                f"Source path: {config_path.as_posix()}\n",
+                f"Error: {error}",
+                file=sys.stderr,
+                sep="",
+            )
 
 
-def merge_configs(configs: Iterable[Config]) -> Config | None:
+def merge_configs(configs: Iterable[Config]) -> Config:
     """Merge ``Config``'s from left to right, where the right ``Config`` overrides the left.
 
     Parameters
@@ -163,14 +177,11 @@ def merge_configs(configs: Iterable[Config]) -> Config | None:
 
     Returns
     -------
-    Config | None
+    Config
     """
-    full_config = None
+    full_config = Config()
     for config in configs:
-        if full_config is None:  # noqa: SIM108
-            full_config = config
-        else:
-            full_config = full_config.merge(config)
+        full_config = full_config.merge(config)
     return full_config
 
 
@@ -202,8 +213,7 @@ def load_config(
         script_dir, include_home_dir=include_home_dir, lookup_depth=lookup_depth
     )
     configs = load_config_files(config_paths)
-    config = merge_configs(configs)
-    return config if config is not None else Config()
+    return merge_configs(configs)
 
 
 def _find_script_dir_at_import(package_root_file: str) -> Path:
