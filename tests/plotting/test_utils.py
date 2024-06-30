@@ -17,6 +17,7 @@ from pyglotaran_extras.plotting.utils import add_subplot_labels
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
 from pyglotaran_extras.plotting.utils import ensure_axes_array
 from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
+from pyglotaran_extras.plotting.utils import get_next_cycler_color
 from pyglotaran_extras.plotting.utils import not_single_element_dims
 
 if TYPE_CHECKING:
@@ -42,11 +43,9 @@ def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycl
     ax = plt.subplot()
     add_cycler_if_not_none(ax, cycler)
 
-    ax_cycler = iter(ax._get_lines._cycler_items)
-
     for _ in range(10):
         expected = next(expected_cycler)
-        assert next(ax_cycler) == expected
+        assert get_next_cycler_color(ax) == expected
 
 
 @pytest.mark.parametrize(
@@ -58,13 +57,10 @@ def test_add_cycler_if_not_none_multiple_axes(cycler: Cycler | None, expected_cy
     _, axes = plt.subplots(1, 2)
     add_cycler_if_not_none(axes, cycler)
 
-    ax0_cycler = iter(axes[0]._get_lines._cycler_items)
-    ax1_cycler = iter(axes[1]._get_lines._cycler_items)
-
     for _ in range(10):
         expected = next(expected_cycler)
-        assert next(ax0_cycler) == expected
-        assert next(ax1_cycler) == expected
+        assert get_next_cycler_color(axes[0]) == expected
+        assert get_next_cycler_color(axes[1]) == expected
 
 
 @pytest.mark.parametrize(
