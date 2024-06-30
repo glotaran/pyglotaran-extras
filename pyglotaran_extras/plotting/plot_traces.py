@@ -15,6 +15,7 @@ from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import add_unique_figure_legend
 from pyglotaran_extras.plotting.utils import extract_dataset_scale
 from pyglotaran_extras.plotting.utils import extract_irf_location
+from pyglotaran_extras.plotting.utils import get_next_cycler_color
 from pyglotaran_extras.plotting.utils import select_plot_wavelengths
 
 __all__ = ["select_plot_wavelengths", "plot_fitted_traces"]
@@ -96,7 +97,7 @@ def plot_data_and_fits(
             (result_data.data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_data")
             (result_data.fitted_data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_fit")
         else:
-            [next(axis._get_lines.prop_cycler) for _ in range(2)]
+            [get_next_cycler_color(axis) for _ in range(2)]
     if linlog:
         axis.set_xscale("symlog", linthresh=linthresh)
         axis.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
