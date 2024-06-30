@@ -1,5 +1,13 @@
 # Changelog
 
+(changes-0_7_3)=
+
+## 0.7.3 (Unreleased)
+
+- 🩹 Fix incompatibility of plot_data_and_fits with matplotlib>=3.8 (#275)
+- 🩹 Fix deprecation warning for using xr.Dataset.dim (#267)
+- 🩹 Fix very slow data/residual plots (#239)
+
 (changes-0_7_2)=
 
 ## 0.7.2 (2023-12-07)
