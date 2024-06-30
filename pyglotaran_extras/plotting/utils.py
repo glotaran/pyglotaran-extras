@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
     from pyglotaran_extras.types import BuiltinSubPlotLabelFormatFunctionKey
+    from pyglotaran_extras.types import CyclerColor
     from pyglotaran_extras.types import ResultLike
     from pyglotaran_extras.types import SubPlotLabelCoord
 
@@ -213,6 +214,28 @@ def add_unique_figure_legend(fig: Figure, axes: Axes) -> None:
     ]
     unique.sort(key=lambda entry: entry[1])
     fig.legend(*zip(*unique, strict=True))
+
+
+def get_next_cycler_color(ax: Axes) -> CyclerColor:
+    """Get next color from cycler assigned to ``ax``.
+
+    Note
+    ----
+    This will advance the cycler to the next state.
+
+    Parameters
+    ----------
+    ax : Axes
+        Axes to get the color from.
+
+    Returns
+    -------
+    CyclerColor
+    """
+    # Matplotlib<3.8 compat
+    if hasattr(ax._get_lines, "prop_cycler"):
+        return next(ax._get_lines.prop_cycler)
+    return {"color": ax._get_lines.get_next_color()}
 
 
 def select_plot_wavelengths(
