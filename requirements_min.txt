@@ -1,7 +1,7 @@
 # Minimum versions runtime dependencies
 
 cycler==0.10
-numpy==1.22
+numpy==2.0.0
 matplotlib==3.3
 pyglotaran==0.7.2
 tabulate==0.8.9
