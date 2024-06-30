@@ -53,8 +53,8 @@ jobs:
       - name: Upload Example Plots Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: example-plots-${{ matrix.example_name }}
-          path: ${{ steps.example-run.outputs.plots-path }}
+          name: example-notebooks-${{ matrix.example_name }}
+          path: ${{ steps.example-run.outputs.notebook-path }}
 
   collect-artifacts:
     name: "Collect artifacts and reupload as bundel"
@@ -64,18 +64,18 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: example-plots
-          pattern: example-plots-*
+          path: example-notebooks
+          pattern: example-notebooks-*
           merge-multiple: true
 
       - name: Upload Example Plots Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: example-plots
-          path: example-plots
+          name: example-notebooks
+          path: example-notebooks
           overwrite: true
 
       - name: Delete Intermediate artifacts
         uses: GeekyEggo/delete-artifact@v5
         with:
-          name: example-plots-*
+          name: example-notebooks-*
