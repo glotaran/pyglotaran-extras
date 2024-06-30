@@ -1,6 +1,9 @@
 """Convert a new pyglotaran (result) dataset to a version compatible with pyglotaran-extras."""
 
+from __future__ import annotations
+
 import copy
+
 import xarray as xr
 from glotaran.project.result import Result
 
@@ -27,7 +30,9 @@ def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> 
         if cleanup:
             ds = ds.drop_vars("species_associated_estimation")
     if "damped_oscillation_associated_estimation" in ds:
-        ds["damped_oscillation_associated_spectra"] = ds["damped_oscillation_associated_estimation"]
+        ds["damped_oscillation_associated_spectra"] = ds[
+            "damped_oscillation_associated_estimation"
+        ]
         if cleanup:
             ds = ds.drop_vars("damped_oscillation_associated_estimation")
 
@@ -135,9 +140,7 @@ def convert_result(result: Result, cleanup: bool = False) -> Result:
 
     # convert the datasets
     for key in converted_result.data:
-        converted_result.data[key] = convert_dataset(
-            converted_result.data[key], cleanup=cleanup
-        )
+        converted_result.data[key] = convert_dataset(converted_result.data[key], cleanup=cleanup)
 
     # convert the parameters
     return converted_result
