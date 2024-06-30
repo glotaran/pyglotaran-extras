@@ -32,7 +32,7 @@ def test_a_matrix_to_html_table(
         encoding="utf8"
     )
     assert a_matrix_to_html_table(
-        result_parallel_spectral_decay.data["dataset_1"].a_matrix_megacomplex_parallel_decay,
+        result_parallel_spectral_decay.data["parallel-decay"].a_matrix_megacomplex_parallel_decay,
         "megacomplex_parallel_decay",
         **kwargs,
     ) == expected.rstrip("\n")
@@ -60,10 +60,10 @@ def test_show_a_matrixes(
     )
 
     result = result_parallel_spectral_decay
-    result.data["dataset_2"] = result_sequential_spectral_decay.data["dataset_1"]
+    result.data["dataset_2"] = result_sequential_spectral_decay.data["sequential-decay"]
     # dummy data for filtering based on a-matrix size
     single_entry_data = result_sequential_spectral_decay.data[
-        "dataset_1"
+        "sequential-decay"
     ].a_matrix_megacomplex_sequential_decay[:1, :1]
     single_entry_data = single_entry_data.rename(
         {
@@ -85,7 +85,7 @@ def test_show_a_matrixes_multiple_a_matrixes_in_dataset(
     ).read_text(encoding="utf8")
 
     single_entry_data = result_sequential_spectral_decay.data[
-        "dataset_1"
+        "sequential-decay"
     ].a_matrix_megacomplex_sequential_decay[:1, :1]
 
     a_matrix_one = single_entry_data.rename(
