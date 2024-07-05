@@ -144,6 +144,32 @@ def test_config_export(tmp_path: Path):
     )
 
 
+def test_config_export_update(tmp_path: Path):
+    """Update existing config by default and overwrite if update kwarg is ``False``."""
+    config = Config().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
+    existing_config_path = config.export(tmp_path)
+
+    update_config = Config(
+        plotting=PlotConfig.model_validate(
+            {"test_func": {"axis_label_override": {"will_update_label": "new label"}}}
+        )
+    )
+    update_config.export(tmp_path)
+    # Ensure there is no comparison conflict due to different source file paths
+    config._source_files = [existing_config_path]
+    update_config._source_files = [existing_config_path]
+
+    assert (
+        Config().load(existing_config_path)._source_files
+        == config.merge(update_config)._source_files
+    )
+    assert Config().load(existing_config_path) == config.merge(update_config)
+
+    update_config.export(tmp_path, update=False)
+
+    assert Config().load(existing_config_path) == update_config
+
+
 def test_find_config_in_dir(tmp_path: Path):
     """Find one or two config files if present."""
     assert len(list(find_config_in_dir(tmp_path))) == 0

@@ -101,13 +101,15 @@ class Config(BaseModel):
         self._source_files = [Path(config_file_path)]
         return self.reload()
 
-    def export(self, export_folder: Path | str = ".") -> Path:
+    def export(self, export_folder: Path | str = ".", *, update: bool = True) -> Path:
         """Export current config and schema to ``export_folder``.
 
         Parameters
         ----------
         export_folder : Path | str
             Folder to export config and scheme to. Defaults to "."
+        update : bool
+            Whether to update or overwrite and existing config file. Defaults to True
 
         Returns
         -------
@@ -121,7 +123,11 @@ class Config(BaseModel):
         yaml = YAML()
         yaml.indent(mapping=2, sequence=4, offset=2)
         buffer = StringIO()
-        yaml.dump(self.model_dump(), buffer)
+        if export_path.is_file() is True and update is True:
+            merged = Config().load(export_path).merge(self)
+            yaml.dump(merged.model_dump(), buffer)
+        else:
+            yaml.dump(self.model_dump(), buffer)
         buffer.seek(0)
         export_path.write_text(
             EXPORT_TEMPLATE.format(schema_path=schema_path.name, config_yaml=buffer.read()),
