@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_guidance(
     result: DatasetConvertible | Result,
     figsize: tuple[float, float] = (15, 5),

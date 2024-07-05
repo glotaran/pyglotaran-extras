@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import ResultLike
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler", "ax"))
 def plot_irf_dispersion_center(
     result: ResultLike,
     ax: Axis | None = None,

@@ -373,7 +373,7 @@ def test_extract_default_kwargs():
             Defaults to 1.
         """
 
-    assert extract_default_kwargs(func) == {
+    assert extract_default_kwargs(func, ()) == {
         "normal_arg": {
             "default": "normal_arg",
             "annotation": "str",
@@ -389,10 +389,18 @@ def test_extract_default_kwargs():
         },
     }
 
+    assert extract_default_kwargs(func, ("kw_only_arg",)) == {
+        "normal_arg": {
+            "default": "normal_arg",
+            "annotation": "str",
+            "docstring": 'A normal arg. Defaults to "normal_arg".',
+        },
+    }
+
     def no_annotation(foo="bar"):
         pass
 
-    assert extract_default_kwargs(no_annotation) == {
+    assert extract_default_kwargs(no_annotation, ()) == {
         "foo": {"default": "bar", "annotation": "object", "docstring": None}
     }
 
@@ -402,7 +410,7 @@ def test_find_not_user_provided_kwargs():
     result = None
 
     def dec(func):
-        default_kwargs = extract_default_kwargs(func)
+        default_kwargs = extract_default_kwargs(func, ())
 
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -472,7 +480,7 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
 
     assert registry == {}
 
-    @use_plot_config
+    @use_plot_config()
     def test_func(
         will_update_arg="default update",
         will_be_kept_arg="default keep",
@@ -517,7 +525,7 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
 
     _, axes = plt.subplots(1, 2)
 
-    @use_plot_config
+    @use_plot_config()
     def axes_iterable_arg(
         axes: tuple[Axes, Axes],
     ):
@@ -539,7 +547,7 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
 
     _, (ax1_arg, ax2_arg) = plt.subplots(1, 2)
 
-    @use_plot_config
+    @use_plot_config()
     def multiple_axes_args(
         ax1: Axes,
         ax2: Axes,
@@ -580,7 +588,7 @@ def test_plot_config_context():
 
     _, (ax1_arg, ax2_arg) = plt.subplots(1, 2)
 
-    @use_plot_config
+    @use_plot_config()
     def test_func(
         ax1: Axes,
         ax2: Axes,

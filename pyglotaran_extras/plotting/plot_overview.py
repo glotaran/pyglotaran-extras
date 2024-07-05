@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import UnsetType
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler", "das_cycler", "svd_cycler"))
 def plot_overview(
     result: DatasetConvertible | Result,
     center_λ: float | None = None,
@@ -178,7 +178,7 @@ def plot_overview(
     return fig, axes
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler", "svd_cycler"))
 def plot_simple_overview(
     result: DatasetConvertible | Result,
     title: str | None = None,

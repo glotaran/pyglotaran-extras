@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import ResultLike
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_data_and_fits(
     result: ResultLike,
     wavelength: float,
@@ -110,7 +110,7 @@ def plot_data_and_fits(
         axis.legend()
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_fitted_traces(
     result: ResultLike,
     wavelengths: Iterable[float],

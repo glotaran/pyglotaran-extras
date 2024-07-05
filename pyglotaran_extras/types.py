@@ -9,8 +9,8 @@ from typing import TYPE_CHECKING
 from typing import Literal
 from typing import ParamSpec
 from typing import TypeAlias
-from typing import TypeVar
 from typing import TypedDict
+from typing import TypeVar
 
 import xarray as xr
 from glotaran.project.result import Result

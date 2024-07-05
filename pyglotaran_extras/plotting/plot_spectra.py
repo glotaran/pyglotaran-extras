@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import UnsetType
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler", "das_cycler"))
 def plot_spectra(
     res: xr.Dataset,
     axes: Axes,
@@ -53,7 +53,7 @@ def plot_spectra(
     plot_norm_das(res, axes[1, 1], cycler=das_cycler, show_zero_line=show_zero_line)
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_sas(
     res: xr.Dataset,
     ax: Axis,
@@ -89,7 +89,7 @@ def plot_sas(
         ax.axhline(0, color="k", linewidth=1)
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_norm_sas(
     res: xr.Dataset,
     ax: Axis,
@@ -127,7 +127,7 @@ def plot_norm_sas(
         ax.axhline(0, color="k", linewidth=1)
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_das(
     res: xr.Dataset,
     ax: Axis,
@@ -163,7 +163,7 @@ def plot_das(
         ax.axhline(0, color="k", linewidth=1)
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_norm_das(
     res: xr.Dataset,
     ax: Axis,
