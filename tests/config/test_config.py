@@ -170,6 +170,43 @@ def test_config_export_update(tmp_path: Path):
     assert Config().load(existing_config_path) == update_config
 
 
+@pytest.mark.usefixtures("mock_config")
+def test_config_export_rediscover(tmp_path: Path, mock_home: Path):
+    """Check that new files are picked up and filters work."""
+    config = Config()
+    assert config._source_files == []
+
+    home_config_path = mock_home / "pyglotaran_extras_config.yml"
+    home_config_path.touch()
+    expected_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    config_paths_default = config.rediscover()
+
+    assert config_paths_default == [home_config_path, expected_config_path]
+    assert config_paths_default == config._source_files
+
+    config_paths_no_home = config.rediscover(include_home_dir=False)
+
+    assert config_paths_no_home == [expected_config_path]
+    assert config_paths_no_home == config._source_files
+
+    project_config_path = tmp_path / "project/pyglotaran_extras_config.yml"
+    project_config_path.touch()
+
+    config_paths_with_project = config.rediscover()
+
+    assert config_paths_with_project == [
+        home_config_path,
+        expected_config_path,
+        project_config_path,
+    ]
+    assert config_paths_with_project == config._source_files
+
+    config_paths_only_project = config.rediscover(include_home_dir=False, lookup_depth=1)
+
+    assert config_paths_only_project == [project_config_path]
+    assert config_paths_only_project == config._source_files
+
+
 def test_find_config_in_dir(tmp_path: Path):
     """Find one or two config files if present."""
     assert len(list(find_config_in_dir(tmp_path))) == 0

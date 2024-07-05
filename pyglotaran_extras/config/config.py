@@ -135,6 +135,32 @@ class Config(BaseModel):
         )
         return export_path
 
+    def rediscover(self, *, include_home_dir: bool = True, lookup_depth: int = 2) -> list[Path]:
+        """Rediscover config paths based on the ``SCRIPT_DIR`` discovered on import.
+
+        Parameters
+        ----------
+        include_home_dir : bool
+            Where or not to include the users home folder in the config lookup. Defaults to True
+        lookup_depth : int
+            Depth at which to look for configs in parent folders of ``script_dir``.
+            If set to ``1`` only ``script_dir`` will be considered as config dir.
+            Defaults to ``2``.
+
+        Returns
+        -------
+        list[Path]
+            Paths of the discovered config files.
+        """
+        from pyglotaran_extras import SCRIPT_DIR
+
+        self._source_files = list(
+            discover_config_files(
+                SCRIPT_DIR, include_home_dir=include_home_dir, lookup_depth=lookup_depth
+            )
+        )
+        return self._source_files
+
 
 def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:
     """Find the config file inside of dir ``dir_path``.

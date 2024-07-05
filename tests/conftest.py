@@ -109,8 +109,11 @@ def mock_config(
     config = Config()
     config.load(dest_path)
     mock_registry: dict[str, Any] = {}
+    project_dir = tmp_path / "project"
+    project_dir.mkdir(parents=True, exist_ok=True)
     with (
         monkeypatch_all(monkeypatch, "CONFIG", config),
+        monkeypatch_all(monkeypatch, "SCRIPT_DIR", project_dir),
         monkeypatch_all(monkeypatch, "__PlotFunctionRegistry", mock_registry),
     ):
         yield config, mock_registry
