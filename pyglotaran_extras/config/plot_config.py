@@ -40,19 +40,6 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import Param
     from pyglotaran_extras.types import RetType
 
-EXCLUDE_DEFAULT_KWARGS = [
-    "cycler",
-    "das_cycler",
-    "svd_cycler",
-    "ax",
-    "oscillation_type",
-    "indices",
-]
-"""Function kwargs to ignore when building schema.
-
-For now this is a workaround ``ForwardRef`` types that are not known when creating the schema
-"""
-
 
 class DefaultKwarg(TypedDict):
     """Default value and type annotation of a kwarg extracted from the function signature."""
@@ -360,17 +347,25 @@ def create_parameter_docstring_mapping(func: Callable[..., Any]) -> Mapping[str,
     return param_docstring_mapping
 
 
-def extract_default_kwargs(func: Callable[..., Any]) -> DefaultKwargs:
+def extract_default_kwargs(
+    func: Callable[..., Any], exclude_kwargs: tuple[str, ...]
+) -> DefaultKwargs:
     """Extract the default kwargs of ``func`` from its signature.
 
     Parameters
     ----------
     func : Callable[..., Any]
         Function to extract the default args from.
+    exclude_kwargs : tuple[str, ...]
+        Names of keyword arguments that should be excluded.
 
     Returns
     -------
     DefaultKwargs
+
+    See Also
+    --------
+    use_plot_config
     """
     sig = signature(func)
     param_docstring_mapping = create_parameter_docstring_mapping(func)
@@ -381,7 +376,7 @@ def extract_default_kwargs(func: Callable[..., Any]) -> DefaultKwargs:
             "docstring": param_docstring_mapping.get(k, None),
         }
         for k, v in sig.parameters.items()
-        if k not in EXCLUDE_DEFAULT_KWARGS
+        if k not in exclude_kwargs
         and v.default is not Parameter.empty
         and v.kind is not Parameter.POSITIONAL_ONLY
     }
@@ -439,34 +434,50 @@ def find_axes(
             yield from find_axes(value)
 
 
-def use_plot_config(func: Callable[Param, RetType]) -> Callable[Param, RetType]:  # noqa: DOC
-    """Decorate plot functions to register it and enables auto use of config."""
-    default_kwargs = extract_default_kwargs(func)
-    __PlotFunctionRegistry[func.__name__] = default_kwargs
+def use_plot_config(  # noqa: DOC201, DOC203
+    exclude_from_config: tuple[str, ...] = (),
+) -> Callable[[Callable[Param, RetType]], Callable[Param, RetType]]:
+    """Decorate plot functions to register it and enables auto use of config.
 
-    @wraps(func)
-    def wrapper(*args: Param.args, **kwargs: Param.kwargs) -> RetType:  # noqa: DOC
-        """Wrap function and apply config."""
-        import pyglotaran_extras
+    Parameters
+    ----------
+    exclude_from_config : tuple[str, ...]
+        Names of keyword argument with default for which the type can not be represent in the
+        config. Defaults to ()
+    """
 
-        pyglotaran_extras.CONFIG.reload()
+    def outer_wrapper(func: Callable[Param, RetType]) -> Callable[Param, RetType]:  # noqa: DOC
+        """Outer wrapper to allow for ``ignore_kwargs`` to be passed."""
+        default_kwargs = extract_default_kwargs(func, exclude_from_config)
+        __PlotFunctionRegistry[func.__name__] = default_kwargs
 
-        arg_names = func.__code__.co_varnames[: len(args)]
-        not_user_provided_kwargs = find_not_user_provided_kwargs(default_kwargs, arg_names, kwargs)
-        function_config = pyglotaran_extras.CONFIG.plotting.get_function_config(func.__name__)
-        override_kwargs = function_config.find_override_kwargs(not_user_provided_kwargs)
-        updated_kwargs = kwargs | override_kwargs
-        arg_axes = find_axes(inspect.getcallargs(func, *args, **updated_kwargs).values())
-        return_values = func(*args, **updated_kwargs)
-        function_config.update_axes_labels(arg_axes)
+        @wraps(func)
+        def wrapper(*args: Param.args, **kwargs: Param.kwargs) -> RetType:  # noqa: DOC
+            """Wrap function and apply config."""
+            import pyglotaran_extras
 
-        if isinstance(return_values, Iterable):
-            return_axes = find_axes(return_values)
-            function_config.update_axes_labels(return_axes)
+            pyglotaran_extras.CONFIG.reload()
 
-        return return_values
+            arg_names = func.__code__.co_varnames[: len(args)]
+            not_user_provided_kwargs = find_not_user_provided_kwargs(
+                default_kwargs, arg_names, kwargs
+            )
+            function_config = pyglotaran_extras.CONFIG.plotting.get_function_config(func.__name__)
+            override_kwargs = function_config.find_override_kwargs(not_user_provided_kwargs)
+            updated_kwargs = kwargs | override_kwargs
+            arg_axes = find_axes(inspect.getcallargs(func, *args, **updated_kwargs).values())
+            return_values = func(*args, **updated_kwargs)
+            function_config.update_axes_labels(arg_axes)
 
-    return wrapper
+            if isinstance(return_values, Iterable):
+                return_axes = find_axes(return_values)
+                function_config.update_axes_labels(return_axes)
+
+            return return_values
+
+        return wrapper
+
+    return outer_wrapper
 
 
 @contextmanager

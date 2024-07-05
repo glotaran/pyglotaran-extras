@@ -12,6 +12,7 @@ from typing import Any
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import PrivateAttr
+from pydantic import PydanticUserError
 from pydantic import create_model
 from pydantic.fields import FieldInfo
 from ruamel.yaml import YAML
@@ -25,6 +26,10 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from collections.abc import Iterable
 
+# Only imported for builtin schema generation
+from collections.abc import Sequence  # noqa: F401
+from typing import Literal  # noqa: F401
+
 CONFIG_FILE_STEM = "pyglotaran_extras_config"
 
 EXPORT_TEMPLATE = """\
@@ -32,6 +37,21 @@ EXPORT_TEMPLATE = """\
 
 {config_yaml}\
 """
+
+
+class UsePlotConfigError(Exception):
+    """Error thrown when ``use_plot_config`` has none json serializable kwargs."""
+
+    def __init__(self, func_name: str, error: PydanticUserError) -> None:  # noqa: DOC
+        """Use ``func_name`` and original ``error`` to create error message."""
+        msg = (
+            f"The function ``{func_name}`` decorated with ``use_plot_config`` has an keyword "
+            "argument with a type annotation can not be represents in the config.\n"
+            "Please use the name of this keyword argument in the ``exclude_from_config`` "
+            "keyword argument to ``use_plot_config``.\n"
+            f"Original error:\n{error}"
+        )
+        super().__init__(msg)
 
 
 class Config(BaseModel):
@@ -347,47 +367,58 @@ def create_config_schema(
     -------
     Path
         Path to the file the schema got saved to.
+
+    Raises
+    ------
+    UsePlotConfigError
+        If any function decorated with ``use_plot_config`` has a keyword argument with a default
+        value and a type annotation that can not be serialized into a json schema.
     """
     json_schema = Config.model_json_schema()
     general_kwargs: dict[str, Any] = {}
 
     for function_name, default_kwargs in __PlotFunctionRegistry.items():
-        name_prefix = "".join([parts.capitalize() for parts in function_name.split("_")])
-        fields = {
-            kwarg_name: (
-                kwarg_value["annotation"],
-                FieldInfo(default=kwarg_value["default"], description=kwarg_value["docstring"]),
+        try:
+            name_prefix = "".join([parts.capitalize() for parts in function_name.split("_")])
+            fields = {
+                kwarg_name: (
+                    kwarg_value["annotation"],
+                    FieldInfo(
+                        default=kwarg_value["default"], description=kwarg_value["docstring"]
+                    ),
+                )
+                for kwarg_name, kwarg_value in default_kwargs.items()
+            }
+            kwargs_model_name = f"{name_prefix}Kwargs"
+            func_kwargs = create_model(
+                kwargs_model_name,
+                __config__=ConfigDict(extra="forbid"),
+                __doc__=(
+                    f"Default arguments to use for ``{function_name}``, "
+                    "if not specified in function call."
+                ),
+                **fields,
             )
-            for kwarg_name, kwarg_value in default_kwargs.items()
-        }
-        kwargs_model_name = f"{name_prefix}Kwargs"
-        func_kwargs = create_model(
-            kwargs_model_name,
-            __config__=ConfigDict(extra="forbid"),
-            __doc__=(
-                f"Default arguments to use for ``{function_name}``, "
-                "if not specified in function call."
-            ),
-            **fields,
-        )
-        config_model_name = f"{name_prefix}Config"
-        func_config = create_model(
-            config_model_name,
-            __config__=ConfigDict(extra="forbid"),
-            __doc__=(
-                f"Plot function configuration specific to ``{function_name}`` "
-                "(overrides values in general)."
-            ),
-            default_args_override=(func_kwargs, {}),
-            axis_label_override=(PlotLabelOverRideMap, PlotLabelOverRideMap()),
-        )
-        func_json_schema = func_config.model_json_schema()
-        general_kwargs |= func_json_schema["$defs"][kwargs_model_name]["properties"]
-        json_schema["$defs"] |= func_json_schema.pop("$defs")
-        json_schema["$defs"][config_model_name] = func_json_schema
-        json_schema["$defs"]["PlotConfig"]["properties"][function_name] = {
-            "allOf": [{"$ref": f"#/$defs/{config_model_name}"}]
-        }
+            config_model_name = f"{name_prefix}Config"
+            func_config = create_model(
+                config_model_name,
+                __config__=ConfigDict(extra="forbid"),
+                __doc__=(
+                    f"Plot function configuration specific to ``{function_name}`` "
+                    "(overrides values in general)."
+                ),
+                default_args_override=(func_kwargs, {}),
+                axis_label_override=(PlotLabelOverRideMap, PlotLabelOverRideMap()),
+            )
+            func_json_schema = func_config.model_json_schema()
+            general_kwargs |= func_json_schema["$defs"][kwargs_model_name]["properties"]
+            json_schema["$defs"] |= func_json_schema.pop("$defs")
+            json_schema["$defs"][config_model_name] = func_json_schema
+            json_schema["$defs"]["PlotConfig"]["properties"][function_name] = {
+                "allOf": [{"$ref": f"#/$defs/{config_model_name}"}]
+            }
+        except PydanticUserError as error:
+            raise UsePlotConfigError(function_name, error)  # noqa: B904
     json_schema["$defs"]["PerFunctionPlotConfig"]["properties"]["default_args_override"][
         "properties"
     ] = general_kwargs

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from matplotlib.axis import Axis
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_concentrations(
     res: xr.Dataset,
     ax: Axis,

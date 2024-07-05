@@ -522,13 +522,13 @@ input_type=CommentedMap]
 def test_create_config_schema(tmp_path: Path):
     """A valid config doesn't cause any schema validation errors."""
 
-    @use_plot_config
+    @use_plot_config()
     def other(
         will_be_kept_arg="default update",
     ):
         pass
 
-    @use_plot_config
+    @use_plot_config()
     def test_func(
         will_update_arg="default update",
         will_be_kept_arg="default keep",
@@ -554,7 +554,7 @@ def test_create_config_schema(tmp_path: Path):
 def test_create_config_schema_errors(tmp_path: Path):
     """A broken config does cause schema validation errors."""
 
-    @use_plot_config
+    @use_plot_config()
     def test_func(
         will_update_arg="default update",
         # we don't define will_be_added_arg and will_be_kept_arg because we want them to cause

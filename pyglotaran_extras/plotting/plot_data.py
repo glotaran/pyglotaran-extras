@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
-@use_plot_config
+@use_plot_config(exclude_from_config=("svd_cycler",))
 def plot_data_overview(
     dataset: DatasetConvertible | Result,
     title: str = "Data overview",
