@@ -128,6 +128,22 @@ def test_config_load(tmp_path: Path):
     assert test_config._source_files == [test_config_path]
 
 
+def test_config_export(tmp_path: Path):
+    """Exporting the config gives the expected result."""
+    expected_config_file = TEST_DATA / "config/pyglotaran_extras_config.yml"
+    config = Config().load(expected_config_file)
+
+    exported_config_path = config.export(tmp_path)
+
+    assert exported_config_path.is_file() is True
+    assert exported_config_path.samefile(tmp_path / "pyglotaran_extras_config.yml") is True
+    assert (tmp_path / "pyglotaran_extras_config.schema.json").is_file() is True
+
+    assert exported_config_path.read_text(encoding="utf8") == expected_config_file.read_text(
+        encoding="utf8"
+    )
+
+
 def test_find_config_in_dir(tmp_path: Path):
     """Find one or two config files if present."""
     assert len(list(find_config_in_dir(tmp_path))) == 0
