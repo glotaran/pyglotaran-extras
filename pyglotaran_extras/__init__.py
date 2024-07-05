@@ -70,5 +70,7 @@ __all__ = [
 
 __version__ = "0.7.2"
 
-CONFIG = load_config(_find_script_dir_at_import(__file__))
+SCRIPT_DIR = _find_script_dir_at_import(__file__)
+"""User script dir determined during import."""
+CONFIG = load_config(SCRIPT_DIR)
 """Global config instance."""
