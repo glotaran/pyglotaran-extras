@@ -4,5 +4,5 @@ cycler==0.10
 numpy==1.22
 matplotlib==3.3
 pyglotaran==0.7.2
-tabulate==0.8.9
+tabulate==0.9.0
 xarray==2022.3
