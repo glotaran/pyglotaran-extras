@@ -42,7 +42,7 @@ def test_config():
     assert test_config.plotting == test_plot_config
 
 
-def test_config_merge():
+def test_config_merge(tmp_path: Path):
     """Merging creates the expected output.
 
     - Update fields that are present in original and update
@@ -59,12 +59,17 @@ def test_config_merge():
     assert original.merge(update) == expected
 
     config_with_paths = Config()
-    config_with_paths._source_files = [Path("foo"), Path("bar"), Path("baz")]
+    config_with_paths._source_files = [tmp_path / "foo", tmp_path / "bar", tmp_path / "baz"]
+    [file.touch() for file in config_with_paths._source_files]  # type:ignore[func-returns-value]
 
     update = Config()
-    update._source_files = [Path("foo")]
+    update._source_files = [tmp_path / "foo"]
 
-    assert config_with_paths.merge(update)._source_files == [Path("bar"), Path("baz"), Path("foo")]
+    assert config_with_paths.merge(update)._source_files == [
+        tmp_path / "bar",
+        tmp_path / "baz",
+        tmp_path / "foo",
+    ]
 
 
 def test_config_reset(tmp_path: Path):
@@ -159,15 +164,15 @@ def test_config_export_update(tmp_path: Path):
     config._source_files = [existing_config_path]
     update_config._source_files = [existing_config_path]
 
-    assert (
-        Config().load(existing_config_path)._source_files
-        == config.merge(update_config)._source_files
-    )
     assert Config().load(existing_config_path) == config.merge(update_config)
 
     update_config.export(tmp_path, update=False)
 
-    assert Config().load(existing_config_path) == update_config
+    expected_config = Config().load(existing_config_path)
+    assert expected_config._source_hash != update_config._source_hash
+
+    expected_config._source_hash = update_config._source_hash
+    assert expected_config == update_config
 
 
 @pytest.mark.usefixtures("mock_config")

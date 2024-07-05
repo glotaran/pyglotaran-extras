@@ -560,9 +560,12 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
     assert ax2_arg.get_ylabel() == "default"
 
 
-def test_plot_config_context(mock_config: tuple[Config, dict[str, Any]]):
+@pytest.mark.usefixtures("mock_config")
+def test_plot_config_context():
     """Context overrides resolved config values of the function."""
-    config, _ = mock_config
+    import pyglotaran_extras
+
+    source_file = pyglotaran_extras.CONFIG._source_files[0]
 
     plot_config = PerFunctionPlotConfig(
         default_args_override={
@@ -575,8 +578,26 @@ def test_plot_config_context(mock_config: tuple[Config, dict[str, Any]]):
         },
     )
 
+    _, (ax1_arg, ax2_arg) = plt.subplots(1, 2)
+
+    @use_plot_config
+    def test_func(
+        ax1: Axes,
+        ax2: Axes,
+    ):
+        ax1.set_xlabel("will_update_label")
+        ax1.set_ylabel("will_be_kept_label")
+        ax2.set_xlabel("will_be_added_label")
+        ax2.set_ylabel("default")
+        return (ax1, ax2)
+
     with plot_config_context(plot_config):
-        test_func_config = config.plotting.get_function_config("test_func")
+        test_func_config = pyglotaran_extras.CONFIG.plotting.get_function_config("test_func")
+
+        # Force reload in use_plot_config by changing mtime of the file
+        source_file.write_bytes(source_file.read_bytes())
+
+        test_func(ax1_arg, ax2_arg)
 
     assert test_func_config == PerFunctionPlotConfig(
         default_args_override={
@@ -592,3 +613,8 @@ def test_plot_config_context(mock_config: tuple[Config, dict[str, Any]]):
             "added_by_context_label": "added by context label",
         },
     )
+
+    assert ax1_arg.get_xlabel() == "test_func label"
+    assert ax1_arg.get_ylabel() == "general label"
+    assert ax2_arg.get_xlabel() == "test_func arg overridden by context label"
+    assert ax2_arg.get_ylabel() == "default"

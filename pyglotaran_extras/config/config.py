@@ -41,6 +41,7 @@ class Config(BaseModel):
 
     plotting: PlotConfig = PlotConfig()
     _source_files: list[Path] = PrivateAttr(default_factory=list)
+    _source_hash: int = PrivateAttr(default=hash(()))
 
     def merge(self, other: Config) -> Config:
         """Merge two ``Config``'s where ``other`` overrides values and return a new instance.
@@ -60,6 +61,7 @@ class Config(BaseModel):
             if source_file in merged._source_files:
                 merged._source_files.remove(source_file)
             merged._source_files.append(source_file)
+        merged._source_hash = merged._calculate_source_hash()
         return merged
 
     def _reset(self) -> Config:
@@ -72,6 +74,10 @@ class Config(BaseModel):
         self.plotting = PlotConfig()
         return self
 
+    def _calculate_source_hash(self) -> int:  # noqa: DOC
+        """Calculate hash of source files based on their modification time."""
+        return hash(tuple(source_file.stat().st_mtime for source_file in self._source_files))
+
     def reload(self) -> Config:
         """Reset and reload config from files.
 
@@ -79,11 +85,17 @@ class Config(BaseModel):
         -------
         Config
         """
-        self._reset()
+        if self._source_hash == self._calculate_source_hash():
+            return self
         merged = Config()
+        context_config = getattr(self.plotting, "__context_config", None)
+        self._reset()
         for config in load_config_files(self._source_files):
             merged = merged.merge(config)
         self.plotting = merged.plotting
+        if context_config is not None:
+            setattr(self.plotting, "__context_config", context_config)
+        self._source_hash = merged._source_hash
         return self
 
     def load(self, config_file_path: Path | str) -> Config:
