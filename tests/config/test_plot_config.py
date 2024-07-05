@@ -393,7 +393,7 @@ def test_extract_default_kwargs():
         pass
 
     assert extract_default_kwargs(no_annotation) == {
-        "foo": {"default": "bar", "annotation": "Any", "docstring": None}
+        "foo": {"default": "bar", "annotation": "object", "docstring": None}
     }
 
 

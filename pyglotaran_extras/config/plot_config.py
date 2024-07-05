@@ -377,7 +377,7 @@ def extract_default_kwargs(func: Callable[..., Any]) -> DefaultKwargs:
     return {
         k: {
             "default": v.default,
-            "annotation": v.annotation if v.annotation is not Parameter.empty else "Any",
+            "annotation": v.annotation if v.annotation is not Parameter.empty else "object",
             "docstring": param_docstring_mapping.get(k, None),
         }
         for k, v in sig.parameters.items()

@@ -10,9 +10,11 @@ from shutil import copyfile
 from textwrap import dedent
 
 import pytest
+from jsonschema import Draft202012Validator
 from pydantic import __version__ as pydantic_version
 from ruamel.yaml import YAML
 
+from pyglotaran_extras import create_config_schema
 from pyglotaran_extras.config.config import CONFIG_FILE_STEM
 from pyglotaran_extras.config.config import Config
 from pyglotaran_extras.config.config import discover_config_files
@@ -21,6 +23,7 @@ from pyglotaran_extras.config.config import load_config
 from pyglotaran_extras.config.config import load_config_files
 from pyglotaran_extras.config.config import merge_configs
 from pyglotaran_extras.config.plot_config import PlotConfig
+from pyglotaran_extras.config.plot_config import use_plot_config
 from tests import TEST_DATA
 from tests.conftest import generator_is_exhausted
 
@@ -429,3 +432,75 @@ input_type=CommentedMap]
             For further information visit https://errors.pydantic.dev/{version}/v/extra_forbidden
         """
     )
+
+
+@pytest.mark.usefixtures("mock_config")
+def test_create_config_schema(tmp_path: Path):
+    """A valid config doesn't cause any schema validation errors."""
+
+    @use_plot_config
+    def other(
+        will_be_kept_arg="default update",
+    ):
+        pass
+
+    @use_plot_config
+    def test_func(
+        will_update_arg="default update",
+        will_be_kept_arg="default keep",
+        will_be_added_arg="default add",
+    ):
+        pass
+
+    json_schema = json.loads(create_config_schema(tmp_path).read_text())
+    expected_schema = json.loads(
+        (TEST_DATA / "config/pyglotaran_extras_config.schema.json").read_text()
+    )
+
+    assert json_schema == expected_schema
+
+    validator = Draft202012Validator(json_schema)
+
+    good_config = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
+
+    assert generator_is_exhausted(validator.iter_errors(good_config))
+
+
+@pytest.mark.usefixtures("mock_config")
+def test_create_config_schema_errors(tmp_path: Path):
+    """A broken config does cause schema validation errors."""
+
+    @use_plot_config
+    def test_func(
+        will_update_arg="default update",
+        # we don't define will_be_added_arg and will_be_kept_arg because we want them to cause
+        # errors
+    ):
+        pass
+
+    json_schema = json.loads(create_config_schema(tmp_path).read_text())
+    expected_schema = json.loads(
+        (TEST_DATA / "config/pyglotaran_extras_config-broken.schema.json").read_text()
+    )
+
+    assert json_schema == expected_schema
+
+    validator = Draft202012Validator(json_schema)
+
+    broken_config_dict = YAML().load(TEST_DATA / "config/broken_config.yml")
+    expected_errors = [
+        "Additional properties are not allowed ('invalid_kw_root' was unexpected)",
+        "Additional properties are not allowed ('invalid_kw_general' was unexpected)",
+        "Additional properties are not allowed ('will_be_kept_arg' was unexpected)",
+        "{'will_update_label': 'will change label', 'will_be_kept_label': {'not_allowed_general': "
+        "False}} is not valid under any of the given schemas",
+        "Additional properties are not allowed ('invalid_kw_test_func' was unexpected)",
+        "Additional properties are not allowed ('will_be_added_arg' was unexpected)",
+        "{'not_allowed_test_func': False} is not valid under any of the given schemas",
+    ]
+    for error, expected_error in zip(
+        validator.iter_errors(broken_config_dict), expected_errors, strict=True
+    ):
+        assert error.message.splitlines()[0] == expected_error, [
+            error.message.splitlines()[0] for error in validator.iter_errors(broken_config_dict)
+        ]

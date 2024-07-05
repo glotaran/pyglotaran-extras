@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from pyglotaran_extras.config.config import _find_script_dir_at_import
+from pyglotaran_extras.config.config import create_config_schema
 from pyglotaran_extras.config.config import load_config
 from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.io.setup_case_study import setup_case_study
 from pyglotaran_extras.plotting.plot_coherent_artifact import plot_coherent_artifact
@@ -59,7 +61,10 @@ __all__ = [
     "plot_fitted_traces",
     "select_plot_wavelengths",
     "add_subplot_labels",
+    # Config
     "PerFunctionPlotConfig",
+    "use_plot_config",
+    "create_config_schema",
     "CONFIG",
 ]
 

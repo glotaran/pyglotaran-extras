@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
+from typing import Any
 
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import PrivateAttr
+from pydantic import create_model
+from pydantic.fields import FieldInfo
 from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.plot_config import PlotConfig
+from pyglotaran_extras.config.plot_config import PlotLabelOverRideMap
+from pyglotaran_extras.config.plot_config import __PlotFunctionRegistry
 from pyglotaran_extras.io.setup_case_study import get_script_dir
 
 if TYPE_CHECKING:
@@ -244,3 +250,73 @@ def _find_script_dir_at_import(package_root_file: str) -> Path:
         nesting_offset += 1
         script_dir = get_script_dir(nesting=2 + nesting_offset)
     return script_dir
+
+
+def create_config_schema(
+    output_folder: Path | str = ".", file_name: Path | str = "pyglotaran_extras_config.schema.json"
+) -> Path:
+    """Create json schema file to be used for autocompletion and linting of the config.
+
+    Parameters
+    ----------
+    output_folder : Path | str
+        Folder to write schema file to. Defaults to "."
+    file_name : Path | str
+        Name of the scheme file. Defaults to "pyglotaran_extras_config_schema.json"
+
+    Returns
+    -------
+    Path
+        Path to the file the schema got saved to.
+    """
+    json_schema = Config.model_json_schema()
+    general_kwargs: dict[str, Any] = {}
+
+    for function_name, default_kwargs in __PlotFunctionRegistry.items():
+        name_prefix = "".join([parts.capitalize() for parts in function_name.split("_")])
+        fields = {
+            kwarg_name: (
+                kwarg_value["annotation"],
+                FieldInfo(default=kwarg_value["default"], description=kwarg_value["docstring"]),
+            )
+            for kwarg_name, kwarg_value in default_kwargs.items()
+        }
+        kwargs_model_name = f"{name_prefix}Kwargs"
+        func_kwargs = create_model(
+            kwargs_model_name,
+            __config__=ConfigDict(extra="forbid"),
+            __doc__=(
+                f"Default arguments to use for ``{function_name}``, "
+                "if not specified in function call."
+            ),
+            **fields,
+        )
+        config_model_name = f"{name_prefix}Config"
+        func_config = create_model(
+            config_model_name,
+            __config__=ConfigDict(extra="forbid"),
+            __doc__=(
+                f"Plot function configuration specific to ``{function_name}`` "
+                "(overrides values in general)."
+            ),
+            default_args_override=(func_kwargs, {}),
+            axis_label_override=(PlotLabelOverRideMap, PlotLabelOverRideMap()),
+        )
+        func_json_schema = func_config.model_json_schema()
+        general_kwargs |= func_json_schema["$defs"][kwargs_model_name]["properties"]
+        json_schema["$defs"] |= func_json_schema.pop("$defs")
+        json_schema["$defs"][config_model_name] = func_json_schema
+        json_schema["$defs"]["PlotConfig"]["properties"][function_name] = {
+            "allOf": [{"$ref": f"#/$defs/{config_model_name}"}]
+        }
+    json_schema["$defs"]["PerFunctionPlotConfig"]["properties"]["default_args_override"][
+        "properties"
+    ] = general_kwargs
+    json_schema["$defs"]["PerFunctionPlotConfig"]["properties"]["default_args_override"][
+        "additionalProperties"
+    ] = False
+    output_folder = Path(output_folder)
+    output_folder.mkdir(parents=True, exist_ok=True)
+    output_file = output_folder / file_name
+    output_file.write_text(json.dumps(json_schema, ensure_ascii=False), encoding="utf8")
+    return output_file
