@@ -297,7 +297,7 @@ class PlotConfig(BaseModel):
         -------
         PerFunctionPlotConfig
         """
-        function_config = self.general if self.general is not None else PerFunctionPlotConfig()
+        function_config = self.general
         if self.model_extra is not None and function_name in self.model_extra:
             function_config = function_config.merge(self.model_extra[function_name])
         if hasattr(self, "__context_config"):
@@ -449,6 +449,8 @@ def use_plot_config(func: Callable[Param, RetType]) -> Callable[Param, RetType]:
         """Wrap function and apply config."""
         import pyglotaran_extras
 
+        pyglotaran_extras.CONFIG.reload()
+
         arg_names = func.__code__.co_varnames[: len(args)]
         not_user_provided_kwargs = find_not_user_provided_kwargs(default_kwargs, arg_names, kwargs)
         function_config = pyglotaran_extras.CONFIG.plotting.get_function_config(func.__name__)
@@ -483,8 +485,10 @@ def plot_config_context(plot_config: PerFunctionPlotConfig) -> Generator[Config,
     import pyglotaran_extras
 
     orig_config = pyglotaran_extras.CONFIG.model_copy(deep=True)
-    pyglotaran_extras.CONFIG.plotting.__context_config = PerFunctionPlotConfig.model_validate(
-        plot_config
+    setattr(
+        pyglotaran_extras.CONFIG.plotting,
+        "__context_config",
+        PerFunctionPlotConfig.model_validate(plot_config),
     )
     yield pyglotaran_extras.CONFIG
     pyglotaran_extras.CONFIG = orig_config
