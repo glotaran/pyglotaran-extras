@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
@@ -25,6 +26,12 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
 CONFIG_FILE_STEM = "pyglotaran_extras_config"
+
+EXPORT_TEMPLATE = """\
+# yaml-language-server: $schema={schema_path}
+
+{config_yaml}\
+"""
 
 
 class Config(BaseModel):
@@ -93,6 +100,34 @@ class Config(BaseModel):
         """
         self._source_files = [Path(config_file_path)]
         return self.reload()
+
+    def export(self, export_folder: Path | str = ".") -> Path:
+        """Export current config and schema to ``export_folder``.
+
+        Parameters
+        ----------
+        export_folder : Path | str
+            Folder to export config and scheme to. Defaults to "."
+
+        Returns
+        -------
+        Path
+            Path to exported config file.
+        """
+        export_folder = Path(export_folder)
+        export_folder.mkdir(parents=True, exist_ok=True)
+        schema_path = create_config_schema(export_folder)
+        export_path = export_folder / f"{CONFIG_FILE_STEM}.yml"
+        yaml = YAML()
+        yaml.indent(mapping=2, sequence=4, offset=2)
+        buffer = StringIO()
+        yaml.dump(self.model_dump(), buffer)
+        buffer.seek(0)
+        export_path.write_text(
+            EXPORT_TEMPLATE.format(schema_path=schema_path.name, config_yaml=buffer.read()),
+            encoding="utf8",
+        )
+        return export_path
 
 
 def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:

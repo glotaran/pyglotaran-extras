@@ -8,7 +8,6 @@ plotting:
     axis_label_override:
       will_update_label: will change label
       will_be_kept_label: general label
-
   test_func:
     default_args_override:
       will_update_arg: test_func arg
