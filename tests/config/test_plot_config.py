@@ -18,7 +18,7 @@ from ruamel.yaml import YAML
 from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
 from pyglotaran_extras.config.plot_config import PlotConfig
 from pyglotaran_extras.config.plot_config import PlotLabelOverRideMap
-from pyglotaran_extras.config.plot_config import PlotLabelOverRideValue
+from pyglotaran_extras.config.plot_config import PlotLabelOverrideValue
 from pyglotaran_extras.config.plot_config import extract_default_kwargs
 from pyglotaran_extras.config.plot_config import find_axes
 from pyglotaran_extras.config.plot_config import find_not_user_provided_kwargs
@@ -35,8 +35,8 @@ if TYPE_CHECKING:
 
 def test_plot_label_over_ride_value_serialization():
     """Short notation is used if axis has default value."""
-    assert PlotLabelOverRideValue(target_name="New Label").model_dump() == "New Label"
-    assert PlotLabelOverRideValue(target_name="New Label", axis="x").model_dump() == {
+    assert PlotLabelOverrideValue(target_name="New Label").model_dump() == "New Label"
+    assert PlotLabelOverrideValue(target_name="New Label", axis="x").model_dump() == {
         "target_name": "New Label",
         "axis": "x",
     }
@@ -60,13 +60,13 @@ def test_plot_label_over_ride_map():
 
     assert len(override_map) == 2
 
-    assert override_map["Old Label"] == PlotLabelOverRideValue(target_name="New Label")
-    assert override_map["Old Y Label"] == PlotLabelOverRideValue(target_name="New Label", axis="y")
+    assert override_map["Old Label"] == PlotLabelOverrideValue(target_name="New Label")
+    assert override_map["Old Y Label"] == PlotLabelOverrideValue(target_name="New Label", axis="y")
 
     override_map_pydantic_init = PlotLabelOverRideMap(
-        {"Old Label": PlotLabelOverRideValue(target_name="New Label")}
+        {"Old Label": PlotLabelOverrideValue(target_name="New Label")}
     )
-    assert override_map_pydantic_init["Old Label"] == PlotLabelOverRideValue(
+    assert override_map_pydantic_init["Old Label"] == PlotLabelOverrideValue(
         target_name="New Label"
     )
 
@@ -114,7 +114,7 @@ def test_per_function_plot_config():
     validate(instance=function_config_data, schema=PerFunctionPlotConfig.model_json_schema())
 
     assert function_config.default_args_override["test_arg"] is True
-    assert function_config.axis_label_override["Old Label"] == PlotLabelOverRideValue(
+    assert function_config.axis_label_override["Old Label"] == PlotLabelOverrideValue(
         target_name="New Label"
     )
 
@@ -158,10 +158,10 @@ def test_per_function_plot_config_merge():
 
     assert merged_config.default_args_override["test_arg"] == "changed"
     assert merged_config.default_args_override["not_updated"] == "same"
-    assert merged_config.axis_label_override["Old Label"] == PlotLabelOverRideValue(
+    assert merged_config.axis_label_override["Old Label"] == PlotLabelOverrideValue(
         target_name="changed"
     )
-    assert merged_config.axis_label_override["not_updated"] == PlotLabelOverRideValue(
+    assert merged_config.axis_label_override["not_updated"] == PlotLabelOverrideValue(
         target_name="same"
     )
 
@@ -201,8 +201,8 @@ def test_per_function_plot_update_axes_labels():
     PerFunctionPlotConfig(
         axis_label_override=PlotLabelOverRideMap(
             {
-                "x": PlotLabelOverRideValue(target_name="new x", axis="x"),
-                "y": PlotLabelOverRideValue(target_name="new y", axis="y"),
+                "x": PlotLabelOverrideValue(target_name="new x", axis="x"),
+                "y": PlotLabelOverrideValue(target_name="new y", axis="y"),
             }
         )
     ).update_axes_labels(ax_explicit)
@@ -214,8 +214,8 @@ def test_per_function_plot_update_axes_labels():
     PerFunctionPlotConfig(
         axis_label_override=PlotLabelOverRideMap(
             {
-                "x": PlotLabelOverRideValue(target_name="new x", axis="y"),
-                "y": PlotLabelOverRideValue(target_name="new y", axis="x"),
+                "x": PlotLabelOverrideValue(target_name="new x", axis="y"),
+                "y": PlotLabelOverrideValue(target_name="new y", axis="x"),
             }
         )
     ).update_axes_labels(ax_mismatch)
