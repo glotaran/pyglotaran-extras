@@ -17,7 +17,7 @@ from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
 from pyglotaran_extras.config.plot_config import PlotConfig
-from pyglotaran_extras.config.plot_config import PlotLabelOverRideMap
+from pyglotaran_extras.config.plot_config import PlotLabelOverrideMap
 from pyglotaran_extras.config.plot_config import PlotLabelOverrideValue
 from pyglotaran_extras.config.plot_config import extract_default_kwargs
 from pyglotaran_extras.config.plot_config import find_axes
@@ -43,7 +43,7 @@ def test_plot_label_over_ride_value_serialization():
 
 
 def test_plot_label_over_ride_map():
-    """PlotLabelOverRideMap behaves like a mapping and the schema allows short notation."""
+    """PlotLabelOverrideMap behaves like a mapping and the schema allows short notation."""
     axis_label_override: dict[str, Any] = YAML().load(
         StringIO(
             dedent(
@@ -56,21 +56,21 @@ def test_plot_label_over_ride_map():
             )
         )
     )
-    override_map = PlotLabelOverRideMap(axis_label_override)
+    override_map = PlotLabelOverrideMap(axis_label_override)
 
     assert len(override_map) == 2
 
     assert override_map["Old Label"] == PlotLabelOverrideValue(target_name="New Label")
     assert override_map["Old Y Label"] == PlotLabelOverrideValue(target_name="New Label", axis="y")
 
-    override_map_pydantic_init = PlotLabelOverRideMap(
+    override_map_pydantic_init = PlotLabelOverrideMap(
         {"Old Label": PlotLabelOverrideValue(target_name="New Label")}
     )
     assert override_map_pydantic_init["Old Label"] == PlotLabelOverrideValue(
         target_name="New Label"
     )
 
-    validate(instance=axis_label_override, schema=PlotLabelOverRideMap.model_json_schema())
+    validate(instance=axis_label_override, schema=PlotLabelOverrideMap.model_json_schema())
 
     for map_item_tuple, expected in zip(
         override_map.items(), axis_label_override.items(), strict=True
@@ -80,14 +80,14 @@ def test_plot_label_over_ride_map():
     with pytest.raises(SchemaValidationError) as execinfo:
         validate(
             instance={"Old Y Label": {"axis": "y"}},
-            schema=PlotLabelOverRideMap.model_json_schema(),
+            schema=PlotLabelOverrideMap.model_json_schema(),
         )
 
     assert str(execinfo.value).startswith("'target_name' is a required property")
 
-    assert PlotLabelOverRideMap().model_dump() == {}
+    assert PlotLabelOverrideMap().model_dump() == {}
     with pytest.raises(PydanticValidationError) as execinfo:
-        PlotLabelOverRideMap.model_validate({"invalid": {"invalid": 1}})
+        PlotLabelOverrideMap.model_validate({"invalid": {"invalid": 1}})
 
     assert (
         "target_name\n  Field required [type=missing, input_value={'invalid': 1}, input_type=dict]"
@@ -199,7 +199,7 @@ def test_per_function_plot_update_axes_labels():
     ax_explicit = create_test_ax()
 
     PerFunctionPlotConfig(
-        axis_label_override=PlotLabelOverRideMap(
+        axis_label_override=PlotLabelOverrideMap(
             {
                 "x": PlotLabelOverrideValue(target_name="new x", axis="x"),
                 "y": PlotLabelOverrideValue(target_name="new y", axis="y"),
@@ -212,7 +212,7 @@ def test_per_function_plot_update_axes_labels():
     ax_mismatch = create_test_ax()
 
     PerFunctionPlotConfig(
-        axis_label_override=PlotLabelOverRideMap(
+        axis_label_override=PlotLabelOverrideMap(
             {
                 "x": PlotLabelOverrideValue(target_name="new x", axis="y"),
                 "y": PlotLabelOverrideValue(target_name="new y", axis="x"),

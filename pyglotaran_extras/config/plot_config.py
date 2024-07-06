@@ -54,7 +54,7 @@ __PlotFunctionRegistry: MutableMapping[str, DefaultKwargs] = {}
 
 
 class PlotLabelOverrideValue(BaseModel):
-    """Value of ``PlotLabelOverRideMap``."""
+    """Value of ``PlotLabelOverrideMap``."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -82,7 +82,7 @@ def _add_short_notation_to_schema(json_schema: dict[str, Any]) -> None:  # noqa:
     }
 
 
-class PlotLabelOverRideMap(RootModel, Mapping):
+class PlotLabelOverrideMap(RootModel, Mapping):
     """Mapping to override axis labels."""
 
     model_config = ConfigDict(json_schema_extra=_add_short_notation_to_schema)
@@ -141,17 +141,17 @@ class PerFunctionPlotConfig(BaseModel):
         default_factory=dict,
         description="Default arguments to use if not specified in function call.",
     )
-    axis_label_override: PlotLabelOverRideMap | dict[str, str] = Field(
-        default_factory=PlotLabelOverRideMap
+    axis_label_override: PlotLabelOverrideMap | dict[str, str] = Field(
+        default_factory=PlotLabelOverrideMap
     )
 
     @field_validator("axis_label_override", mode="before")
     @classmethod
     def validate_axis_label_override(  # noqa: DOC
-        cls, value: PlotLabelOverRideMap | dict[str, str]
-    ) -> PlotLabelOverRideMap:
-        """Ensure that ``axis_label_override`` gets converted into ``PlotLabelOverRideMap``."""
-        return PlotLabelOverRideMap.model_validate(value)
+        cls, value: PlotLabelOverrideMap | dict[str, str]
+    ) -> PlotLabelOverrideMap:
+        """Ensure that ``axis_label_override`` gets converted into ``PlotLabelOverrideMap``."""
+        return PlotLabelOverrideMap.model_validate(value)
 
     def merge(self, other: PerFunctionPlotConfig) -> PerFunctionPlotConfig:
         """Merge two ``PerFunctionPlotConfig``'s where ``other`` overrides values.
