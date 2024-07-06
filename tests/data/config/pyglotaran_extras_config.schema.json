@@ -76,7 +76,7 @@
       "additionalProperties": {
         "anyOf": [
           {
-            "$ref": "#/$defs/PlotLabelOverRideValue"
+            "$ref": "#/$defs/PlotLabelOverrideValue"
           },
           {
             "type": "string"
@@ -87,7 +87,7 @@
       "title": "PlotLabelOverRideMap",
       "type": "object"
     },
-    "PlotLabelOverRideValue": {
+    "PlotLabelOverrideValue": {
       "additionalProperties": false,
       "description": "Value of ``PlotLabelOverRideMap``.",
       "properties": {
@@ -103,7 +103,7 @@
         }
       },
       "required": ["target_name"],
-      "title": "PlotLabelOverRideValue",
+      "title": "PlotLabelOverrideValue",
       "type": "object"
     },
     "OtherKwargs": {

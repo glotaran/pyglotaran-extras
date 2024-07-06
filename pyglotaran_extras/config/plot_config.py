@@ -53,7 +53,7 @@ DefaultKwargs: TypeAlias = Mapping[str, DefaultKwarg]
 __PlotFunctionRegistry: MutableMapping[str, DefaultKwargs] = {}
 
 
-class PlotLabelOverRideValue(BaseModel):
+class PlotLabelOverrideValue(BaseModel):
     """Value of ``PlotLabelOverRideMap``."""
 
     model_config = ConfigDict(extra="forbid")
@@ -75,7 +75,7 @@ class PlotLabelOverRideValue(BaseModel):
 
 
 def _add_short_notation_to_schema(json_schema: dict[str, Any]) -> None:  # noqa: DOC
-    """Update json schema to support short notation for ``PlotLabelOverRideValue``."""
+    """Update json schema to support short notation for ``PlotLabelOverrideValue``."""
     orig_additional_properties = json_schema["additionalProperties"]
     json_schema["additionalProperties"] = {
         "anyOf": [orig_additional_properties, {"type": "string"}]
@@ -87,11 +87,11 @@ class PlotLabelOverRideMap(RootModel, Mapping):
 
     model_config = ConfigDict(json_schema_extra=_add_short_notation_to_schema)
 
-    root: dict[str, PlotLabelOverRideValue] = Field(default_factory=dict)
+    root: dict[str, PlotLabelOverrideValue] = Field(default_factory=dict)
 
     @model_validator(mode="before")
     @classmethod
-    def parse(cls, values: dict[str, Any]) -> dict[str, PlotLabelOverRideValue]:  # noqa: DOC
+    def parse(cls, values: dict[str, Any]) -> dict[str, PlotLabelOverrideValue]:  # noqa: DOC
         """Parse ``axis_label_override`` dictionary supporting verbose and short notation.
 
         Parameters
@@ -101,18 +101,18 @@ class PlotLabelOverRideMap(RootModel, Mapping):
 
         Returns
         -------
-        dict[str, PlotLabelOverRideValue]
+        dict[str, PlotLabelOverrideValue]
         """
         if values is PydanticUndefined or values is None:
             return {}
         errors: dict[str, ErrorDetails] = {}
-        parsed_values: dict[str, PlotLabelOverRideValue] = {}
+        parsed_values: dict[str, PlotLabelOverrideValue] = {}
         for key, value in values.items():
             try:
                 if isinstance(value, str):
-                    parsed_values[key] = PlotLabelOverRideValue(target_name=value)
+                    parsed_values[key] = PlotLabelOverrideValue(target_name=value)
                 else:
-                    parsed_values[key] = PlotLabelOverRideValue.model_validate(value)
+                    parsed_values[key] = PlotLabelOverrideValue.model_validate(value)
             except ValidationError as error:
                 errors |= {str(e): e for e in error.errors()}
         if len(errors) > 0:
@@ -127,7 +127,7 @@ class PlotLabelOverRideMap(RootModel, Mapping):
         """Get number of items."""
         return len(self.root)
 
-    def __getitem__(self, item_label: str) -> PlotLabelOverRideValue:  # noqa: DOC
+    def __getitem__(self, item_label: str) -> PlotLabelOverrideValue:  # noqa: DOC
         """Access items."""
         return self.root[item_label]
 
@@ -215,14 +215,14 @@ class PerFunctionPlotConfig(BaseModel):
 
                 if orig_x_label in self.axis_label_override and (
                     override_item := cast(
-                        PlotLabelOverRideValue, self.axis_label_override[orig_x_label]
+                        PlotLabelOverrideValue, self.axis_label_override[orig_x_label]
                     )
                 ).axis in ("x", "both"):
                     ax.set_xlabel(override_item.target_name)
 
                 if orig_y_label in self.axis_label_override and (
                     override_item := cast(
-                        PlotLabelOverRideValue, self.axis_label_override[orig_y_label]
+                        PlotLabelOverrideValue, self.axis_label_override[orig_y_label]
                     )
                 ).axis in ("y", "both"):
                     ax.set_ylabel(override_item.target_name)
