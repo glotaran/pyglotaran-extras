@@ -22,7 +22,9 @@ import pytest
 from glotaran.optimization.optimize import optimize
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
 from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
+from ruamel.yaml import YAML
 
+from pyglotaran_extras.config.config import CONFIG_FILE_STEM
 from pyglotaran_extras.config.config import Config
 from pyglotaran_extras.io.setup_case_study import get_script_dir
 from tests import TEST_DATA
@@ -99,13 +101,24 @@ def mock_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
 
 
 @pytest.fixture()
+def test_config_file() -> Path:
+    """Path to the test config file."""
+    return TEST_DATA / "config/pygta_config.yml"
+
+
+@pytest.fixture()
+def test_config_values(test_config_file: Path) -> dict[str, Any]:
+    """Read test config into dict."""
+    return YAML().load(test_config_file)
+
+
+@pytest.fixture()
 def mock_config(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, test_config_file: Path
 ) -> Generator[tuple[Config, dict[str, Any]], None, None]:
     """Mock config with test config and empty function registry."""
-    src_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
-    dest_path = tmp_path / "pyglotaran_extras_config.yml"
-    copyfile(src_path, dest_path)
+    dest_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
+    copyfile(test_config_file, dest_path)
     config = Config()
     config.load(dest_path)
     mock_registry: dict[str, Any] = {}

@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=pyglotaran_extras_config-broken.schema.json
+# yaml-language-server: $schema=broken_config.schema.json
 
 plotting:
   general:

@@ -321,17 +321,14 @@ def test_plot_config_merge():
     assert original.merge(update) == expected
 
 
-def test_plot_config_get_function_config():
+def test_plot_config_get_function_config(test_config_values: dict[str, Any]):
     """The generated config updates the general config with the test func config.
 
     - Update fields that are present in general and test_fun config
     - Keep fields that are not present in the test_func config
     - Add field that is only present in test_func config
     """
-    plot_config_values = YAML().load(
-        StringIO((TEST_DATA / "config/pyglotaran_extras_config.yml").read_text())
-    )
-    plot_config = PlotConfig.model_validate(plot_config_values["plotting"])
+    plot_config = PlotConfig.model_validate(test_config_values["plotting"])
 
     assert plot_config.get_function_config("test_func") == PerFunctionPlotConfig(
         default_args_override={

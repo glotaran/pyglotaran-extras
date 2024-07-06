@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 from collections.abc import Sequence  # noqa: F401
 from typing import Literal  # noqa: F401
 
-CONFIG_FILE_STEM = "pyglotaran_extras_config"
+CONFIG_FILE_STEM = "pygta_config"
 
 EXPORT_TEMPLATE = """\
 # yaml-language-server: $schema={schema_path}
@@ -352,7 +352,7 @@ def _find_script_dir_at_import(package_root_file: str) -> Path:
 
 
 def create_config_schema(
-    output_folder: Path | str = ".", file_name: Path | str = "pyglotaran_extras_config.schema.json"
+    output_folder: Path | str = ".", file_name: Path | str = "pygta_config.schema.json"
 ) -> Path:
     """Create json schema file to be used for autocompletion and linting of the config.
 
@@ -361,7 +361,7 @@ def create_config_schema(
     output_folder : Path | str
         Folder to write schema file to. Defaults to "."
     file_name : Path | str
-        Name of the scheme file. Defaults to "pyglotaran_extras_config_schema.json"
+        Name of the scheme file. Defaults to "pygta_config.schema.json"
 
     Returns
     -------
