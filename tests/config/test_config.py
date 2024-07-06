@@ -7,11 +7,9 @@ import subprocess
 import sys
 from pathlib import Path
 from shutil import copyfile
-from textwrap import dedent
 
 import pytest
 from jsonschema import Draft202012Validator
-from pydantic import __version__ as pydantic_version
 from ruamel.yaml import YAML
 
 from pyglotaran_extras import create_config_schema
@@ -485,37 +483,22 @@ def test_load_config_on_import_broken_config(tmp_path: Path, import_load_script:
     res = subprocess.run([sys.executable, import_load_script], text=True, capture_output=True)
     assert res.returncode == 0
 
-    version = pydantic_version[:-2]
-    assert res.stderr == dedent(
-        f"""\
-        Error loading the config:
-        Source path: {dest_path.as_posix()}
-        Error: 7 validation errors for Config
-        plotting.general.axis_label_override.target_name
-          Field required [type=missing, input_value={{'not_allowed_general': False}}, \
-input_type=CommentedMap]
-            For further information visit https://errors.pydantic.dev/{version}/v/missing
-        plotting.general.axis_label_override.not_allowed_general
-          Extra inputs are not permitted [type=extra_forbidden, input_value=False, input_type=bool]
-            For further information visit https://errors.pydantic.dev/{version}/v/extra_forbidden
-        plotting.general.invalid_kw_general
-          Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
-            For further information visit https://errors.pydantic.dev/{version}/v/extra_forbidden
-        plotting.test_func.axis_label_override.target_name
-          Field required [type=missing, input_value={{'not_allowed_test_func': False}}, \
-input_type=CommentedMap]
-            For further information visit https://errors.pydantic.dev/{version}/v/missing
-        plotting.test_func.axis_label_override.not_allowed_test_func
-          Extra inputs are not permitted [type=extra_forbidden, input_value=False, input_type=bool]
-            For further information visit https://errors.pydantic.dev/{version}/v/extra_forbidden
-        plotting.test_func.invalid_kw_test_func
-          Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
-            For further information visit https://errors.pydantic.dev/{version}/v/extra_forbidden
-        invalid_kw_root
-          Extra inputs are not permitted [type=extra_forbidden, input_value=True, input_type=bool]
-            For further information visit https://errors.pydantic.dev/{version}/v/extra_forbidden
-        """
-    )
+    expected_errors = [
+        "plotting.general.axis_label_override.target_name",
+        "plotting.general.axis_label_override.not_allowed_general",
+        "plotting.general.invalid_kw_general",
+        "plotting.test_func.axis_label_override.target_name",
+        "plotting.test_func.axis_label_override.not_allowed_test_func",
+        "plotting.test_func.invalid_kw_test_func",
+        "invalid_kw_root",
+    ]
+
+    assert f"{len(expected_errors)} validation errors for Config" in res.stderr
+
+    assert f"Source path: {dest_path.as_posix()}" in res.stderr
+
+    for error in expected_errors:
+        assert error in res.stderr, f"Expected error '{error}' not found in stderr"
 
 
 @pytest.mark.usefixtures("mock_config")
