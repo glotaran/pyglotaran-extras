@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 from shutil import copyfile
+from typing import Any
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -26,13 +27,11 @@ from tests import TEST_DATA
 from tests.conftest import generator_is_exhausted
 
 
-def test_config():
+def test_config(test_config_values: dict[str, Any]):
     """Empty and from values initialization works."""
     empty_config = Config()
 
     assert empty_config.plotting == PlotConfig()
-
-    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
 
     test_config = Config.model_validate(test_config_values)
     test_plot_config = PlotConfig.model_validate(test_config_values["plotting"])
@@ -70,11 +69,10 @@ def test_config_merge(tmp_path: Path):
     ]
 
 
-def test_config_reset(tmp_path: Path):
+def test_config_reset(tmp_path: Path, test_config_values: dict[str, Any]):
     """All config values but the source files get reset."""
-    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
 
-    test_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    test_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     test_config = Config.model_validate(test_config_values)
     test_config._source_files = [test_config_path]
 
@@ -84,11 +82,10 @@ def test_config_reset(tmp_path: Path):
     assert test_config._source_files == [test_config_path]
 
 
-def test_config_reload(tmp_path: Path):
+def test_config_reload(tmp_path: Path, test_config_values: dict[str, Any]):
     """Config values get reloaded from file."""
-    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
 
-    test_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    test_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     test_config = Config.model_validate(test_config_values)
     test_config._source_files = [test_config_path]
 
@@ -107,19 +104,18 @@ def test_config_reload(tmp_path: Path):
     assert test_config._source_files == [test_config_path]
 
 
-def test_config_load(tmp_path: Path):
+def test_config_load(tmp_path: Path, test_config_values: dict[str, Any], test_config_file: Path):
     """Loading config replaces its values and and source files."""
-    test_config_values = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
 
     test_config = Config()
-    test_config._source_files = [TEST_DATA / "config/pyglotaran_extras_config.yml"]
+    test_config._source_files = [test_config_file]
     test_config.reload()
 
     test_config_values["plotting"]["general"]["default_args_override"]["will_update_arg"] = (
         "from new file"
     )
 
-    test_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    test_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     YAML().dump(test_config_values, test_config_path)
 
     expected_plot_config = test_config.plotting.model_copy(deep=True)
@@ -131,25 +127,24 @@ def test_config_load(tmp_path: Path):
     assert test_config._source_files == [test_config_path]
 
 
-def test_config_export(tmp_path: Path):
+def test_config_export(tmp_path: Path, test_config_file: Path):
     """Exporting the config gives the expected result."""
-    expected_config_file = TEST_DATA / "config/pyglotaran_extras_config.yml"
-    config = Config().load(expected_config_file)
+    config = Config().load(test_config_file)
 
     exported_config_path = config.export(tmp_path)
 
     assert exported_config_path.is_file() is True
-    assert exported_config_path.samefile(tmp_path / "pyglotaran_extras_config.yml") is True
-    assert (tmp_path / "pyglotaran_extras_config.schema.json").is_file() is True
+    assert exported_config_path.samefile(tmp_path / f"{CONFIG_FILE_STEM}.yml") is True
+    assert (tmp_path / f"{CONFIG_FILE_STEM}.schema.json").is_file() is True
 
-    assert exported_config_path.read_text(encoding="utf8") == expected_config_file.read_text(
+    assert exported_config_path.read_text(encoding="utf8") == test_config_file.read_text(
         encoding="utf8"
     )
 
 
-def test_config_export_update(tmp_path: Path):
+def test_config_export_update(tmp_path: Path, test_config_file: Path):
     """Update existing config by default and overwrite if update kwarg is ``False``."""
-    config = Config().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
+    config = Config().load(test_config_file)
     existing_config_path = config.export(tmp_path)
 
     update_config = Config(
@@ -179,9 +174,9 @@ def test_config_export_rediscover(tmp_path: Path, mock_home: Path):
     config = Config()
     assert config._source_files == []
 
-    home_config_path = mock_home / "pyglotaran_extras_config.yml"
+    home_config_path = mock_home / f"{CONFIG_FILE_STEM}.yml"
     home_config_path.touch()
-    expected_config_path = tmp_path / "pyglotaran_extras_config.yml"
+    expected_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     config_paths_default = config.rediscover()
 
     assert config_paths_default == [home_config_path, expected_config_path]
@@ -192,7 +187,7 @@ def test_config_export_rediscover(tmp_path: Path, mock_home: Path):
     assert config_paths_no_home == [expected_config_path]
     assert config_paths_no_home == config._source_files
 
-    project_config_path = tmp_path / "project/pyglotaran_extras_config.yml"
+    project_config_path = tmp_path / f"project/{CONFIG_FILE_STEM}.yml"
     project_config_path.touch()
 
     config_paths_with_project = config.rediscover()
@@ -282,11 +277,10 @@ def test_discover_config_files(tmp_path: Path, mock_home: Path):
     assert generator_is_exhausted(top_project_discovery) is True
 
 
-def test_load_config_files(tmp_path: Path):
+def test_load_config_files(tmp_path: Path, test_config_file: Path):
     """Read configs and add source path."""
     empty_config_file = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     empty_config_file.touch()
-    test_config_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
 
     empty_file_loaded = load_config_files([empty_config_file])
 
@@ -296,21 +290,21 @@ def test_load_config_files(tmp_path: Path):
     assert empty_config._source_files == [empty_config_file]
     assert generator_is_exhausted(empty_file_loaded) is True
 
-    two_configs = load_config_files([empty_config_file, test_config_path])
+    two_configs = load_config_files([empty_config_file, test_config_file])
 
     empty_config = next(two_configs)
 
     assert empty_config.model_dump() == Config().model_dump()
     assert empty_config._source_files == [empty_config_file]
 
-    test_config_values = YAML().load(test_config_path)
+    test_config_values = YAML().load(test_config_file)
 
     expected_config = Config.model_validate(test_config_values)
 
     test_config = next(two_configs)
 
     assert test_config.model_dump() == expected_config.model_dump()
-    assert test_config._source_files == [test_config_path]
+    assert test_config._source_files == [test_config_file]
     assert generator_is_exhausted(two_configs) is True
 
 
@@ -447,22 +441,24 @@ def check_config(tmp_path: Path, plot_config_path: Path):
     assert plotting_dict["test_func"]["axis_label_override"]["will_be_added_label"] == "new label"
 
 
-def test_load_config_on_import_local_config(tmp_path: Path, import_load_script: Path):
+def test_load_config_on_import_local_config(
+    tmp_path: Path, import_load_script: Path, test_config_file: Path
+):
     """Check that config is properly loaded at import."""
-    src_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
-    dest_path = tmp_path / "pyglotaran_extras_config.yml"
-    copyfile(src_path, dest_path)
+    dest_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
+    copyfile(test_config_file, dest_path)
 
     subprocess.run([sys.executable, import_load_script])
 
     check_config(tmp_path, dest_path)
 
 
-def test_load_config_on_import_none_root_import(tmp_path: Path, import_load_script: Path):
+def test_load_config_on_import_none_root_import(
+    tmp_path: Path, import_load_script: Path, test_config_file: Path
+):
     """Also works something from non root ``pyglotaran_extras`` was imported first."""
-    src_path = TEST_DATA / "config/pyglotaran_extras_config.yml"
-    dest_path = tmp_path / "pyglotaran_extras_config.yml"
-    copyfile(src_path, dest_path)
+    dest_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
+    copyfile(test_config_file, dest_path)
 
     import_load_script.write_text(
         "from pyglotaran_extras.inspect.a_matrix import show_a_matrixes\n"
@@ -475,9 +471,9 @@ def test_load_config_on_import_none_root_import(tmp_path: Path, import_load_scri
 
 
 def test_load_config_on_import_broken_config(tmp_path: Path, import_load_script: Path):
-    """Also works something from non root ``pyglotaran_extras`` was imported first."""
+    """Broken config does not brake script."""
     src_path = TEST_DATA / "config/broken_config.yml"
-    dest_path = tmp_path / "pyglotaran_extras_config.yml"
+    dest_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     copyfile(src_path, dest_path)
 
     res = subprocess.run([sys.executable, import_load_script], text=True, capture_output=True)
@@ -502,7 +498,7 @@ def test_load_config_on_import_broken_config(tmp_path: Path, import_load_script:
 
 
 @pytest.mark.usefixtures("mock_config")
-def test_create_config_schema(tmp_path: Path):
+def test_create_config_schema(tmp_path: Path, test_config_values: dict[str, Any]):
     """A valid config doesn't cause any schema validation errors."""
 
     @use_plot_config()
@@ -521,16 +517,14 @@ def test_create_config_schema(tmp_path: Path):
 
     json_schema = json.loads(create_config_schema(tmp_path).read_text())
     expected_schema = json.loads(
-        (TEST_DATA / "config/pyglotaran_extras_config.schema.json").read_text()
+        (TEST_DATA / f"config/{CONFIG_FILE_STEM}.schema.json").read_text()
     )
 
     assert json_schema == expected_schema
 
     validator = Draft202012Validator(json_schema)
 
-    good_config = YAML().load(TEST_DATA / "config/pyglotaran_extras_config.yml")
-
-    assert generator_is_exhausted(validator.iter_errors(good_config))
+    assert generator_is_exhausted(validator.iter_errors(test_config_values))
 
 
 @pytest.mark.usefixtures("mock_config")
@@ -546,9 +540,7 @@ def test_create_config_schema_errors(tmp_path: Path):
         pass
 
     json_schema = json.loads(create_config_schema(tmp_path).read_text())
-    expected_schema = json.loads(
-        (TEST_DATA / "config/pyglotaran_extras_config-broken.schema.json").read_text()
-    )
+    expected_schema = json.loads((TEST_DATA / "config/broken_config.schema.json").read_text())
 
     assert json_schema == expected_schema
 
