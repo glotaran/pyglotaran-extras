@@ -254,7 +254,7 @@ def plot_sv_data(
         dSV = dSV.assign_coords(  # noqa: N806
             {x_dim: ("singular_value_index", (dSV.singular_value_index + 1).data)}
         )
-    dSV.sel({"singular_value_index": indices[: len(dSV.singular_value_index)]}).plot.line(
+    dSV.sel({"singular_value_index": list(indices[: len(dSV.singular_value_index)])}).plot.line(
         "ro-", yscale="log", ax=ax, x=x_dim
     )
     ax.set_title("data. log(SV)")
@@ -410,7 +410,7 @@ def plot_sv_residual(
         rSV = rSV.assign_coords(  # noqa: N806
             {x_dim: ("singular_value_index", (rSV.singular_value_index + 1).data)}
         )
-    rSV.sel({"singular_value_index": indices[: len(rSV.singular_value_index)]}).plot.line(
+    rSV.sel({"singular_value_index": list(indices[: len(rSV.singular_value_index)])}).plot.line(
         "ro-", yscale="log", ax=ax, x=x_dim
     )
     ax.set_title("res. log(SV)")
@@ -455,7 +455,9 @@ def _plot_svd_vectors(
     """
     max_index = len(getattr(vector_data, sv_index_dim))
     values = shift_time_axis_by_irf_location(
-        vector_data.isel({sv_index_dim: indices[:max_index]}), irf_location, _internal_call=True
+        vector_data.isel({sv_index_dim: list(indices[:max_index])}),
+        irf_location,
+        _internal_call=True,
     )
     x_dim = vector_data.dims[1]
     if x_dim == sv_index_dim:
