@@ -18,7 +18,7 @@ from pydantic.fields import FieldInfo
 from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.plot_config import PlotConfig
-from pyglotaran_extras.config.plot_config import PlotLabelOverRideMap
+from pyglotaran_extras.config.plot_config import PlotLabelOverrideMap
 from pyglotaran_extras.config.plot_config import __PlotFunctionRegistry
 from pyglotaran_extras.io.setup_case_study import get_script_dir
 
@@ -408,7 +408,7 @@ def create_config_schema(
                     "(overrides values in general)."
                 ),
                 default_args_override=(func_kwargs, {}),
-                axis_label_override=(PlotLabelOverRideMap, PlotLabelOverRideMap()),
+                axis_label_override=(PlotLabelOverrideMap, PlotLabelOverrideMap()),
             )
             func_json_schema = func_config.model_json_schema()
             general_kwargs |= func_json_schema["$defs"][kwargs_model_name]["properties"]

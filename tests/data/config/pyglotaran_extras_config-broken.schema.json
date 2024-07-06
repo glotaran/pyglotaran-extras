@@ -19,7 +19,7 @@
         "axis_label_override": {
           "anyOf": [
             {
-              "$ref": "#/$defs/PlotLabelOverRideMap"
+              "$ref": "#/$defs/PlotLabelOverrideMap"
             },
             {
               "additionalProperties": {
@@ -57,7 +57,7 @@
       "title": "PlotConfig",
       "type": "object"
     },
-    "PlotLabelOverRideMap": {
+    "PlotLabelOverrideMap": {
       "additionalProperties": {
         "anyOf": [
           {
@@ -69,12 +69,12 @@
         ]
       },
       "description": "Mapping to override axis labels.",
-      "title": "PlotLabelOverRideMap",
+      "title": "PlotLabelOverrideMap",
       "type": "object"
     },
     "PlotLabelOverrideValue": {
       "additionalProperties": false,
-      "description": "Value of ``PlotLabelOverRideMap``.",
+      "description": "Value of ``PlotLabelOverrideMap``.",
       "properties": {
         "target_name": {
           "title": "Target Name",
@@ -118,7 +118,7 @@
         "axis_label_override": {
           "allOf": [
             {
-              "$ref": "#/$defs/PlotLabelOverRideMap"
+              "$ref": "#/$defs/PlotLabelOverrideMap"
             }
           ],
           "default": {}
