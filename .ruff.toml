@@ -69,6 +69,9 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 "tests/data/config/run_load_config_on_import.py" = [
   "I002", # from __future__ import annotations
 ]
+"pyglotaran_extras/compat/compat_result.py" = ["D", "N", "E", "ERA"]
+"pyglotaran_extras/compat/convert_result_dataset.py" = ["D", "N", "F", "C"]
+
 [lint.isort]
 required-imports = ["from __future__ import annotations"]
 known-first-party = ["pyglotaran_extras"]

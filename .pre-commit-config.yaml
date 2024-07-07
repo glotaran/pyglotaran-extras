@@ -115,7 +115,7 @@ repos:
           - "--allow-init-docstring=True"
           - "--skip-checking-short-docstrings=False"
         name: "flake8 lint docstrings"
-        exclude: "^(docs/|tests?/)"
+        exclude: "^(docs/|tests?/|pyglotaran_extras/compat)"
         additional_dependencies: [pydoclint==0.5.6]
 
   - repo: https://github.com/codespell-project/codespell
