@@ -66,6 +66,8 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [lint.per-file-ignores]
 "tests/*" = ["ARG001"]
+"pyglotaran_extras/compat/compat_result.py" = ["D", "N", "E", "ERA"]
+"pyglotaran_extras/compat/convert_result_dataset.py" = ["D", "N", "F", "C"]
 
 [lint.isort]
 required-imports = ["from __future__ import annotations"]

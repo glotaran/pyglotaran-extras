@@ -144,6 +144,7 @@ disallow_untyped_defs = false
 exclude = [
   "docs",
   "tests/*",
+  "*/compat/*",
 ]
 ignore-init-module = true
 fail-under = 100
