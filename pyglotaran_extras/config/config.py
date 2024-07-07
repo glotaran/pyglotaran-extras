@@ -152,17 +152,13 @@ class Config(BaseModel):
         export_folder.mkdir(parents=True, exist_ok=True)
         schema_path = create_config_schema(export_folder)
         export_path = export_folder / f"{CONFIG_FILE_STEM}.yml"
-        yaml = YAML()
-        yaml.indent(mapping=2, sequence=4, offset=2)
-        buffer = StringIO()
         if export_path.is_file() is True and update is True:
             merged = Config().load(export_path).merge(self)
-            yaml.dump(merged.model_dump(), buffer)
+            config = merged
         else:
-            yaml.dump(self.model_dump(), buffer)
-        buffer.seek(0)
+            config = self
         export_path.write_text(
-            EXPORT_TEMPLATE.format(schema_path=schema_path.name, config_yaml=buffer.read()),
+            EXPORT_TEMPLATE.format(schema_path=schema_path.name, config_yaml=config),
             encoding="utf8",
         )
         return export_path
@@ -192,6 +188,15 @@ class Config(BaseModel):
             )
         )
         return self._source_files
+
+    def __str__(self) -> str:  # noqa: DOC
+        """Convert to yaml when shown as string."""
+        yaml = YAML()
+        yaml.indent(mapping=2, sequence=4, offset=2)
+        buffer = StringIO()
+        yaml.dump(self.model_dump(), buffer)
+        buffer.seek(0)
+        return buffer.read()
 
 
 def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:
