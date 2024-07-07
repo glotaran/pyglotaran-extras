@@ -153,6 +153,23 @@ class PerFunctionPlotConfig(BaseModel):
         """Ensure that ``axis_label_override`` gets converted into ``PlotLabelOverrideMap``."""
         return PlotLabelOverrideMap.model_validate(value)
 
+    @model_serializer
+    def serialize(self) -> dict[str, Any]:
+        """Serialize in a sparse manner leaving out empty values.
+
+        Returns
+        -------
+        dict[str, Any]
+        """
+        serialized = {}
+        if len(self.default_args_override) > 0:
+            serialized["default_args_override"] = self.default_args_override
+        if len(self.axis_label_override) > 0:
+            serialized["axis_label_override"] = cast(
+                PlotLabelOverrideMap, self.axis_label_override
+            ).model_dump()
+        return serialized
+
     def merge(self, other: PerFunctionPlotConfig) -> PerFunctionPlotConfig:
         """Merge two ``PerFunctionPlotConfig``'s where ``other`` overrides values.
 
@@ -170,10 +187,12 @@ class PerFunctionPlotConfig(BaseModel):
         return PerFunctionPlotConfig.model_validate(
             {
                 "default_args_override": (
-                    self_dict["default_args_override"] | other_dict["default_args_override"]
+                    self_dict.pop("default_args_override", {})
+                    | other_dict.pop("default_args_override", {})
                 ),
                 "axis_label_override": (
-                    self_dict["axis_label_override"] | other_dict["axis_label_override"]
+                    self_dict.pop("axis_label_override", {})
+                    | other_dict.pop("axis_label_override", {})
                 ),
             }
         )

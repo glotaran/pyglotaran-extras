@@ -128,10 +128,8 @@ def test_per_function_plot_config():
         "Additional properties are not allowed ('unknown' was unexpected)"
     )
 
-    assert PerFunctionPlotConfig().model_dump() == {
-        "default_args_override": {},
-        "axis_label_override": {},
-    }
+    assert PerFunctionPlotConfig().model_dump() == {}
+
     with pytest.raises(PydanticValidationError) as execinfo:
         PerFunctionPlotConfig.model_validate({"unknown": 1})
 
