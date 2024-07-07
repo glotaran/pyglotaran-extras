@@ -198,6 +198,15 @@ class Config(BaseModel):
         buffer.seek(0)
         return buffer.read()
 
+    def _repr_markdown_(self) -> str:
+        """Render ``ipython`` markdown.
+
+        Returns
+        -------
+        str
+        """
+        return f"```yaml\n{self}\n```"
+
 
 def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:
     """Find the config file inside of dir ``dir_path``.
