@@ -43,7 +43,8 @@ def test_load_data(
     result_sequential_spectral_decay: Result, tmp_path: Path, recwarn: WarningsRecorder
 ):
     """All input_type permutations result in a ``xr.Dataset``."""
-    compare_dataset = result_sequential_spectral_decay.data["dataset_1"]
+    compare_dataset = result_sequential_spectral_decay.data["sequential-decay"]
+    save_path = tmp_path / "result"
 
     from_result = load_data(result_sequential_spectral_decay)
 
@@ -53,9 +54,9 @@ def test_load_data(
 
     run_load_data_test(from_dataset, compare_dataset)
 
-    result_sequential_spectral_decay.save(tmp_path / "result.yml")
+    result_sequential_spectral_decay.save(save_path)
 
-    from_file = load_data(tmp_path / "dataset_1.nc")
+    from_file = load_data(save_path / "data/sequential-decay.nc")
 
     run_load_data_test(from_file, compare_dataset)
 
@@ -69,7 +70,7 @@ def test_load_data(
     assert len(filter_warnings(recwarn)) == 0
 
     # Ensure not to mutate original fixture
-    result_multi_dataset = load_result(tmp_path / "result.yml")
+    result_multi_dataset = load_result(save_path)
     result_multi_dataset.data["dataset_2"] = xr.Dataset({"foo": [1]})
 
     from_result_multi_dataset = load_data(result_multi_dataset)

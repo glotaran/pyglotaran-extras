@@ -100,9 +100,10 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --frozen --group test
+          uv pip install git+https://github.com/glotaran/pyglotaran@staging
 
       - name: Run tests
-        run: uv run pytest --nbval --cov=pyglotaran_extras --cov-report term --cov-report xml --cov-config pyproject.toml tests
+        run: uv run --no-sync pytest --nbval --cov=pyglotaran_extras --cov-report term --cov-report xml --cov-config pyproject.toml tests
 
       - name: Codecov Upload
         continue-on-error: true
@@ -113,42 +114,42 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  test-pyglotaran-dev:
-    name: Test pyglotaran dev
-    runs-on: ubuntu-latest
-    needs: [pre-commit, docs]
+  # test-pyglotaran-dev:
+  #   name: Test pyglotaran dev
+  #   runs-on: ubuntu-latest
+  #   needs: [pre-commit, docs]
 
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v7
+  #   steps:
+  #     - name: Check out repo
+  #       uses: actions/checkout@v7
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.10"
+  #     - name: Set up Python 3.10
+  #       uses: actions/setup-python@v7
+  #       with:
+  #         python-version: "3.10"
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+  #     - name: Install uv
+  #       uses: astral-sh/setup-uv@v7
 
-      - name: Install dependencies
-        run: |
-          uv sync --frozen --group test
-          uv pip install git+https://github.com/glotaran/pyglotaran
+  #     - name: Install dependencies
+  #       run: |
+  #         uv sync --frozen --group test
+  #         uv pip install git+https://github.com/glotaran/pyglotaran
 
-      - name: Show installed dependencies
-        run: uv pip list
+  #     - name: Show installed dependencies
+  #       run: uv pip list
 
-      - name: Run tests
-        run: uv run pytest --nbval --cov=pyglotaran_extras --cov-report term --cov-report xml --cov-config pyproject.toml tests
+  #     - name: Run tests
+  #       run: uv run pytest --nbval --cov=pyglotaran_extras --cov-report term --cov-report xml --cov-config pyproject.toml tests
 
-      - name: Codecov Upload
-        continue-on-error: true
-        uses: codecov/codecov-action@v7
-        with:
-          files: ./coverage.xml
-          name: test-pyglotaran-dev
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  #     - name: Codecov Upload
+  #       continue-on-error: true
+  #       uses: codecov/codecov-action@v7
+  #       with:
+  #         files: ./coverage.xml
+  #         name: test-pyglotaran-dev
+  #       env:
+  #         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-min-versions:
     name: Test dependency min versions
@@ -190,7 +191,10 @@ jobs:
     name: Deploy to PyPi
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-    needs: [test, test-pyglotaran-dev, test-min-versions]
+    needs:
+      - test
+      # - test-pyglotaran-dev
+      - test-min-versions
     permissions:
       id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
