@@ -197,10 +197,7 @@
         }
       ],
       "default": {
-        "general": {
-          "axis_label_override": {},
-          "default_args_override": {}
-        }
+        "general": {}
       }
     }
   },
