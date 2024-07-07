@@ -1,8 +1,13 @@
 """Convert a new pyglotaran (result) dataset to a version compatible with pyglotaran-extras."""
 
+from __future__ import annotations
+
 import copy
+
 import xarray as xr
 from glotaran.project.result import Result
+
+from pyglotaran_extras.compat.compat_result import CompatResult
 
 
 def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> None:
@@ -27,7 +32,9 @@ def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> 
         if cleanup:
             ds = ds.drop_vars("species_associated_estimation")
     if "damped_oscillation_associated_estimation" in ds:
-        ds["damped_oscillation_associated_spectra"] = ds["damped_oscillation_associated_estimation"]
+        ds["damped_oscillation_associated_spectra"] = ds[
+            "damped_oscillation_associated_estimation"
+        ]
         if cleanup:
             ds = ds.drop_vars("damped_oscillation_associated_estimation")
 
@@ -77,7 +84,7 @@ def _adjust_activation_to_irf(ds: xr.Dataset, *, cleanup: bool = False) -> None:
             pass
 
 
-def convert(input: xr.Dataset | Result, cleanup: bool = False) -> xr.Dataset | Result:
+def convert(input: xr.Dataset | Result, cleanup: bool = False) -> xr.Dataset | CompatResult:
     """Convert a glotaran Result or xarray Dataset to a different format.
 
     Parameters
@@ -128,16 +135,14 @@ def convert_dataset(dataset: xr.Dataset, cleanup: bool = False) -> xr.Dataset:
     return converted_ds
 
 
-def convert_result(result: Result, cleanup: bool = False) -> Result:
+def convert_result(result: Result, cleanup: bool = False) -> CompatResult:
     """Convert the result format used in staging (to be v0.8) to the format of main (v0.7)."""
 
-    converted_result = copy.copy(result)
+    converted_result = CompatResult.from_result(result)
 
     # convert the datasets
     for key in converted_result.data:
-        converted_result.data[key] = convert_dataset(
-            converted_result.data[key], cleanup=cleanup
-        )
+        converted_result.data[key] = convert_dataset(converted_result.data[key], cleanup=cleanup)
 
     # convert the parameters
     return converted_result
