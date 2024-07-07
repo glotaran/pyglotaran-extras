@@ -19,10 +19,10 @@ from dataclasses import replace
 
 import matplotlib.pyplot as plt
 import pytest
-from glotaran.optimization.optimize import optimize
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
 from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
 from ruamel.yaml import YAML
+from glotaran.testing.simulated_data.shared_decay import PARAMETERS
 
 from pyglotaran_extras.config.config import CONFIG_FILE_STEM
 from pyglotaran_extras.config.config import Config
@@ -73,15 +73,13 @@ def _close_matplotlib_figures():
 @pytest.fixture(scope="session")
 def result_parallel_spectral_decay():
     """Test result from ``glotaran.testing.simulated_data.parallel_spectral_decay``."""
-    scheme = replace(SCHEME_PAR, maximum_number_function_evaluations=1)
-    return optimize(scheme)
+    return SCHEME_PAR.optimize(PARAMETERS, maximum_number_function_evaluations=1)
 
 
 @pytest.fixture(scope="session")
 def result_sequential_spectral_decay():
     """Test result from ``glotaran.testing.simulated_data.sequential_spectral_decay``."""
-    scheme = replace(SCHEME_SEQ, maximum_number_function_evaluations=1)
-    return optimize(scheme)
+    return SCHEME_SEQ.optimize(PARAMETERS, maximum_number_function_evaluations=1)
 
 
 @pytest.fixture
