@@ -40,6 +40,7 @@ def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> 
 
 
 def _adjust_activation_to_irf(ds: xr.Dataset, *, cleanup: bool = False) -> None:
+    """Adjust the activation to the corresponding IRF."""
     if "gaussian_activation_center" in ds:
         values = ds.gaussian_activation_center.to_numpy().flatten()
         ds["irf_center"] = values[0]
