@@ -62,8 +62,8 @@ class CompatResult(Result):
         return self.optimization.root_mean_square_error
 
     @property
-    def additional_penalty(self) -> list | None:
-        return None  # TODO: implement
+    def additional_penalty(self) -> float | None:
+        return self.optimization.additional_penalty
 
     @property
     def optimized_parameters(self) -> Parameters:
@@ -120,9 +120,7 @@ class CompatResult(Result):
             ["Reduced Chi Square", f"{self.reduced_chi_square or np.nan:.2e}"],
             ["Root Mean Square Error (RMSE)", f"{self.root_mean_square_error or np.nan:.2e}"],
         ]
-        if self.additional_penalty is not None and any(
-            len(penalty) != 0 for penalty in self.additional_penalty
-        ):
+        if self.additional_penalty is not None:
             general_table_rows.append(["RMSE additional penalty", self.additional_penalty])
 
         result_table = tabulate(
@@ -135,8 +133,8 @@ class CompatResult(Result):
             RMSE_rows = [
                 [
                     f"{index}.{label}:",
-                    dataset.weighted_root_mean_square_error,
-                    dataset.root_mean_square_error,
+                    dataset.attrs["weighted_root_mean_square_error"],
+                    dataset.attrs["root_mean_square_error"],
                 ]
                 for index, (label, dataset) in enumerate(self.data.items(), start=1)
             ]
