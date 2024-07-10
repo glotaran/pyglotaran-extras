@@ -131,6 +131,35 @@ class PlotLabelOverrideMap(RootModel, Mapping):
         """Access items."""
         return self.root[item_label]
 
+    def find_axis_label(self, matplotlib_label: str, axis_name: Literal["x", "y"]) -> str | None:
+        """Find axis label even if ``matplotlib`` or the user added a newline in it.
+
+        Parameters
+        ----------
+        matplotlib_label : str
+            Label extracted from the ``matplotlib`` ``Axes`` with ``ax.get_xlabel()`` or
+            ``ax.get_xlabel()``.
+        axis_name : Literal["x", "y"]
+            Name of the axis to find the label for.
+
+        Returns
+        -------
+        str | None
+            Mapped label value if found and None otherwise.
+        """
+        if matplotlib_label in self and self[matplotlib_label].axis in (axis_name, "both"):
+            return self[matplotlib_label].target_name
+
+        # If a label is too long to fit matplotlib inserts a newline which means we can not look it
+        # up with string equality
+        for key, value in self.root.items():
+            if matplotlib_label.replace("\n", "") == key.replace("\n", "") and value.axis in (
+                axis_name,
+                "both",
+            ):
+                return value.target_name
+        return None
+
 
 class PerFunctionPlotConfig(BaseModel):
     """Per function plot configuration."""
@@ -231,20 +260,17 @@ class PerFunctionPlotConfig(BaseModel):
             if isinstance(ax, Axes):
                 orig_x_label = ax.get_xlabel()
                 orig_y_label = ax.get_ylabel()
+                axis_label_override = cast(PlotLabelOverrideMap, self.axis_label_override)
 
-                if orig_x_label in self.axis_label_override and (
-                    override_item := cast(
-                        PlotLabelOverrideValue, self.axis_label_override[orig_x_label]
-                    )
-                ).axis in ("x", "both"):
-                    ax.set_xlabel(override_item.target_name)
+                if (
+                    override_label := axis_label_override.find_axis_label(orig_x_label, "x")
+                ) is not None:
+                    ax.set_xlabel(override_label)
 
-                if orig_y_label in self.axis_label_override and (
-                    override_item := cast(
-                        PlotLabelOverrideValue, self.axis_label_override[orig_y_label]
-                    )
-                ).axis in ("y", "both"):
-                    ax.set_ylabel(override_item.target_name)
+                if (
+                    override_label := axis_label_override.find_axis_label(orig_y_label, "y")
+                ) is not None:
+                    ax.set_ylabel(override_label)
 
             elif isinstance(ax, np.ndarray):
                 self.update_axes_labels(ax.flatten())
