@@ -129,6 +129,14 @@ def convert_dataset(dataset: xr.Dataset, cleanup: bool = False) -> xr.Dataset:
     _adjust_activation_to_irf(converted_ds, cleanup=cleanup)
     _adjust_estimations_to_spectra(converted_ds, cleanup=cleanup)
 
+    if (
+        "weighted_root_mean_square_error" not in converted_ds.attrs
+        and "root_mean_square_error" in converted_ds.attrs
+    ):
+        converted_ds.attrs["weighted_root_mean_square_error"] = converted_ds.attrs[
+            "root_mean_square_error"
+        ]
+
     # variable_mapping = {"species_associated_estimation": "species_associated_spectra"} # noqa: ERA001, E501
     # converted_ds = converted_ds.rename_vars({**variable_mapping}) # noqa: ERA001
 
