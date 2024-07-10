@@ -6,6 +6,7 @@ from pyglotaran_extras.config.config import _find_script_dir_at_import
 from pyglotaran_extras.config.config import create_config_schema
 from pyglotaran_extras.config.config import load_config
 from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
+from pyglotaran_extras.config.plot_config import plot_config_context
 from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.io.setup_case_study import setup_case_study
@@ -63,6 +64,7 @@ __all__ = [
     "add_subplot_labels",
     # Config
     "PerFunctionPlotConfig",
+    "plot_config_context",
     "use_plot_config",
     "create_config_schema",
     "CONFIG",
