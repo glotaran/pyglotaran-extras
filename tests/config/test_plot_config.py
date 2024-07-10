@@ -28,6 +28,8 @@ from tests import TEST_DATA
 from tests.conftest import generator_is_exhausted
 
 if TYPE_CHECKING:
+    from typing import Literal
+
     from matplotlib.axes import Axes
 
     from pyglotaran_extras.config.config import Config
@@ -93,6 +95,36 @@ def test_plot_label_over_ride_map():
         "target_name\n  Field required [type=missing, input_value={'invalid': 1}, input_type=dict]"
         in str(execinfo.value)
     )
+
+
+@pytest.mark.parametrize(
+    ("matplotlib_label", "axis_name", "expected"),
+    [
+        ("not_found", "x", None),
+        ("not_found", "y", None),
+        ("no_user_newline", "x", "no_user_newline value"),
+        ("no\n_user_newline", "x", "no_user_newline value"),
+        ("with_\nuser_\nnewline", "x", "with_user_newline value"),
+        ("with_user_newline", "x", "with_user_newline value"),
+        ("x_only", "x", "x_only value"),
+        ("x_only", "y", None),
+        ("y_only", "x", None),
+        ("y_only", "y", "y_only value"),
+    ],
+)
+def test_plot_label_over_ride_map_find_axis_label(
+    matplotlib_label: str, axis_name: Literal["x", "y"], expected: str | None
+):
+    """Finding the correct label is agnostic to newlines injected by matplotlib."""
+    over_ride_map = PlotLabelOverrideMap.model_validate(
+        {
+            "no_user_newline": "no_user_newline value",
+            "with_\nuser_\nnewline": "with_user_newline value",
+            "x_only": {"target_name": "x_only value", "axis": "x"},
+            "y_only": {"target_name": "y_only value", "axis": "y"},
+        }
+    )
+    assert over_ride_map.find_axis_label(matplotlib_label, axis_name) == expected
 
 
 def test_per_function_plot_config():
@@ -561,6 +593,24 @@ def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):
     assert ax1_arg.get_ylabel() == "general label"
     assert ax2_arg.get_xlabel() == "will_be_added_label"
     assert ax2_arg.get_ylabel() == "default"
+
+    # Integration test that ``PlotLabelOverrideMap.find_axis_label`` is used
+    _, ax_newline = plt.subplots()
+
+    @use_plot_config()
+    def newline_label(
+        ax: Axes,
+    ):
+        ax.set_xlabel("will_\nupdate_label")
+        ax.set_ylabel("will_be_\nkept_label")
+        return ax
+
+    assert "newline_label" in registry
+
+    newline_label(ax_newline)
+
+    assert ax_newline.get_xlabel() == "will change label"
+    assert ax_newline.get_ylabel() == "general label"
 
 
 @pytest.mark.usefixtures("mock_config")
