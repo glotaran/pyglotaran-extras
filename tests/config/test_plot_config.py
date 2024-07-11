@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.config.config import Config
 
 
-def test_plot_label_over_ride_value_serialization():
+def test_plot_label_override_value_serialization():
     """Short notation is used if axis has default value."""
     assert PlotLabelOverrideValue(target_name="New Label").model_dump() == "New Label"
     assert PlotLabelOverrideValue(target_name="New Label", axis="x").model_dump() == {
@@ -44,7 +44,7 @@ def test_plot_label_over_ride_value_serialization():
     }
 
 
-def test_plot_label_over_ride_map():
+def test_plot_label_override_map():
     """PlotLabelOverrideMap behaves like a mapping and the schema allows short notation."""
     axis_label_override: dict[str, Any] = YAML().load(
         StringIO(
@@ -112,11 +112,11 @@ def test_plot_label_over_ride_map():
         ("y_only", "y", "y_only value"),
     ],
 )
-def test_plot_label_over_ride_map_find_axis_label(
+def test_plot_label_override_map_find_axis_label(
     matplotlib_label: str, axis_name: Literal["x", "y"], expected: str | None
 ):
     """Finding the correct label is agnostic to newlines injected by matplotlib."""
-    over_ride_map = PlotLabelOverrideMap.model_validate(
+    override_map = PlotLabelOverrideMap.model_validate(
         {
             "no_user_newline": "no_user_newline value",
             "with_\nuser_\nnewline": "with_user_newline value",
@@ -124,7 +124,7 @@ def test_plot_label_over_ride_map_find_axis_label(
             "y_only": {"target_name": "y_only value", "axis": "y"},
         }
     )
-    assert over_ride_map.find_axis_label(matplotlib_label, axis_name) == expected
+    assert override_map.find_axis_label(matplotlib_label, axis_name) == expected
 
 
 def test_per_function_plot_config():
