@@ -91,13 +91,11 @@ def mock_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     mock_home_path = tmp_path / "home"
     mock_home_path.mkdir()
 
-    class MockPath(Path):
-        @staticmethod
-        def home():
-            return mock_home_path
-
-    with monkeypatch_all(monkeypatch, "Path", MockPath):
-        yield mock_home_path
+    with monkeypatch.context() as m:
+        m.setattr(Path, "home", lambda: mock_home_path)
+        MockPath = Path  # noqa: N806
+        with monkeypatch_all(monkeypatch, "Path", MockPath):
+            yield mock_home_path
 
 
 @pytest.fixture()
