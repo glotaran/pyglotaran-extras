@@ -205,6 +205,40 @@ def test_config_export_rediscover(tmp_path: Path, mock_home: Path):
     assert config_paths_only_project == config._source_files
 
 
+@pytest.mark.usefixtures("mock_config")
+def test_config_init_project(tmp_path: Path, mock_home: Path):
+    """New config and schema are created."""
+    from pyglotaran_extras import CONFIG
+    from pyglotaran_extras import SCRIPT_DIR
+
+    expected_config_file = SCRIPT_DIR / f"{CONFIG_FILE_STEM}.yml"
+    expected_schema_file = SCRIPT_DIR / f"{CONFIG_FILE_STEM}.schema.json"
+
+    assert tmp_path in SCRIPT_DIR.parents
+    assert expected_config_file.is_file() is False
+    assert expected_schema_file.is_file() is False
+
+    assert expected_config_file not in CONFIG._source_files
+
+    initial_config = CONFIG.model_copy(deep=True)
+    CONFIG.init_project()
+
+    assert expected_config_file.is_file() is True
+    assert expected_schema_file.is_file() is True
+
+    assert expected_config_file in CONFIG._source_files
+
+    reloaded_config = Config()
+    reloaded_config._source_files = [
+        SCRIPT_DIR.parent / f"{CONFIG_FILE_STEM}.yml",
+        expected_config_file,
+    ]
+    reloaded_config.reload()
+
+    assert CONFIG == reloaded_config  # noqa: SIM300
+    assert CONFIG != initial_config  # noqa: SIM300
+
+
 def test_find_config_in_dir(tmp_path: Path):
     """Find one or two config files if present."""
     assert len(list(find_config_in_dir(tmp_path))) == 0
