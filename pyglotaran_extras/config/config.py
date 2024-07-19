@@ -195,6 +195,25 @@ class Config(BaseModel):
         )
         return self._source_files
 
+    def init_project(self) -> Config:
+        """Initialize configuration for the current project.
+
+        This will use the configs discovered and resolved config during import to create a new
+        config and schema for your current project inside of your working directory (script dir),
+        if it didn't exist before.
+
+        Returns
+        -------
+        Config
+        """
+        from pyglotaran_extras import SCRIPT_DIR
+
+        if any(find_config_in_dir(SCRIPT_DIR)) is False:
+            self.export()
+        self.rediscover()
+        self.reload()
+        return self
+
     def __str__(self) -> str:  # noqa: DOC
         """Convert to yaml when shown as string."""
         yaml = YAML()
