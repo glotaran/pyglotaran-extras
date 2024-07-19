@@ -133,13 +133,14 @@ class Config(BaseModel):
         self._source_files = [Path(config_file_path)]
         return self.reload()
 
-    def export(self, export_folder: Path | str = ".", *, update: bool = True) -> Path:
+    def export(self, export_folder: Path | str | None = None, *, update: bool = True) -> Path:
         """Export current config and schema to ``export_folder``.
 
         Parameters
         ----------
-        export_folder : Path | str
-            Folder to export config and scheme to. Defaults to "."
+        export_folder : Path | str | None
+            Folder to export config and scheme to. Defaults to None, which means that the script
+            folder is used
         update : bool
             Whether to update or overwrite and existing config file. Defaults to True
 
@@ -148,7 +149,12 @@ class Config(BaseModel):
         Path
             Path to exported config file.
         """
-        export_folder = Path(export_folder)
+        if export_folder is None:
+            from pyglotaran_extras import SCRIPT_DIR
+
+            export_folder = SCRIPT_DIR
+        else:
+            export_folder = Path(export_folder)
         export_folder.mkdir(parents=True, exist_ok=True)
         schema_path = create_config_schema(export_folder)
         export_path = export_folder / f"{CONFIG_FILE_STEM}.yml"
@@ -366,14 +372,15 @@ def _find_script_dir_at_import(package_root_file: str) -> Path:
 
 
 def create_config_schema(
-    output_folder: Path | str = ".", file_name: Path | str = "pygta_config.schema.json"
+    output_folder: Path | str | None = None, file_name: Path | str = "pygta_config.schema.json"
 ) -> Path:
     """Create json schema file to be used for autocompletion and linting of the config.
 
     Parameters
     ----------
-    output_folder : Path | str
-        Folder to write schema file to. Defaults to "."
+    output_folder : Path | str | None
+        Folder to write schema file to. Defaults to None, which means that the script
+            folder is used
     file_name : Path | str
         Name of the scheme file. Defaults to "pygta_config.schema.json"
 
@@ -439,7 +446,12 @@ def create_config_schema(
     json_schema["$defs"]["PerFunctionPlotConfig"]["properties"]["default_args_override"][
         "additionalProperties"
     ] = False
-    output_folder = Path(output_folder)
+    if output_folder is None:
+        from pyglotaran_extras import SCRIPT_DIR
+
+        output_folder = SCRIPT_DIR
+    else:
+        output_folder = Path(output_folder)
     output_folder.mkdir(parents=True, exist_ok=True)
     output_file = output_folder / file_name
     output_file.write_text(json.dumps(json_schema, ensure_ascii=False), encoding="utf8")
