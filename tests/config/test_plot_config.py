@@ -619,6 +619,9 @@ def test_plot_config_context():
     import pyglotaran_extras
 
     source_file = pyglotaran_extras.CONFIG._source_files[0]
+    original_test_func_config = pyglotaran_extras.CONFIG.plotting.get_function_config(
+        "test_func"
+    ).model_copy(deep=True)
 
     plot_config = PerFunctionPlotConfig(
         default_args_override={
@@ -671,3 +674,8 @@ def test_plot_config_context():
     assert ax1_arg.get_ylabel() == "general label"
     assert ax2_arg.get_xlabel() == "test_func arg overridden by context label"
     assert ax2_arg.get_ylabel() == "default"
+
+    assert (
+        pyglotaran_extras.CONFIG.plotting.get_function_config("test_func")
+        == original_test_func_config
+    )
