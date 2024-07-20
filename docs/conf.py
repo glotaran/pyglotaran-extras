@@ -37,7 +37,10 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
+    "sphinx_click",
+    "nbsphinx",
     "myst_parser",
+    "sphinx_copybutton",
     "sphinx_rtd_theme",
 ]
 
