@@ -38,11 +38,13 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx_click",
-    "nbsphinx",
-    "myst_parser",
+    "myst_nb",
+    'sphinxcontrib.mermaid',
     "sphinx_copybutton",
     "sphinx_rtd_theme",
 ]
+
+myst_fence_as_directive = ["mermaid"]
 
 
 autoclass_content = "both"
