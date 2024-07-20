@@ -1,0 +1,4 @@
+plotting:
+  general:
+    axis_label_override:
+      time: "Time (fs)"

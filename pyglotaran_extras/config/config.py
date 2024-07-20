@@ -383,7 +383,8 @@ def _find_script_dir_at_import(package_root_file: str) -> Path:
 
 
 def create_config_schema(
-    output_folder: Path | str | None = None, file_name: Path | str = "pygta_config.schema.json"
+    output_folder: Path | str | None = None,
+    file_name: Path | str = f"{CONFIG_FILE_STEM}.schema.json",
 ) -> Path:
     """Create json schema file to be used for autocompletion and linting of the config.
 

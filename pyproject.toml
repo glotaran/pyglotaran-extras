@@ -45,6 +45,7 @@ optional-dependencies.dev = [
   "pyglotaran-extras[docs,test]",
 ]
 optional-dependencies.docs = [
+  "autodoc-pydantic>=2.2",
   "jupyterlab>=3",
   "myst-nb>=1.1.1",                  # notebook docs
   "myst-parser>=0.12",

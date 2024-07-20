@@ -1,7 +1,7 @@
 # Exclude a variety of commonly ignored directories.
 extend-exclude = [
-  "venv",
   "docs/conf.py",
+  "*.ipynb",
 ]
 # Same as Black.
 line-length = 99
@@ -9,8 +9,6 @@ line-length = 99
 # Assume Python 3.10.
 target-version = "py310"
 
-# Enable using ruff with notebooks
-extend-include = ["*.ipynb"]
 
 [lint]
 select = [

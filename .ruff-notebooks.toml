@@ -1,6 +1,10 @@
 #:schema https://json.schemastore.org/ruff.json
 extend = ".ruff.toml"
 
+extend-exclude = [
+  "docs/conf.py",
+]
+
 [lint]
 extend-ignore = [
   "D",
@@ -9,6 +13,6 @@ extend-ignore = [
   "I002", # from __future__ import annotations
 ]
 
-[isort]
+[lint.isort]
 required-imports = []
 force-single-line = false

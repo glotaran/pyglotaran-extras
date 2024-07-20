@@ -1,0 +1,18 @@
+plotting:
+  general:
+    default_args_override:
+      linlog: true
+      use_svd_number: true
+      linthresh: 2
+    axis_label_override:
+      time: "Time (ps)"
+      spectral: "Wavelength (nm)"
+      data_left_singular_vectors: ""
+      data_singular_values: "Singular Value (a.u.)"
+      data_right_singular_vectors: ""
+  plot_svd:
+    default_args_override:
+      use_svd_number: false
+  plot_overview:
+    default_args_override:
+      show_data: True
