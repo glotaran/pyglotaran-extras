@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=pygta_config.schema.json
+
+plotting:
+  general:
+    axis_label_override:
+      time: "Time (fs)"

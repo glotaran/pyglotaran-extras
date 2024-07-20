@@ -37,7 +37,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "sphinx_click",
     "myst_nb",
     'sphinxcontrib.mermaid',
     "sphinx_copybutton",
@@ -51,6 +50,10 @@ autoclass_content = "both"
 autosummary_generate = True
 add_module_names = False
 autodoc_member_order = "bysource"
+
+autodoc_pydantic_model_show_config_summary=False
+autodoc_pydantic_model_show_validator_summary=False
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
