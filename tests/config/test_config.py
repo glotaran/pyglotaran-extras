@@ -169,7 +169,7 @@ def test_config_export_update(tmp_path: Path, test_config_file: Path):
 
 
 @pytest.mark.usefixtures("mock_config")
-def test_config_export_rediscover(tmp_path: Path, mock_home: Path):
+def test_config_rediscover(tmp_path: Path, mock_home: Path):
     """Check that new files are picked up and filters work."""
     config = Config()
     assert config._source_files == []
