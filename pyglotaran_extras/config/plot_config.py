@@ -505,15 +505,15 @@ def use_plot_config(  # noqa: DOC201, DOC203
         @wraps(func)
         def wrapper(*args: Param.args, **kwargs: Param.kwargs) -> RetType:  # noqa: DOC
             """Wrap function and apply config."""
-            import pyglotaran_extras
+            from pyglotaran_extras import CONFIG
 
-            pyglotaran_extras.CONFIG.reload()
+            CONFIG.reload()
 
             arg_names = func.__code__.co_varnames[: len(args)]
             not_user_provided_kwargs = find_not_user_provided_kwargs(
                 default_kwargs, arg_names, kwargs
             )
-            function_config = pyglotaran_extras.CONFIG.plotting.get_function_config(func.__name__)
+            function_config = CONFIG.plotting.get_function_config(func.__name__)
             override_kwargs = function_config.find_override_kwargs(not_user_provided_kwargs)
             updated_kwargs = kwargs | override_kwargs
             arg_axes = find_axes(inspect.getcallargs(func, *args, **updated_kwargs).values())
@@ -544,13 +544,13 @@ def plot_config_context(plot_config: PerFunctionPlotConfig) -> Generator[Config,
     ------
     Config
     """
-    import pyglotaran_extras
+    from pyglotaran_extras import CONFIG
 
-    orig_config = pyglotaran_extras.CONFIG.model_copy(deep=True)
+    orig_config = CONFIG.model_copy(deep=True)
     setattr(
-        pyglotaran_extras.CONFIG.plotting,
+        CONFIG.plotting,
         "__context_config",
         PerFunctionPlotConfig.model_validate(plot_config),
     )
-    yield pyglotaran_extras.CONFIG
-    pyglotaran_extras.CONFIG = orig_config
+    yield CONFIG
+    CONFIG._reset(orig_config)

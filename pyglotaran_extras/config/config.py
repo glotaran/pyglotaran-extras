@@ -86,14 +86,21 @@ class Config(BaseModel):
         merged._source_hash = merged._calculate_source_hash()
         return merged
 
-    def _reset(self) -> Config:
-        """Reset self to default initialization.
+    def _reset(self, other: Config | None = None) -> Config:
+        """Reset self to ``other`` config or default initialization.
+
+        Parameters
+        ----------
+        other : Config | None
+            Other ``Config`` to to reset to.
 
         Returns
         -------
         Config
         """
-        self.plotting = PlotConfig()
+        if other is None:
+            other = Config()
+        self.plotting = other.plotting
         return self
 
     def _calculate_source_hash(self) -> int:  # noqa: DOC
@@ -109,9 +116,8 @@ class Config(BaseModel):
         """
         if self._source_hash == self._calculate_source_hash():
             return self
-        merged = Config()
         context_config = getattr(self.plotting, "__context_config", None)
-        self._reset()
+        merged = self._reset()
         for config in load_config_files(self._source_files):
             merged = merged.merge(config)
         self.plotting = merged.plotting
