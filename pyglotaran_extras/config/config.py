@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import json
 import sys
 from pathlib import Path
@@ -361,7 +362,7 @@ def _find_script_dir_at_import(package_root_file: str) -> Path:
     Path
     """
     nesting_offset = 0
-    importlib_path = Path(sys.executable).parent / "lib/importlib"
+    importlib_path = Path(importlib.__file__).parent
     package_root = Path(package_root_file).parent
     script_dir = get_script_dir(nesting=2)
     while (
