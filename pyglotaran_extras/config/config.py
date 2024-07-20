@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import sys
-from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
@@ -20,6 +19,7 @@ from ruamel.yaml import YAML
 from pyglotaran_extras.config.plot_config import PlotConfig
 from pyglotaran_extras.config.plot_config import PlotLabelOverrideMap
 from pyglotaran_extras.config.plot_config import __PlotFunctionRegistry
+from pyglotaran_extras.config.utils import add_yaml_repr
 from pyglotaran_extras.io.setup_case_study import get_script_dir
 
 if TYPE_CHECKING:
@@ -54,6 +54,7 @@ class UsePlotConfigError(Exception):
         super().__init__(msg)
 
 
+@add_yaml_repr
 class Config(BaseModel):
     """Main configuration class."""
 
@@ -213,24 +214,6 @@ class Config(BaseModel):
         self.rediscover()
         self.reload()
         return self
-
-    def __str__(self) -> str:  # noqa: DOC
-        """Convert to yaml when shown as string."""
-        yaml = YAML()
-        yaml.indent(mapping=2, sequence=4, offset=2)
-        buffer = StringIO()
-        yaml.dump(self.model_dump(), buffer)
-        buffer.seek(0)
-        return buffer.read()
-
-    def _repr_markdown_(self) -> str:
-        """Render ``ipython`` markdown.
-
-        Returns
-        -------
-        str
-        """
-        return f"```yaml\n{self}\n```"
 
 
 def find_config_in_dir(dir_path: Path) -> Generator[Path, None, None]:

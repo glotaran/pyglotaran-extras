@@ -33,6 +33,8 @@ from pydantic import model_validator
 from pydantic_core import ErrorDetails
 from pydantic_core import PydanticUndefined
 
+from pyglotaran_extras.config.utils import add_yaml_repr
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -53,6 +55,7 @@ DefaultKwargs: TypeAlias = Mapping[str, DefaultKwarg]
 __PlotFunctionRegistry: MutableMapping[str, DefaultKwargs] = {}
 
 
+@add_yaml_repr
 class PlotLabelOverrideValue(BaseModel):
     """Value of ``PlotLabelOverrideMap``."""
 
@@ -82,6 +85,7 @@ def _add_short_notation_to_schema(json_schema: dict[str, Any]) -> None:  # noqa:
     }
 
 
+@add_yaml_repr
 class PlotLabelOverrideMap(RootModel, Mapping):
     """Mapping to override axis labels."""
 
@@ -161,6 +165,7 @@ class PlotLabelOverrideMap(RootModel, Mapping):
         return None
 
 
+@add_yaml_repr
 class PerFunctionPlotConfig(BaseModel):
     """Per function plot configuration."""
 
@@ -278,6 +283,7 @@ class PerFunctionPlotConfig(BaseModel):
                 self.update_axes_labels(ax)
 
 
+@add_yaml_repr
 class PlotConfig(BaseModel):
     """Config for plot functions including default args and label overrides."""
 
