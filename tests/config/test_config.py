@@ -70,7 +70,10 @@ def test_config_merge(tmp_path: Path):
 
 
 def test_config_reset(tmp_path: Path, test_config_values: dict[str, Any]):
-    """All config values but the source files get reset."""
+    """All config values but the source files get reset when no other config is passed.
+
+    If another config is passed all values (including source files) are reset.
+    """
 
     test_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     test_config = Config.model_validate(test_config_values)
@@ -80,6 +83,14 @@ def test_config_reset(tmp_path: Path, test_config_values: dict[str, Any]):
 
     assert test_config.plotting == PlotConfig()
     assert test_config._source_files == [test_config_path]
+
+    other = Config.model_validate(test_config_values)
+
+    test_config._reset(other)
+
+    assert test_config.plotting == PlotConfig.model_validate(test_config_values["plotting"])
+    assert test_config._source_files == []
+    assert test_config == other
 
 
 def test_config_reload(tmp_path: Path, test_config_values: dict[str, Any]):

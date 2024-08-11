@@ -100,6 +100,8 @@ class Config(BaseModel):
         """
         if other is None:
             other = Config()
+        else:
+            self._source_files = other._source_files
         self.plotting = other.plotting
         return self
 
