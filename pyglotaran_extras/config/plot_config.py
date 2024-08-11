@@ -120,10 +120,10 @@ class PlotLabelOverrideMap(RootModel, Mapping):
             except ValidationError as error:
                 errors |= {str(e): e for e in error.errors()}
         if len(errors) > 0:
-            raise ValidationError.from_exception_data(cls.__name__, line_errors=[*errors.values()])
+            raise ValidationError.from_exception_data(cls.__name__, line_errors=[*errors.values()])  # type:ignore[list-item]
         return parsed_values
 
-    def __iter__(self) -> Iterator[str]:  # noqa: DOC
+    def __iter__(self) -> Iterator[str]:  # type:ignore[override] # noqa: DOC
         """Iterate over items."""
         return iter(self.root)
 
@@ -320,7 +320,7 @@ class PlotConfig(BaseModel):
             except ValidationError as error:
                 errors |= {str(e): {**e, "loc": (key, *e["loc"])} for e in error.errors()}
         if len(errors) > 0:
-            raise ValidationError.from_exception_data(cls.__name__, line_errors=[*errors.values()])
+            raise ValidationError.from_exception_data(cls.__name__, line_errors=[*errors.values()])  # type:ignore[list-item]
         return parsed_values
 
     def get_function_config(self, function_name: str) -> PerFunctionPlotConfig:
