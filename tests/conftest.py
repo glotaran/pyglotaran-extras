@@ -84,7 +84,7 @@ def result_sequential_spectral_decay():
     return optimize(scheme)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     """Mock ``pathlib.Path.home`` to return ``tmp_path/"home"``."""
 
@@ -98,19 +98,19 @@ def mock_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
             yield mock_home_path
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_config_file() -> Path:
     """Path to the test config file."""
     return TEST_DATA / "config/pygta_config.yml"
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_config_values(test_config_file: Path) -> dict[str, Any]:
     """Read test config into dict."""
     return YAML().load(test_config_file)
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_config(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, test_config_file: Path
 ) -> Generator[tuple[Config, dict[str, Any]], None, None]:

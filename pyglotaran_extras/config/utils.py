@@ -47,7 +47,7 @@ def add_yaml_repr(cls: type[SupportsModelDump]) -> type[SupportsModelDump]:
     -------
     type[SupportsModelDump]
     """
-    cls.__str__ = to_yaml_str  # type:ignore[assignment]
-    cls._repr_markdown_ = lambda self: f"```yaml\n{self}\n```"
+    cls.__str__ = to_yaml_str  # type:ignore[method-assign]
+    cls._repr_markdown_ = lambda self: f"```yaml\n{self}\n```"  # type:ignore[attr-defined]
 
     return cls

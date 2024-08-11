@@ -412,7 +412,7 @@ def create_config_schema(
     for function_name, default_kwargs in __PlotFunctionRegistry.items():
         try:
             name_prefix = "".join([parts.capitalize() for parts in function_name.split("_")])
-            fields = {
+            fields: Any = {
                 kwarg_name: (
                     kwarg_value["annotation"],
                     FieldInfo(

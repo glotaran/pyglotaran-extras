@@ -37,7 +37,7 @@ DEPRECATION_WARN_MESSAGE = (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def _pyglotaran_extras_0_3_0(monkeypatch: MonkeyPatch):
     """Mock pyglotaran_extras version to always be 0.3.0 for the test."""
     monkeypatch.setattr(
@@ -47,7 +47,7 @@ def _pyglotaran_extras_0_3_0(monkeypatch: MonkeyPatch):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def _pyglotaran_extras_1_0_0(monkeypatch: MonkeyPatch):
     """Mock pyglotaran_extras version to always be 1.0.0 for the test."""
     monkeypatch.setattr(

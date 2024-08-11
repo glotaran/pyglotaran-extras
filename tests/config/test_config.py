@@ -429,7 +429,7 @@ def test_load_config(tmp_path: Path, mock_home: Path):
     assert minimal_lookup_config._source_files == [sub_project_config_path]
 
 
-@pytest.fixture()
+@pytest.fixture
 def import_load_script(tmp_path: Path):
     """Copy import load script into tmp_path."""
     src_path = TEST_DATA / "config/run_load_config_on_import.py"

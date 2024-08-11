@@ -131,6 +131,9 @@ exclude_lines = [
 ]
 
 [tool.mypy]
+plugins = [
+  "pydantic.mypy",
+]
 python_version = "3.10"
 ignore_missing_imports = true
 scripts_are_modules = true
