@@ -79,17 +79,11 @@ def plot_sas(
     ]
     for key in reversed(keys):
         sas = res[key]
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"],strict=False):
+        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
             sas.sel(species=species).plot.line(x="spectral", ax=ax, zorder=zorder)
         ax.set_title(title)
-        # ax.get_legend().remove()
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
-
-    # for zorder, label, value in zip(range(100)[::-1], indices[:max_index], values, strict=False):
-    #     value.plot.line(
-    #         x=x_dim, ax=ax, zorder=zorder, label=label + 1 if use_svd_number else label
-    #     )
 
 
 def plot_norm_sas(
@@ -120,11 +114,11 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        # (sas / np.abs(sas).max(dim="spectral")).plot.line(x="spectral", ax=ax)
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"],strict=False):
-            (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(x="spectral", ax=ax, zorder=zorder)
+        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
+            (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
+                x="spectral", ax=ax, zorder=zorder
+            )
         ax.set_title(title)
-        # ax.get_legend().remove()
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
 
@@ -158,9 +152,6 @@ def plot_das(
     for key in keys:
         das = res[key]
         das.plot.line(x="spectral", ax=ax)
-        # note that this works only for megacomplex "decay"
-        # for zorder, species in zip(range(100)[::-1], das.coords["component_decay"],strict=False):
-        #     das.sel(component_decay=species).plot.line(x="spectral", ax=ax, zorder=zorder)
         ax.set_title(title)
         ax.get_legend().remove()
     if show_zero_line is True:
@@ -196,9 +187,6 @@ def plot_norm_das(
     for key in keys:
         das = res[key]
         (das / np.abs(das).max(dim="spectral")).plot.line(x="spectral", ax=ax)
-        # note that this works only for megacomplex "decay"
-        # for zorder, species in zip(range(100)[::-1], das.coords["component_decay"],strict=False):
-        #     (das / np.abs(das).max(dim="spectral")).sel(component_decay=species).plot.line(x="spectral", ax=ax, zorder=zorder)
         ax.set_title(title)
         ax.get_legend().remove()
     if show_zero_line is True:
