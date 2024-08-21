@@ -15,6 +15,7 @@ from pyglotaran_extras.plotting.utils import abs_max
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
 from pyglotaran_extras.plotting.utils import add_subplot_labels
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
+from pyglotaran_extras.plotting.utils import condense_numbered_strings
 from pyglotaran_extras.plotting.utils import ensure_axes_array
 from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
 from pyglotaran_extras.plotting.utils import get_next_cycler_color
@@ -206,3 +207,14 @@ def test_add_subplot_labels_label_format_template(label_format_template: str, ex
     add_subplot_labels(ax, label_format_template=label_format_template)
 
     assert ax.texts[0].get_text() == expected
+
+
+def test_condense_numbered_strings():
+    """Test condensed labels."""
+    assert condense_numbered_strings(None) == ""
+    assert condense_numbered_strings(["osc1", "osc2", "osc3", "osc4"]) == "osc1-4"
+    assert condense_numbered_strings(["osc3", "osc4"]) == "osc3-4"
+    assert condense_numbered_strings(["osc1"]) == "osc1"
+    assert condense_numbered_strings(["osc1", "osc3", "osc4", "osc5", "osc7"]) == "osc1,3-5,7"
+    assert condense_numbered_strings(["abc1", "abc3", "abc4", "abc5", "abc7"]) == "abc1,3-5,7"
+    assert condense_numbered_strings(["aa1", "aa3", "aa4", "aa5", "aa7"]) == "aa1,3-5,7"

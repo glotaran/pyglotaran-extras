@@ -76,7 +76,7 @@ repos:
     hooks:
       - id: mypy
         exclude: ^docs
-        additional_dependencies: [types-all]
+        additional_dependencies: [types-tabulate]
 
   - repo: https://github.com/econchick/interrogate
     rev: 1.7.0
