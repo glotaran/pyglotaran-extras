@@ -33,7 +33,7 @@ def plot_pfid(  # noqa: C901
     oscillation_type: Literal["cos", "sin"] = "cos",
     show_clps: bool = False,
     time_range: tuple[float, float] | None = None,
-    spectral: float = 0,
+    spectral: float | None = None,
     main_irf_nr: int | None = 0,
     normalize: bool = False,
     figsize: tuple[float, float] | None = None,
@@ -60,11 +60,10 @@ def plot_pfid(  # noqa: C901
         Start and end time for the Oscillation plot, if ``main_irf_nr`` is not None the value are
         relative to the IRF location. Defaults to None which means that the full time range is
         used.
-    spectral : float
+    spectral : float | None
         Value of the spectral axis that should be used to select the data for the Oscillation
         plot this value does not need to be an exact existing value and only has effect if the
-        IRF has dispersion. Defaults to 0 which means that the Oscillation plot at lowest
-        spectral value will be shown.
+        IRF has dispersion. If None the Oscillation plot at lowest spectral value will be shown.
     main_irf_nr : int | None
         Index of the main ``irf`` component when using an ``irf`` parametrized with multiple peaks
         and is used to shift the time axis. If it is none ``None`` the shifting will be
@@ -107,6 +106,8 @@ def plot_pfid(  # noqa: C901
     time_sel_kwargs = {"time": slice(time_range[0], time_range[1])} if time_range else {}
     names = dataset.pfid.to_numpy() if names is None else names
     osc_sel_kwargs = {"pfid": names}
+    if spectral is None and "spectral" in dataset.coords:
+        spectral = dataset.coords["spectral"].min().item()
     irf_location = extract_irf_location(dataset, spectral, main_irf_nr)
 
     pfid_phase = dataset["pfid_phase"].sel(**osc_sel_kwargs)
@@ -171,6 +172,8 @@ def plot_pfid(  # noqa: C901
         axes[1, 0].set_xlabel("Time (ps)")
         axes[0, 1].set_xlabel("Wavenumber (1/cm)")
         axes[1, 1].set_xlabel("Wavenumber (1/cm)")
+        axes[0, 2].set_xlabel("Wavenumber (1/cm)")
+        axes[1, 2].set_xlabel("Wavenumber (1/cm)")
     else:
         axes[0].set_title(f"{oscillation_type.capitalize()} Oscillations {spectral}")
 
