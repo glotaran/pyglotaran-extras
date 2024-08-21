@@ -77,11 +77,11 @@ def plot_sas(
     keys = [
         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
     ]
-    for key in keys:
+    for key in reversed(keys):
         sas = res[key]
-        sas.plot.line(x="spectral", ax=ax)
+        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
+            sas.sel(species=species).plot.line(x="spectral", ax=ax, zorder=zorder)
         ax.set_title(title)
-        ax.get_legend().remove()
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
 
@@ -114,9 +114,11 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        (sas / np.abs(sas).max(dim="spectral")).plot.line(x="spectral", ax=ax)
+        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
+            (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
+                x="spectral", ax=ax, zorder=zorder
+            )
         ax.set_title(title)
-        ax.get_legend().remove()
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import itertools
 from collections.abc import Iterable
 from math import ceil
 from math import log
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from typing import Literal
 
+    from collecations.abs import Sequence
     from cycler import Cycler
     from matplotlib.axis import Axis
     from matplotlib.figure import Figure
@@ -775,3 +777,41 @@ def add_subplot_labels(
             xycoords=label_coords,
             fontsize=fontsize,
         )
+
+
+def condense_numbered_strings(inputs: Sequence[str] | None) -> str:
+    """Condense a list of numbered strings into a compact string representation.
+
+    This function takes a sequence of strings with a common prefix followed by numbers,
+    and condenses consecutive numbers into ranges. For example, the input
+    ["osc1", "osc2", "osc3", "osc5"] will be condensed to "osc1-3,5".
+
+    Parameters
+    ----------
+    inputs : Sequence[str] | None
+        A sequence of strings to condense. If None or empty, an empty string is returned.
+
+    Returns
+    -------
+    str
+        A condensed string representation of the input sequence.
+    """
+    if inputs is None:
+        return ""
+
+    # Extract prefix and numbers
+    prefix = "".join(c for c in inputs[0] if not c.isdigit())
+    nums = sorted(int("".join(c for c in s if c.isdigit())) for s in inputs)
+
+    # Find and format ranges
+    ranges = []
+    for _, group in itertools.groupby(enumerate(nums), key=lambda x: x[0] - x[1]):
+        group_list = list(group)
+        start = group_list[0][1]
+        end = group_list[-1][1]
+        if start == end:
+            ranges.append(str(start))
+        else:
+            ranges.append(f"{start}-{end}")
+
+    return f"{prefix}{','.join(ranges)}"
