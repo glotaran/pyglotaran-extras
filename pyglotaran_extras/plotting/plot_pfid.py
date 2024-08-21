@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
-def plot_pfid(
+def plot_pfid(  # noqa: C901
     dataset: DatasetConvertible | Result,
     *,
     names: list[str] | None = None,
@@ -36,7 +36,7 @@ def plot_pfid(
     spectral: float = 0,
     main_irf_nr: int | None = 0,
     normalize: bool = False,
-    figsize: tuple[float, float] = (20, 5),
+    figsize: tuple[float, float] | None = None,
     show_zero_line: bool = True,
     cycler: Cycler | None = PlotStyle().cycler,
     title: str | None = "Perturbed Free Induction Decays",
@@ -73,8 +73,9 @@ def plot_pfid(
         Whether or not to normalize the PFID spectra plot. If the PFID spectra is normalized,
         the Oscillation is scaled with the reciprocal of the normalization to compensate for this.
         Defaults to False.
-    figsize : tuple[float, float]
-        Size of the figure (N, M) in inches. Defaults to (20, 5)
+    figsize : tuple[float, float] | None
+        Size of the figure (N, M) in inches. Defaults to None which then uses
+        (20,5) if show_clps=False, (20, 10) if show_clps=True.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True
     cycler : Cycler | None
@@ -97,7 +98,8 @@ def plot_pfid(
     calculate_ticks_in_units_of_pi
     """
     dataset = load_data(dataset, _stacklevel=3)
-    offset = 0  # with DOAS offset=1
+    if figsize is None:
+        figsize = (20, 10) if show_clps else (20, 5)
     fig, axes = plt.subplots(2 if show_clps else 1, 3, figsize=figsize)
 
     add_cycler_if_not_none(axes, cycler)
@@ -120,12 +122,12 @@ def plot_pfid(
         oscillations = shift_time_axis_by_irf_location(
             oscillations.sel(**osc_sel_kwargs), irf_location, _internal_call=True
         )
-        osc_max = abs_max((oscillations - offset), result_dims="pfid")
+        osc_max = abs_max(oscillations, result_dims="pfid")
         spectra_max = abs_max(oscillations_spectra, result_dims="pfid")
         scales = np.sqrt(osc_max * spectra_max)
         norm_factor = scales.max() if normalize else 1
 
-        oscillations_to_plot = ((oscillations - offset) / osc_max * scales * norm_factor).sel(
+        oscillations_to_plot = (oscillations / osc_max * scales * norm_factor).sel(
             **time_sel_kwargs
         )
 
@@ -172,10 +174,13 @@ def plot_pfid(
     else:
         axes[0].set_title(f"{oscillation_type.capitalize()} Oscillations {spectral}")
 
+    for ax in axes.flatten():
+        legend = ax.get_legend()
+        if legend is not None:
+            legend.remove()
+
     if legend_format_string:
         axes[0].legend() if not show_clps else axes[0, 0].legend()
-    else:
-        axes[0].get_legend().remove() if not show_clps else axes[0, 0].get_legend().remove()
 
     if show_zero_line:
         [ax.axhline(0, color="k", linewidth=1) for ax in axes.flatten()]

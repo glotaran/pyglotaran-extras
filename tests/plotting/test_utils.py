@@ -218,3 +218,4 @@ def test_condense_numbered_strings():
     assert condense_numbered_strings(["osc1", "osc3", "osc4", "osc5", "osc7"]) == "osc1,3-5,7"
     assert condense_numbered_strings(["abc1", "abc3", "abc4", "abc5", "abc7"]) == "abc1,3-5,7"
     assert condense_numbered_strings(["aa1", "aa3", "aa4", "aa5", "aa7"]) == "aa1,3-5,7"
+    # TODO: handle case where substring is not all the same (e.g. abc1, def2)

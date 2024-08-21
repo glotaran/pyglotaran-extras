@@ -796,7 +796,7 @@ def condense_numbered_strings(inputs: Sequence[str] | None) -> str:
     str
         A condensed string representation of the input sequence.
     """
-    if not inputs:
+    if inputs is None:
         return ""
 
     # Extract prefix and numbers
