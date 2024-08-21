@@ -41,6 +41,7 @@ jobs:
       - name: Install pyglotaran-extras
         run: |
           pip install wheel
+          pip install -r requirements_pinned.txt
           pip install .
 
       - name: ${{ matrix.example_name }}
