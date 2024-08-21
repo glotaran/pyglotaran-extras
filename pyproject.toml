@@ -45,6 +45,7 @@ optional-dependencies.dev = [
   "pyglotaran-extras[docs,test]",
 ]
 optional-dependencies.docs = [
+  "autodoc-pydantic>=2.2",
   "jupyterlab>=3",
   "myst-nb>=1.1.1",                  # notebook docs
   "myst-parser>=0.12",
@@ -55,7 +56,6 @@ optional-dependencies.docs = [
   "sphinx-rtd-theme>=1.2",
   "sphinxcontrib-jquery>=4.1",       # Needed for the search to work Ref.: https://github.com/readthedocs/sphinx_rtd_theme/issues/1434
   "sphinxcontrib-mermaid>=0.9.2",
-  "autodoc_pydantic>=2.2",
 ]
 optional-dependencies.test = [
   "coverage[toml]",
