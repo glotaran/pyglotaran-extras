@@ -546,11 +546,10 @@ def plot_config_context(plot_config: PerFunctionPlotConfig) -> Generator[Config,
     """
     from pyglotaran_extras import CONFIG
 
-    orig_config = CONFIG.model_copy(deep=True)
     setattr(
         CONFIG.plotting,
         "__context_config",
         PerFunctionPlotConfig.model_validate(plot_config),
     )
     yield CONFIG
-    CONFIG._reset(orig_config)
+    delattr(CONFIG.plotting, "__context_config")

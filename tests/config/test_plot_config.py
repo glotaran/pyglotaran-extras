@@ -655,6 +655,8 @@ def test_plot_config_context():
 
         test_func(ax1_arg, ax2_arg)
 
+    assert hasattr(pyglotaran_extras.CONFIG.plotting, "__context_config") is False
+
     assert test_func_config == PerFunctionPlotConfig(
         default_args_override={
             "will_update_arg": "test_func arg",
