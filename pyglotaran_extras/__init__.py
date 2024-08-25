@@ -70,7 +70,7 @@ __all__ = [
     "CONFIG",
 ]
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 SCRIPT_DIR = _find_script_dir_at_import(__file__)
 """User script dir determined during import."""

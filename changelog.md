@@ -2,11 +2,14 @@
 
 (changes-0_7_3)=
 
-## 0.7.3 (Unreleased)
+## 0.7.3 (2024-08-25)
 
-- 🩹 Fix incompatibility of plot_data_and_fits with matplotlib>=3.8 (#275)
-- 🩹 Fix deprecation warning for using xr.Dataset.dim (#267)
+- ✨ Add configuration for plot functions (#288)
+- ✨ Add plot_pfid plot function (#283)
 - 🩹 Fix very slow data/residual plots (#239)
+- 🩹 Fix deprecation warning for using xr.Dataset.dim (#267)
+- 🩹🚇 Adapt to changed outputs in pyglotaran-examples GHA (#273)
+- 🩹 Fix incompatibility of plot_data_and_fits with matplotlib>=3.8 (#275)
 
 (changes-0_7_2)=
 
