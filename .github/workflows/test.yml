@@ -175,7 +175,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip wheel
-          python -m pip install -r requirements_min.txt
+          python -m pip install -r .github/requirements_min.txt
           python -m pip install -e ".[test]"
 
       - name: Show installed dependencies
