@@ -1,8 +1,11 @@
 import json
 from pathlib import Path
 
+# This is needed to simulate the case were something else is imported from ``pyglotaran_extras``
+# Before the config is
 from pyglotaran_extras import plot_overview  # noqa: F401
 
+# Added before the import so imports don't get sorted
 HERE = Path(__file__).parent
 
 # We just import the config directly to read out the values
