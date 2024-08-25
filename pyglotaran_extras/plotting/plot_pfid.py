@@ -168,12 +168,6 @@ def plot_pfid(  # noqa: C901
 
         axes[0, 0].set_title(f"Cos Oscillations {spectral}")
         axes[1, 0].set_title(f"Sin Oscillations {spectral}")
-        axes[0, 0].set_xlabel("Time (ps)")
-        axes[1, 0].set_xlabel("Time (ps)")
-        axes[0, 1].set_xlabel("Wavenumber (1/cm)")
-        axes[1, 1].set_xlabel("Wavenumber (1/cm)")
-        axes[0, 2].set_xlabel("Wavenumber (1/cm)")
-        axes[1, 2].set_xlabel("Wavenumber (1/cm)")
     else:
         axes[0].set_title(f"{oscillation_type.capitalize()} Oscillations {spectral}")
 
