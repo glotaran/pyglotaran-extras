@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import inspect
 from collections.abc import Generator
 from collections.abc import Iterable
 from collections.abc import Iterator
@@ -11,6 +10,7 @@ from collections.abc import MutableMapping
 from contextlib import contextmanager
 from functools import wraps
 from inspect import Parameter
+from inspect import getcallargs
 from inspect import signature
 from typing import TYPE_CHECKING
 from typing import Any
@@ -516,7 +516,7 @@ def use_plot_config(  # noqa: DOC201, DOC203
             function_config = CONFIG.plotting.get_function_config(func.__name__)
             override_kwargs = function_config.find_override_kwargs(not_user_provided_kwargs)
             updated_kwargs = kwargs | override_kwargs
-            arg_axes = find_axes(inspect.getcallargs(func, *args, **updated_kwargs).values())
+            arg_axes = find_axes(getcallargs(func, *args, **updated_kwargs).values())
             return_values = func(*args, **updated_kwargs)
             function_config.update_axes_labels(arg_axes)
 
