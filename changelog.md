@@ -1,5 +1,9 @@
 # Changelog
 
+(changes-0_7_4)=
+
+## 0.7.4 (Unreleased)
+
 (changes-0_7_3)=
 
 ## 0.7.3 (2024-08-25)
