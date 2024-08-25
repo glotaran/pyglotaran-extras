@@ -135,6 +135,10 @@ class PlotLabelOverrideMap(RootModel, Mapping):
         """Access items."""
         return self.root[item_label]
 
+    def __contains__(self, item_label: object) -> bool:  # noqa: DOC
+        """Check if item is ``in`` the object."""
+        return item_label in self.root
+
     def find_axis_label(self, matplotlib_label: str, axis_name: Literal["x", "y"]) -> str | None:
         """Find axis label even if ``matplotlib`` or the user added a newline in it.
 
