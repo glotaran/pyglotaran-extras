@@ -11,6 +11,7 @@ readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
   { name = "Joris Snellenburg", email = "j.snellenburg@gmail.com" },
+  { name = "Sebastian Weigand", email = "s.weigand.phy@gmail.com" },
 ]
 requires-python = ">=3.10"
 classifiers = [
