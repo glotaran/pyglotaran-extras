@@ -17,8 +17,12 @@
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
-
+from pathlib import Path
 import pyglotaran_extras
+
+HERE = Path(__file__).parent
+
+pyglotaran_extras.create_config_schema(HERE/"_static")
 
 # -- General configuration ---------------------------------------------
 
@@ -33,9 +37,13 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
-    "myst_parser",
+    "myst_nb",
+    'sphinxcontrib.mermaid',
+    "sphinx_copybutton",
     "sphinx_rtd_theme",
 ]
+
+myst_fence_as_directive = ["mermaid"]
 
 
 autoclass_content = "both"
@@ -43,13 +51,17 @@ autosummary_generate = True
 add_module_names = False
 autodoc_member_order = "bysource"
 
+autodoc_pydantic_model_show_config_summary=False
+autodoc_pydantic_model_show_validator_summary=False
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = [".rst", ".md"]
+source_suffix = {'.rst': 'restructuredtext', '.md': 'restructuredtext'}
 # source_suffix = '.rst'
 linkcheck_ignore = [
     r"https://github\.com/glotaran/pyglotaran-extras/actions",
@@ -111,7 +123,7 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ["_static"]
+html_static_path = ["_static"]
 
 
 # -- Options for HTMLHelp output ---------------------------------------

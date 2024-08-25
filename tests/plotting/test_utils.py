@@ -41,7 +41,7 @@ DEFAULT_CYCLER = plt.rcParams["axes.prop_cycle"]
 )
 def test_add_cycler_if_not_none_single_axis(cycler: Cycler | None, expected_cycler: cycle):
     """Default cycler if None and cycler otherwise on a single axis."""
-    ax = plt.subplot()
+    _, ax = plt.subplots()
     add_cycler_if_not_none(ax, cycler)
 
     for _ in range(10):
@@ -196,8 +196,6 @@ def test_add_subplot_labels_assignment(
     )
     assert [ax.texts[0].get_anncoords() for ax in axes.flatten()] == [label_coords] * 4
     assert [ax.texts[0].get_fontsize() for ax in axes.flatten()] == [fontsize] * 4
-
-    plt.close()
 
 
 @pytest.mark.parametrize(("label_format_template", "expected"), [("{})", "1)"), ("({})", "(1)")])

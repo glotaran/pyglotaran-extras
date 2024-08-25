@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_guidance(
     result: DatasetConvertible | Result,
     figsize: tuple[float, float] = (15, 5),

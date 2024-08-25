@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=pygta_config.schema.json
+
+plotting:
+  general:
+    default_args_override:
+      will_update_arg: will change arg
+      will_be_kept_arg: general arg
+    axis_label_override:
+      will_update_label: will change label
+      will_be_kept_label: general label
+  test_func:
+    default_args_override:
+      will_update_arg: test_func arg
+      will_be_added_arg: new arg
+    axis_label_override:
+      will_update_label: test_func label
+      will_be_added_label: new label

@@ -79,7 +79,7 @@ def test_load_data(
     filtered_warnings = filter_warnings(recwarn)
     assert len(filtered_warnings) == 1
 
-    assert filtered_warnings[0].category == UserWarning
+    assert filtered_warnings[0].category is UserWarning
     assert filtered_warnings[0].message.args[0] == MULTI_DATASET_WARING  # type:ignore[union-attr]
     assert Path(filtered_warnings[0].filename) == Path(__file__)
 
@@ -94,7 +94,7 @@ def test_load_data(
 
     assert len(filtered_warnings) == 2
 
-    assert filtered_warnings[1].category == UserWarning
+    assert filtered_warnings[1].category is UserWarning
     assert filtered_warnings[1].message.args[0] == MULTI_DATASET_WARING  # type:ignore[union-attr]
     assert Path(filtered_warnings[1].filename) == Path(__file__)
 

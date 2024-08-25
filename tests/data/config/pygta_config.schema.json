@@ -1,0 +1,206 @@
+{
+  "$defs": {
+    "PerFunctionPlotConfig": {
+      "additionalProperties": false,
+      "description": "Per function plot configuration.",
+      "properties": {
+        "default_args_override": {
+          "description": "Default arguments to use if not specified in function call.",
+          "title": "Default Args Override",
+          "type": "object",
+          "properties": {
+            "will_be_kept_arg": {
+              "default": "default keep",
+              "title": "Will Be Kept Arg"
+            },
+            "will_update_arg": {
+              "default": "default update",
+              "title": "Will Update Arg"
+            },
+            "will_be_added_arg": {
+              "default": "default add",
+              "title": "Will Be Added Arg"
+            }
+          },
+          "additionalProperties": false
+        },
+        "axis_label_override": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PlotLabelOverrideMap"
+            },
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            }
+          ],
+          "title": "Axis Label Override"
+        }
+      },
+      "title": "PerFunctionPlotConfig",
+      "type": "object"
+    },
+    "PlotConfig": {
+      "additionalProperties": true,
+      "description": "Config for plot functions including default args and label overrides.",
+      "properties": {
+        "general": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PerFunctionPlotConfig"
+            }
+          ],
+          "description": "Config that gets applied to all functions if not specified otherwise."
+        },
+        "other": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/OtherConfig"
+            }
+          ]
+        },
+        "test_func": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/TestFuncConfig"
+            }
+          ]
+        }
+      },
+      "title": "PlotConfig",
+      "type": "object"
+    },
+    "PlotLabelOverrideMap": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/PlotLabelOverrideValue"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      },
+      "description": "Mapping to override axis labels.",
+      "title": "PlotLabelOverrideMap",
+      "type": "object"
+    },
+    "PlotLabelOverrideValue": {
+      "additionalProperties": false,
+      "description": "Value of ``PlotLabelOverrideMap``.",
+      "properties": {
+        "target_name": {
+          "title": "Target Name",
+          "type": "string"
+        },
+        "axis": {
+          "default": "both",
+          "enum": ["x", "y", "both"],
+          "title": "Axis",
+          "type": "string"
+        }
+      },
+      "required": ["target_name"],
+      "title": "PlotLabelOverrideValue",
+      "type": "object"
+    },
+    "OtherKwargs": {
+      "additionalProperties": false,
+      "description": "Default arguments to use for ``other``, if not specified in function call.",
+      "properties": {
+        "will_be_kept_arg": {
+          "default": "default update",
+          "title": "Will Be Kept Arg"
+        }
+      },
+      "title": "OtherKwargs",
+      "type": "object"
+    },
+    "OtherConfig": {
+      "additionalProperties": false,
+      "description": "Plot function configuration specific to ``other`` (overrides values in general).",
+      "properties": {
+        "default_args_override": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/OtherKwargs"
+            }
+          ],
+          "default": {}
+        },
+        "axis_label_override": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PlotLabelOverrideMap"
+            }
+          ],
+          "default": {}
+        }
+      },
+      "title": "OtherConfig",
+      "type": "object"
+    },
+    "TestFuncKwargs": {
+      "additionalProperties": false,
+      "description": "Default arguments to use for ``test_func``, if not specified in function call.",
+      "properties": {
+        "will_update_arg": {
+          "default": "default update",
+          "title": "Will Update Arg"
+        },
+        "will_be_kept_arg": {
+          "default": "default keep",
+          "title": "Will Be Kept Arg"
+        },
+        "will_be_added_arg": {
+          "default": "default add",
+          "title": "Will Be Added Arg"
+        }
+      },
+      "title": "TestFuncKwargs",
+      "type": "object"
+    },
+    "TestFuncConfig": {
+      "additionalProperties": false,
+      "description": "Plot function configuration specific to ``test_func`` (overrides values in general).",
+      "properties": {
+        "default_args_override": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/TestFuncKwargs"
+            }
+          ],
+          "default": {}
+        },
+        "axis_label_override": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PlotLabelOverrideMap"
+            }
+          ],
+          "default": {}
+        }
+      },
+      "title": "TestFuncConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Main configuration class.",
+  "properties": {
+    "plotting": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/PlotConfig"
+        }
+      ],
+      "default": {
+        "general": {}
+      }
+    }
+  },
+  "title": "Config",
+  "type": "object"
+}

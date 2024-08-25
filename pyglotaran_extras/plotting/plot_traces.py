@@ -7,6 +7,7 @@ from warnings import warn
 
 import matplotlib.pyplot as plt
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import ResultLike
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_data_and_fits(
     result: ResultLike,
     wavelength: float,
@@ -108,6 +110,7 @@ def plot_data_and_fits(
         axis.legend()
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_fitted_traces(
     result: ResultLike,
     wavelengths: Iterable[float],

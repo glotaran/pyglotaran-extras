@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from glotaran.io.prepare_dataset import add_svd_to_dataset
 from matplotlib.axis import Axis
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.plot_svd import plot_lsv_data
 from pyglotaran_extras.plotting.plot_svd import plot_rsv_data
@@ -32,6 +33,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
+@use_plot_config(exclude_from_config=("svd_cycler",))
 def plot_data_overview(
     dataset: DatasetConvertible | Result,
     title: str = "Data overview",

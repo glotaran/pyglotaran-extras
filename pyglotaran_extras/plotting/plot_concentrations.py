@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
 from pyglotaran_extras.plotting.utils import add_cycler_if_not_none
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
     from matplotlib.axis import Axis
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_concentrations(
     res: xr.Dataset,
     ax: Axis,

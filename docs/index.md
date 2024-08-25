@@ -7,6 +7,7 @@
 readme
 installation
 usage
+config/project/subproject/config_docs
 api_docs
 contributing
 changelog

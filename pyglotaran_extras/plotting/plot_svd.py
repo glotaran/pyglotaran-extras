@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from glotaran.io.prepare_dataset import add_svd_to_dataset
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.deprecation import warn_deprecated
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_svd(
     res: xr.Dataset,
     axes: Axes,
@@ -115,10 +117,11 @@ def plot_svd(
     plot_sv_data(res, axes[1, 2], use_svd_number=use_svd_number)
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_lsv_data(
     res: xr.Dataset,
     ax: Axis,
-    indices: Sequence[int] = range(4),
+    indices: Sequence[int] = tuple(range(4)),
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
@@ -135,7 +138,7 @@ def plot_lsv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(4).
+        Indices of the singular vector to plot. Defaults to tuple(range(4)).
     linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
@@ -169,10 +172,11 @@ def plot_lsv_data(
         ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_rsv_data(
     res: xr.Dataset,
     ax: Axis,
-    indices: Sequence[int] = range(4),
+    indices: Sequence[int] = tuple(range(4)),
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
     irf_location: float | None = None,
@@ -187,7 +191,7 @@ def plot_rsv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(4).
+        Indices of the singular vector to plot. Defaults to tuple(range(4)).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_legend : bool
@@ -213,10 +217,11 @@ def plot_rsv_data(
     ax.set_title("data. RSV")
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_sv_data(
     res: xr.Dataset,
     ax: Axis,
-    indices: Sequence[int] = range(10),
+    indices: Sequence[int] = tuple(range(10)),
     cycler: Cycler | None | UnsetType = Unset,
     use_svd_number: bool = False,
 ) -> None:
@@ -229,7 +234,7 @@ def plot_sv_data(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(10).
+        Indices of the singular vector to plot. Defaults to tuple(range(10)).
     cycler : Cycler | None | UnsetType
         Deprecated since it has no effect. Defaults to Unset.
     use_svd_number : bool
@@ -249,16 +254,17 @@ def plot_sv_data(
         dSV = dSV.assign_coords(  # noqa: N806
             {x_dim: ("singular_value_index", (dSV.singular_value_index + 1).data)}
         )
-    dSV.sel({"singular_value_index": indices[: len(dSV.singular_value_index)]}).plot.line(
+    dSV.sel({"singular_value_index": list(indices[: len(dSV.singular_value_index)])}).plot.line(
         "ro-", yscale="log", ax=ax, x=x_dim
     )
     ax.set_title("data. log(SV)")
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_lsv_residual(
     res: xr.Dataset,
     ax: Axis,
-    indices: Sequence[int] = range(2),
+    indices: Sequence[int] = tuple(range(2)),
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
@@ -275,7 +281,7 @@ def plot_lsv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(4).
+        Indices of the singular vector to plot. Defaults to tuple(range(4)).
     linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
@@ -314,10 +320,11 @@ def plot_lsv_residual(
         ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_rsv_residual(
     res: xr.Dataset,
     ax: Axis,
-    indices: Sequence[int] = range(2),
+    indices: Sequence[int] = tuple(range(2)),
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
     irf_location: float | None = None,
@@ -332,7 +339,7 @@ def plot_rsv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(4).
+        Indices of the singular vector to plot. Defaults to tuple(range(4)).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_legend : bool
@@ -362,10 +369,11 @@ def plot_rsv_residual(
     ax.set_title("res. RSV")
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_sv_residual(
     res: xr.Dataset,
     ax: Axis,
-    indices: Sequence[int] = range(10),
+    indices: Sequence[int] = tuple(range(10)),
     cycler: Cycler | None | UnsetType = Unset,
     use_svd_number: bool = False,
 ) -> None:
@@ -378,7 +386,7 @@ def plot_sv_residual(
     ax : Axis
         Axis to plot on.
     indices : Sequence[int]
-        Indices of the singular vector to plot. Defaults to range(10).
+        Indices of the singular vector to plot. Defaults to tuple(range(10)).
     cycler : Cycler | None | UnsetType
         Deprecated since it has no effect. Defaults to Unset.
     use_svd_number : bool
@@ -402,7 +410,7 @@ def plot_sv_residual(
         rSV = rSV.assign_coords(  # noqa: N806
             {x_dim: ("singular_value_index", (rSV.singular_value_index + 1).data)}
         )
-    rSV.sel({"singular_value_index": indices[: len(rSV.singular_value_index)]}).plot.line(
+    rSV.sel({"singular_value_index": list(indices[: len(rSV.singular_value_index)])}).plot.line(
         "ro-", yscale="log", ax=ax, x=x_dim
     )
     ax.set_title("res. log(SV)")
@@ -447,7 +455,9 @@ def _plot_svd_vectors(
     """
     max_index = len(getattr(vector_data, sv_index_dim))
     values = shift_time_axis_by_irf_location(
-        vector_data.isel({sv_index_dim: indices[:max_index]}), irf_location, _internal_call=True
+        vector_data.isel({sv_index_dim: list(indices[:max_index])}),
+        irf_location,
+        _internal_call=True,
     )
     x_dim = vector_data.dims[1]
     if x_dim == sv_index_dim:

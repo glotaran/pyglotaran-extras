@@ -6,12 +6,17 @@ from collections.abc import Mapping
 from collections.abc import Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING
+from typing import Any
 from typing import Literal
+from typing import ParamSpec
 from typing import TypeAlias
 from typing import TypedDict
+from typing import TypeVar
 
 import xarray as xr
 from glotaran.project.result import Result
+from pydantic import BaseModel
+from pydantic import RootModel
 
 if TYPE_CHECKING:
     from pyglotaran_extras.plotting.style import ColorCode
@@ -68,3 +73,9 @@ SubPlotLabelCoordStrs: TypeAlias = Literal[
 SubPlotLabelCoord: TypeAlias = (
     SubPlotLabelCoordStrs | tuple[SubPlotLabelCoordStrs, SubPlotLabelCoordStrs]
 )
+
+
+Param = ParamSpec("Param")
+RetType = TypeVar("RetType")
+
+SupportsModelDump = TypeVar("SupportsModelDump", bound=(BaseModel | RootModel[Any]))

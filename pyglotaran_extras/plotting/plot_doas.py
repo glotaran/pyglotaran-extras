@@ -8,6 +8,7 @@ from typing import Literal
 import matplotlib.pyplot as plt
 import numpy as np
 
+from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import abs_max
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
     from pyglotaran_extras.types import DatasetConvertible
 
 
+@use_plot_config(exclude_from_config=("cycler",))
 def plot_doas(
     dataset: DatasetConvertible | Result,
     *,
