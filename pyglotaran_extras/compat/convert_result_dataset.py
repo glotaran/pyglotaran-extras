@@ -8,6 +8,13 @@ from glotaran.project.result import Result
 from pyglotaran_extras.compat.compat_result import CompatResult
 
 
+def _adjust_fitted_data(ds: xr.Dataset, *, cleanup: bool = False) -> None:
+    """Rename fit to fitted_data."""
+    if "fit" in ds.data_vars:
+        ds["fitted_data"] = ds["fit"]
+        if cleanup:
+            ds = ds.drop_vars("fit")
+
 def _adjust_concentrations(ds: xr.Dataset, *, cleanup: bool = False) -> None:
     """Adjust the concentrations to spectra names."""
     # Check for species associated concentration variables
@@ -148,6 +155,7 @@ def convert_dataset(dataset: xr.Dataset, cleanup: bool = False) -> xr.Dataset:
     _adjust_activation_to_irf(converted_ds, cleanup=cleanup)
     _adjust_estimations_to_spectra(converted_ds, cleanup=cleanup)
     _adjust_concentrations(converted_ds, cleanup=cleanup)
+    _adjust_fitted_data(converted_ds, cleanup=cleanup)
 
     if (
         "weighted_root_mean_square_error" not in converted_ds.attrs
