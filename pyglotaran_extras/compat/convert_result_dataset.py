@@ -2,41 +2,58 @@
 
 from __future__ import annotations
 
-import copy
-
 import xarray as xr
 from glotaran.project.result import Result
 
 from pyglotaran_extras.compat.compat_result import CompatResult
 
 
+import xarray as xr
+
+def _adjust_concentrations(ds: xr.Dataset, *, cleanup: bool = False) -> None:
+    """Adjust the concentrations to spectra names."""
+    # Check for species associated concentration variables
+    for var in ds.data_vars:
+        if "species_associated_concentration" in var or "species_concentration" in var:
+            full_var_name = var  # Capture the full variable name
+            ds["species_concentration"] = ds[full_var_name]
+            if cleanup:
+                ds = ds.drop_vars(full_var_name)
+
 def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> None:
     """Adjust the estimations to spectra names and flatten data."""
-    # Check if the variable exists in the dataset
-    if "kinetic_associated_estimation" in ds:
-        # Extract the data
-        data = ds["kinetic_associated_estimation"].to_numpy()
-        # Reshape the data to match the desired shape
-        for activation_id in range(data.shape[0]):
-            reshaped_data = data[activation_id, :, :]
-            # Update the dataset with the reshaped data
-            ds[f"decay_associated_spectra_mc{activation_id+1}"] = (
-                ("spectral", f"component_mc{activation_id+1}"),
-                reshaped_data,
-            )
-        if cleanup:
-            # Remove the original variable after adjustment
-            ds = ds.drop_vars("kinetic_associated_estimation")
-    if "species_associated_estimation" in ds:
-        ds["species_associated_spectra"] = ds["species_associated_estimation"]
-        if cleanup:
-            ds = ds.drop_vars("species_associated_estimation")
-    if "damped_oscillation_associated_estimation" in ds:
-        ds["damped_oscillation_associated_spectra"] = ds[
-            "damped_oscillation_associated_estimation"
-        ]
-        if cleanup:
-            ds = ds.drop_vars("damped_oscillation_associated_estimation")
+    # Check for kinetic associated estimation variables
+    for var in ds.data_vars:
+        if "kinetic_associated_estimation" in var or "kinetic_associated_amplitude" in var:
+            # Extract the data
+            data = ds[var].to_numpy()
+            # Reshape the data to match the desired shape
+            for activation_id in range(data.shape[0]):
+                reshaped_data = data[activation_id, :, :]
+                # Update the dataset with the reshaped data
+                ds[f"decay_associated_spectra_mc{activation_id+1}"] = (
+                    ("spectral", f"component_mc{activation_id+1}"),
+                    reshaped_data,
+                )
+            if cleanup:
+                # Remove the original variable after adjustment
+                ds = ds.drop_vars(var)
+
+    # Check for species associated estimation variables
+    for var in ds.data_vars:
+        if "species_associated_estimation" in var or "species_associated_amplitude" in var:
+            full_var_name = var  # Capture the full variable name
+            ds["species_associated_spectra"] = ds[full_var_name]
+            if cleanup:
+                ds = ds.drop_vars(full_var_name)
+
+    # Check for damped oscillation associated estimation variables
+    for var in ds.data_vars:
+        if "damped_oscillation_associated_estimation" in var or "damped_oscillation_associated_amplitude" in var:
+            full_var_name = var  # Capture the full variable name
+            ds["damped_oscillation_associated_spectra"] = ds[full_var_name]
+            if cleanup:
+                ds = ds.drop_vars(full_var_name)
 
 
 def _adjust_activation_to_irf(ds: xr.Dataset, *, cleanup: bool = False) -> None:
@@ -128,6 +145,7 @@ def convert_dataset(dataset: xr.Dataset, cleanup: bool = False) -> xr.Dataset:
 
     _adjust_activation_to_irf(converted_ds, cleanup=cleanup)
     _adjust_estimations_to_spectra(converted_ds, cleanup=cleanup)
+    _adjust_concentrations(converted_ds, cleanup=cleanup)
 
     if (
         "weighted_root_mean_square_error" not in converted_ds.attrs
