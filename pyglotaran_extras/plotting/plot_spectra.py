@@ -82,8 +82,9 @@ def plot_sas(
     ]
     for key in reversed(keys):
         sas = res[key]
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
-            sas.sel(species=species).plot.line(x="spectral", ax=ax, zorder=zorder)
+        species_coord = next(coord for coord in sas.coords if coord.startswith("species"))
+        for zorder, comp in zip(range(100)[::-1], sas.coords[species_coord], strict=False):
+            sas.sel({f"{species_coord}": comp}).plot.line(x="spectral", ax=ax, zorder=zorder)
         ax.set_title(title)
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
@@ -118,8 +119,9 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
-            (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
+        species_coord = next(coord for coord in sas.coords if coord.startswith("species"))
+        for zorder, comp in zip(range(100)[::-1], sas.coords[species_coord], strict=False):
+            (sas / np.abs(sas).max(dim="spectral")).sel({f"{species_coord}": comp}).plot.line(
                 x="spectral", ax=ax, zorder=zorder
             )
         ax.set_title(title)
