@@ -8,8 +8,6 @@ from glotaran.project.result import Result
 from pyglotaran_extras.compat.compat_result import CompatResult
 
 
-import xarray as xr
-
 def _adjust_concentrations(ds: xr.Dataset, *, cleanup: bool = False) -> None:
     """Adjust the concentrations to spectra names."""
     # Check for species associated concentration variables
@@ -19,6 +17,7 @@ def _adjust_concentrations(ds: xr.Dataset, *, cleanup: bool = False) -> None:
             ds["species_concentration"] = ds[full_var_name]
             if cleanup:
                 ds = ds.drop_vars(full_var_name)
+
 
 def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> None:
     """Adjust the estimations to spectra names and flatten data."""
@@ -49,7 +48,10 @@ def _adjust_estimations_to_spectra(ds: xr.Dataset, *, cleanup: bool = False) -> 
 
     # Check for damped oscillation associated estimation variables
     for var in ds.data_vars:
-        if "damped_oscillation_associated_estimation" in var or "damped_oscillation_associated_amplitude" in var:
+        if (
+            "damped_oscillation_associated_estimation" in var
+            or "damped_oscillation_associated_amplitude" in var
+        ):
             full_var_name = var  # Capture the full variable name
             ds["damped_oscillation_associated_spectra"] = ds[full_var_name]
             if cleanup:

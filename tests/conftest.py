@@ -15,14 +15,12 @@ import numpy  # noqa: F401
 import netCDF4  # noqa: F401
 # isort: on
 
-from dataclasses import replace
-
 import matplotlib.pyplot as plt
 import pytest
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
 from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
-from ruamel.yaml import YAML
 from glotaran.testing.simulated_data.shared_decay import PARAMETERS
+from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.config import CONFIG_FILE_STEM
 from pyglotaran_extras.config.config import Config
