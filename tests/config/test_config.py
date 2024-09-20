@@ -11,6 +11,8 @@ from typing import Any
 
 import pytest
 from jsonschema import Draft202012Validator
+from packaging.version import Version
+from pydantic import __version__ as pydantic_version
 from ruamel.yaml import YAML
 
 from pyglotaran_extras import create_config_schema
@@ -563,6 +565,8 @@ def test_create_config_schema(tmp_path: Path, test_config_values: dict[str, Any]
     json_schema = json.loads(create_config_schema(tmp_path).read_text())
     expected_schema = json.loads(
         (TEST_DATA / f"config/{CONFIG_FILE_STEM}.schema.json").read_text()
+        if Version(pydantic_version) >= Version("2.9")
+        else (TEST_DATA / f"config/{CONFIG_FILE_STEM}.schema.pydantic_lt_2_9.json").read_text()
     )
 
     assert json_schema == expected_schema
@@ -585,7 +589,13 @@ def test_create_config_schema_errors(tmp_path: Path):
         pass
 
     json_schema = json.loads(create_config_schema(tmp_path).read_text())
-    expected_schema = json.loads((TEST_DATA / "config/broken_config.schema.json").read_text())
+    expected_schema = (
+        json.loads((TEST_DATA / "config/broken_config.schema.json").read_text())
+        if Version(pydantic_version) >= Version("2.9")
+        else json.loads(
+            (TEST_DATA / "config/broken_config.schema.pydantic_lt_2_9.json").read_text()
+        )
+    )
 
     assert json_schema == expected_schema
 
