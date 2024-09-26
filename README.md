@@ -4,7 +4,6 @@
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/pyglotaran-extras.svg)](https://anaconda.org/conda-forge/pyglotaran-extras)
 [![Tests](https://github.com/glotaran/pyglotaran-extras/actions/workflows/test.yml/badge.svg)](https://github.com/glotaran/pyglotaran-extras/actions/workflows/test.yml)
 [![Documentation Status](https://readthedocs.org/projects/pyglotaran-extras/badge/?version=latest)](https://pyglotaran-extras.readthedocs.io/en/latest/?badge=latest)
-[![Binder](https://static.mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/glotaran/pyglotaran-extras.git/main?urlpath=lab%2Ftree%2Fdocs%2Fsource%2Fnotebooks)
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![codecov](https://codecov.io/gh/glotaran/pyglotaran-extras/branch/main/graph/badge.svg?token=I6F412Y390)](https://codecov.io/gh/glotaran/pyglotaran-extras)
