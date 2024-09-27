@@ -10,6 +10,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 import pytest
+import xarray as xr
 from jsonschema import ValidationError as SchemaValidationError
 from jsonschema import validate
 from pydantic import ValidationError as PydanticValidationError
@@ -466,7 +467,10 @@ def test_find_not_user_provided_kwargs():
 def test_find_axes():
     """Get axes value from iterable of values."""
 
-    base_values = ["foo", True, 1.5]
+    data_array = xr.DataArray([[0, 1]], coords={"time": [0], "spectral": [500, 510]})
+    data_set = xr.Dataset({"data": data_array})
+
+    base_values = ["foo", True, 1.5, data_array, data_set]
 
     assert generator_is_exhausted(find_axes(base_values)) is True
 
