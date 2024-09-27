@@ -20,6 +20,7 @@ from typing import TypedDict
 from typing import cast
 
 import numpy as np
+import xarray as xr
 from docstring_parser import parse as parse_docstring
 from matplotlib.axes import Axes
 from pydantic import BaseModel
@@ -479,7 +480,9 @@ def find_axes(
     Axes
     """
     for value in values:
-        if isinstance(value, str):
+        # This are iterables where we are sure that they can not contain `Axes` so we can skip them
+        # early
+        if isinstance(value, str | xr.Dataset | xr.DataArray):
             continue
         elif isinstance(value, Axes):
             yield value
