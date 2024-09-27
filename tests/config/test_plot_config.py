@@ -475,10 +475,10 @@ def test_find_axes():
     assert generator_is_exhausted(find_axes(base_values)) is True
 
     _, ax = plt.subplots()
-    single_ax_gen = find_axes([*base_values, ax])
+    dict_ax_gen = find_axes([*base_values, ax])
 
-    assert next(single_ax_gen) is ax
-    assert generator_is_exhausted(single_ax_gen) is True
+    assert next(dict_ax_gen) is ax
+    assert generator_is_exhausted(dict_ax_gen) is True
 
     _, np_axes = plt.subplots(1, 2)
 
@@ -503,6 +503,11 @@ def test_find_axes():
     assert next(multiple_axes_gen) is ax
     assert next(multiple_axes_gen) is ax1
     assert generator_is_exhausted(multiple_axes_gen) is True
+
+    dict_ax_gen = find_axes([*base_values, {"ax": ax}])
+
+    assert next(dict_ax_gen) is ax
+    assert generator_is_exhausted(dict_ax_gen) is True
 
 
 def test_use_plot_config(mock_config: tuple[Config, dict[str, Any]]):

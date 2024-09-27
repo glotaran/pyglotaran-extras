@@ -488,6 +488,8 @@ def find_axes(
             yield value
         elif isinstance(value, np.ndarray):
             yield from find_axes(value.flatten())
+        elif isinstance(value, Mapping):
+            yield from find_axes(value.values())
         elif isinstance(value, Iterable):
             yield from find_axes(value)
 
