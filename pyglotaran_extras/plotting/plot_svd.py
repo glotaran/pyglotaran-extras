@@ -18,16 +18,16 @@ from pyglotaran_extras.types import UnsetType
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
+    import numpy as np
     import xarray as xr
     from cycler import Cycler
-    from matplotlib.axis import Axis
-    from matplotlib.pyplot import Axes
+    from matplotlib.axes import Axes
 
 
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_svd(
     res: xr.Dataset,
-    axes: Axes,
+    axes: np.ndarray[(2, 3), Axes],
     linlog: bool = False,
     linthresh: float = 1,
     cycler: Cycler | None = PlotStyle().cycler,
@@ -44,7 +44,7 @@ def plot_svd(
     ----------
     res : xr.Dataset
         Result dataset
-    axes : Axes
+    axes : np.ndarray[(2, 3), Axes]
         Axes to plot the SVDs on (needs to be at least 2x3).
     linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
@@ -120,7 +120,7 @@ def plot_svd(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_lsv_data(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     indices: Sequence[int] = tuple(range(4)),
     linlog: bool = False,
     linthresh: float = 1,
@@ -135,8 +135,8 @@ def plot_lsv_data(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(4)).
     linlog : bool
@@ -175,7 +175,7 @@ def plot_lsv_data(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_rsv_data(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     indices: Sequence[int] = tuple(range(4)),
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
@@ -188,8 +188,8 @@ def plot_rsv_data(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(4)).
     cycler : Cycler | None
@@ -220,7 +220,7 @@ def plot_rsv_data(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_sv_data(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     indices: Sequence[int] = tuple(range(10)),
     cycler: Cycler | None | UnsetType = Unset,
     use_svd_number: bool = False,
@@ -231,8 +231,8 @@ def plot_sv_data(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(10)).
     cycler : Cycler | None | UnsetType
@@ -244,7 +244,7 @@ def plot_sv_data(
     if cycler is not Unset:
         warn_deprecated(
             deprecated_qual_name_usage="'cycler' argument in 'plot_sv_data'",
-            new_qual_name_usage="matplotlib on the axis directly",
+            new_qual_name_usage="matplotlib on the Axes directly",
             to_be_removed_in_version="0.9.0",
         )
     dSV = res.data_singular_values  # noqa: N806
@@ -263,7 +263,7 @@ def plot_sv_data(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_lsv_residual(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     indices: Sequence[int] = tuple(range(2)),
     linlog: bool = False,
     linthresh: float = 1,
@@ -278,8 +278,8 @@ def plot_lsv_residual(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(4)).
     linlog : bool
@@ -323,7 +323,7 @@ def plot_lsv_residual(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_rsv_residual(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     indices: Sequence[int] = tuple(range(2)),
     cycler: Cycler | None = PlotStyle().cycler,
     show_legend: bool = True,
@@ -336,8 +336,8 @@ def plot_rsv_residual(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(4)).
     cycler : Cycler | None
@@ -372,7 +372,7 @@ def plot_rsv_residual(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_sv_residual(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     indices: Sequence[int] = tuple(range(10)),
     cycler: Cycler | None | UnsetType = Unset,
     use_svd_number: bool = False,
@@ -383,8 +383,8 @@ def plot_sv_residual(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(10)).
     cycler : Cycler | None | UnsetType
@@ -420,7 +420,7 @@ def _plot_svd_vectors(
     vector_data: xr.DataArray,
     indices: Sequence[int],
     sv_index_dim: str,
-    ax: Axis,
+    ax: Axes,
     show_legend: bool,
     irf_location: float | None,
     use_svd_number: bool = False,
@@ -435,8 +435,8 @@ def _plot_svd_vectors(
         Indices of the singular vector to plot.
     sv_index_dim : str
         Name of the singular value index dimension.
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     show_legend : bool
         Whether or not to show the legend.
     irf_location : float | None

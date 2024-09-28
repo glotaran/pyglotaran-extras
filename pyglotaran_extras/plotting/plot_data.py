@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from typing import cast
 
 import matplotlib.pyplot as plt
+import numpy as np
 from glotaran.io.prepare_dataset import add_svd_to_dataset
-from matplotlib.axis import Axis
+from matplotlib.axes import Axes
 
 from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.load_data import load_data
@@ -27,8 +27,8 @@ if TYPE_CHECKING:
     import xarray as xr
     from cycler import Cycler
     from glotaran.project.result import Result
+    from matplotlib.axes import Axes
     from matplotlib.figure import Figure
-    from matplotlib.pyplot import Axes
 
     from pyglotaran_extras.types import DatasetConvertible
 
@@ -48,7 +48,7 @@ def plot_data_overview(
     vmax: float | None = None,
     svd_cycler: Cycler | None = PlotStyle().cycler,
     use_svd_number: bool = False,
-) -> tuple[Figure, Axes] | tuple[Figure, Axis]:
+) -> tuple[Figure, np.ndarray[Axes]] | tuple[Figure, Axes]:
     """Plot data as filled contour plot and SVD components.
 
     Parameters
@@ -86,7 +86,7 @@ def plot_data_overview(
 
     Returns
     -------
-    tuple[Figure, Axes] | tuple[Figure, Axis]
+    tuple[Figure, np.ndarray[Axes]] | tuple[Figure, Axes]
         Figure and axes which can then be refined by the user.
     """
     dataset = load_data(dataset, _stacklevel=3)
@@ -103,11 +103,11 @@ def plot_data_overview(
         )
 
     fig = plt.figure(figsize=figsize)
-    data_ax = cast(Axis, plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig))
+    data_ax = plt.subplot2grid((4, 3), (0, 0), colspan=3, rowspan=3, fig=fig)
     fig.subplots_adjust(hspace=0.5, wspace=0.25)
-    lsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 0), fig=fig))
-    sv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 1), fig=fig))
-    rsv_ax = cast(Axis, plt.subplot2grid((4, 3), (3, 2), fig=fig))
+    lsv_ax = plt.subplot2grid((4, 3), (3, 0), fig=fig)
+    sv_ax = plt.subplot2grid((4, 3), (3, 1), fig=fig)
+    rsv_ax = plt.subplot2grid((4, 3), (3, 2), fig=fig)
 
     if len(data.time) > 1:
         data.plot(x="time", ax=data_ax, center=False, cmap=cmap, vmin=vmin, vmax=vmax)
@@ -146,7 +146,7 @@ def plot_data_overview(
     if linlog:
         data_ax.set_xscale("symlog", linthresh=linthresh)
         data_ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
-    return fig, (data_ax, lsv_ax, sv_ax, rsv_ax)
+    return fig, np.array((data_ax, lsv_ax, sv_ax, rsv_ax))
 
 
 def _plot_single_trace(
@@ -157,7 +157,7 @@ def _plot_single_trace(
     linlog: bool = False,
     linthresh: float = 1,
     figsize: tuple[float, float] = (15, 10),
-) -> tuple[Figure, Axis]:
+) -> tuple[Figure, Axes]:
     """Plot single trace data in case ``plot_data_overview`` gets passed ingle trace data.
 
     Parameters
@@ -178,7 +178,7 @@ def _plot_single_trace(
 
     Returns
     -------
-    tuple[Figure, Axis]
+    tuple[Figure, Axes]
         Figure and axis which can then be refined by the user.
     """
     fig, ax = plt.subplots(1, 1, figsize=figsize)

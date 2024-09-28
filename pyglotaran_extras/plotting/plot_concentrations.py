@@ -13,13 +13,13 @@ from pyglotaran_extras.plotting.utils import get_shifted_traces
 if TYPE_CHECKING:
     import xarray as xr
     from cycler import Cycler
-    from matplotlib.axis import Axis
+    from matplotlib.axes import Axes
 
 
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_concentrations(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     center_λ: float | None,
     linlog: bool = False,
     linthresh: float = 1,
@@ -34,8 +34,8 @@ def plot_concentrations(
     ----------
     res : xr.Dataset
         Result dataset from a pyglotaran optimization.
-    ax : Axis
-        Axis to plot the traces on
+    ax : Axes
+        Axes to plot the traces on
     center_λ : float | None
         Center wavelength (λ in nm)
     linlog : bool
