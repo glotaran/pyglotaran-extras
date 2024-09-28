@@ -9,10 +9,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Any
 
+from packaging.version import Version
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import PrivateAttr
 from pydantic import PydanticUserError
+from pydantic import __version__ as pydantic_version
 from pydantic import create_model
 from pydantic.fields import FieldInfo
 from ruamel.yaml import YAML
@@ -447,9 +449,11 @@ def create_config_schema(
             general_kwargs |= func_json_schema["$defs"][kwargs_model_name]["properties"]
             json_schema["$defs"] |= func_json_schema.pop("$defs")
             json_schema["$defs"][config_model_name] = func_json_schema
-            json_schema["$defs"]["PlotConfig"]["properties"][function_name] = {
-                "allOf": [{"$ref": f"#/$defs/{config_model_name}"}]
-            }
+            json_schema["$defs"]["PlotConfig"]["properties"][function_name] = (
+                {"$ref": f"#/$defs/{config_model_name}"}
+                if Version(pydantic_version) >= Version("2.9")
+                else {"allOf": [{"$ref": f"#/$defs/{config_model_name}"}]}  # type:ignore[dict-item]
+            )
         except PydanticUserError as error:
             raise UsePlotConfigError(function_name, error)  # noqa: B904
     json_schema["$defs"]["PerFunctionPlotConfig"]["properties"]["default_args_override"][

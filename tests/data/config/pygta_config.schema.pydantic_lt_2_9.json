@@ -9,9 +9,17 @@
           "title": "Default Args Override",
           "type": "object",
           "properties": {
+            "will_be_kept_arg": {
+              "default": "default keep",
+              "title": "Will Be Kept Arg"
+            },
             "will_update_arg": {
               "default": "default update",
               "title": "Will Update Arg"
+            },
+            "will_be_added_arg": {
+              "default": "default add",
+              "title": "Will Be Added Arg"
             }
           },
           "additionalProperties": false
@@ -39,11 +47,26 @@
       "description": "Config for plot functions including default args and label overrides.",
       "properties": {
         "general": {
-          "$ref": "#/$defs/PerFunctionPlotConfig",
+          "allOf": [
+            {
+              "$ref": "#/$defs/PerFunctionPlotConfig"
+            }
+          ],
           "description": "Config that gets applied to all functions if not specified otherwise."
         },
+        "other": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/OtherConfig"
+            }
+          ]
+        },
         "test_func": {
-          "$ref": "#/$defs/TestFuncConfig"
+          "allOf": [
+            {
+              "$ref": "#/$defs/TestFuncConfig"
+            }
+          ]
         }
       },
       "title": "PlotConfig",
@@ -83,6 +106,42 @@
       "title": "PlotLabelOverrideValue",
       "type": "object"
     },
+    "OtherKwargs": {
+      "additionalProperties": false,
+      "description": "Default arguments to use for ``other``, if not specified in function call.",
+      "properties": {
+        "will_be_kept_arg": {
+          "default": "default update",
+          "title": "Will Be Kept Arg"
+        }
+      },
+      "title": "OtherKwargs",
+      "type": "object"
+    },
+    "OtherConfig": {
+      "additionalProperties": false,
+      "description": "Plot function configuration specific to ``other`` (overrides values in general).",
+      "properties": {
+        "default_args_override": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/OtherKwargs"
+            }
+          ],
+          "default": {}
+        },
+        "axis_label_override": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/PlotLabelOverrideMap"
+            }
+          ],
+          "default": {}
+        }
+      },
+      "title": "OtherConfig",
+      "type": "object"
+    },
     "TestFuncKwargs": {
       "additionalProperties": false,
       "description": "Default arguments to use for ``test_func``, if not specified in function call.",
@@ -90,6 +149,14 @@
         "will_update_arg": {
           "default": "default update",
           "title": "Will Update Arg"
+        },
+        "will_be_kept_arg": {
+          "default": "default keep",
+          "title": "Will Be Kept Arg"
+        },
+        "will_be_added_arg": {
+          "default": "default add",
+          "title": "Will Be Added Arg"
         }
       },
       "title": "TestFuncKwargs",
@@ -100,11 +167,19 @@
       "description": "Plot function configuration specific to ``test_func`` (overrides values in general).",
       "properties": {
         "default_args_override": {
-          "$ref": "#/$defs/TestFuncKwargs",
+          "allOf": [
+            {
+              "$ref": "#/$defs/TestFuncKwargs"
+            }
+          ],
           "default": {}
         },
         "axis_label_override": {
-          "$ref": "#/$defs/PlotLabelOverrideMap",
+          "allOf": [
+            {
+              "$ref": "#/$defs/PlotLabelOverrideMap"
+            }
+          ],
           "default": {}
         }
       },
@@ -116,7 +191,11 @@
   "description": "Main configuration class.",
   "properties": {
     "plotting": {
-      "$ref": "#/$defs/PlotConfig",
+      "allOf": [
+        {
+          "$ref": "#/$defs/PlotConfig"
+        }
+      ],
       "default": {
         "general": {}
       }
