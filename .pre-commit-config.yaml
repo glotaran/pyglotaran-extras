@@ -1,5 +1,5 @@
 ci:
-  skip: [flake8]
+  skip: [flake8, taplo-lint]
 
 repos:
   # Formatters
