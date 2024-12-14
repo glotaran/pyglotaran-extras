@@ -37,6 +37,7 @@ dependencies = [
   "docstring-parser>=0.16",
   "matplotlib>=3.3",
   "numpy>=1.22",
+  "packaging>=23.1",
   "pydantic>=2.7",
   "pyglotaran>=0.7",
   "ruamel-yaml>=0.18.6",

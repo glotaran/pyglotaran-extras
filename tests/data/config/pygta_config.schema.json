@@ -47,26 +47,14 @@
       "description": "Config for plot functions including default args and label overrides.",
       "properties": {
         "general": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/PerFunctionPlotConfig"
-            }
-          ],
+          "$ref": "#/$defs/PerFunctionPlotConfig",
           "description": "Config that gets applied to all functions if not specified otherwise."
         },
         "other": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/OtherConfig"
-            }
-          ]
+          "$ref": "#/$defs/OtherConfig"
         },
         "test_func": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/TestFuncConfig"
-            }
-          ]
+          "$ref": "#/$defs/TestFuncConfig"
         }
       },
       "title": "PlotConfig",
@@ -123,19 +111,11 @@
       "description": "Plot function configuration specific to ``other`` (overrides values in general).",
       "properties": {
         "default_args_override": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/OtherKwargs"
-            }
-          ],
+          "$ref": "#/$defs/OtherKwargs",
           "default": {}
         },
         "axis_label_override": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/PlotLabelOverrideMap"
-            }
-          ],
+          "$ref": "#/$defs/PlotLabelOverrideMap",
           "default": {}
         }
       },
@@ -167,19 +147,11 @@
       "description": "Plot function configuration specific to ``test_func`` (overrides values in general).",
       "properties": {
         "default_args_override": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/TestFuncKwargs"
-            }
-          ],
+          "$ref": "#/$defs/TestFuncKwargs",
           "default": {}
         },
         "axis_label_override": {
-          "allOf": [
-            {
-              "$ref": "#/$defs/PlotLabelOverrideMap"
-            }
-          ],
+          "$ref": "#/$defs/PlotLabelOverrideMap",
           "default": {}
         }
       },
@@ -191,11 +163,7 @@
   "description": "Main configuration class.",
   "properties": {
     "plotting": {
-      "allOf": [
-        {
-          "$ref": "#/$defs/PlotConfig"
-        }
-      ],
+      "$ref": "#/$defs/PlotConfig",
       "default": {
         "general": {}
       }
