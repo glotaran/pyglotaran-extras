@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from typing import Any
 from warnings import warn
 
 import matplotlib.pyplot as plt
 
 from pyglotaran_extras.config.plot_config import use_plot_config
+from pyglotaran_extras.deprecation import warn_deprecated
 from pyglotaran_extras.io.utils import result_dataset_mapping
 from pyglotaran_extras.plotting.style import PlotStyle
 from pyglotaran_extras.plotting.utils import MinorSymLogLocator
@@ -18,25 +20,27 @@ from pyglotaran_extras.plotting.utils import extract_dataset_scale
 from pyglotaran_extras.plotting.utils import extract_irf_location
 from pyglotaran_extras.plotting.utils import get_next_cycler_color
 from pyglotaran_extras.plotting.utils import select_plot_wavelengths
+from pyglotaran_extras.types import Unset
+from pyglotaran_extras.types import UnsetType
 
-__all__ = ["select_plot_wavelengths", "plot_fitted_traces"]
+__all__ = ["plot_fitted_traces", "select_plot_wavelengths"]
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    import numpy as np
     from cycler import Cycler
-    from matplotlib.axis import Axis
+    from matplotlib.axes import Axes
     from matplotlib.figure import Figure
-    from matplotlib.pyplot import Axes
 
     from pyglotaran_extras.types import ResultLike
 
 
-@use_plot_config(exclude_from_config=("cycler",))
+@use_plot_config(exclude_from_config=("cycler", "ax", "axis"))
 def plot_data_and_fits(
     result: ResultLike,
     wavelength: float,
-    axis: Axis,
+    ax: Axes | UnsetType = Unset,
     center_λ: float | None = None,
     main_irf_nr: int = 0,
     linlog: bool = False,
@@ -46,8 +50,9 @@ def plot_data_and_fits(
     y_label: str = "a.u.",
     cycler: Cycler | None = PlotStyle().data_cycler_solid,
     show_zero_line: bool = True,
+    axis: UnsetType = Unset,
 ) -> None:
-    """Plot data and fits for a given ``wavelength`` on a given ``axis``.
+    """Plot data and fits for a given ``wavelength`` on a given ``ax``.
 
     If the wavelength isn't part of a dataset, that dataset will be skipped.
 
@@ -57,8 +62,8 @@ def plot_data_and_fits(
         Data structure which can be converted to a mapping.
     wavelength : float
         Wavelength to plot data and fits for.
-    axis : Axis
-        Axis to plot the data and fits on.
+    ax : Axes | UnsetType
+        Axes to plot the data and fits on. Defaults to Unset.
     center_λ : float | None
         Center wavelength (λ in nm)
     main_irf_nr : int
@@ -80,13 +85,31 @@ def plot_data_and_fits(
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
+    axis : UnsetType
+        Deprecated use ``ax`` instead. Defaults to Unset.
 
     See Also
     --------
     plot_fit_overview
+
+    Raises
+    ------
+    ValueError
+        If ``ax`` was not provided, ``ax`` should be a required argument but to facilitate the
+        deprecation ``axis`` -> ``ax`` it has a default of ``Unset``.
     """
+    if isinstance(ax, UnsetType) and not isinstance(axis, UnsetType):
+        warn_deprecated(
+            deprecated_qual_name_usage="axis",
+            new_qual_name_usage="ax",
+            to_be_removed_in_version="0.9.0",
+        )
+        ax = axis
+    if isinstance(ax, UnsetType):
+        msg = "Required argument ``ax`` wasn't set."
+        raise ValueError(msg)
     result_map = result_dataset_mapping(result)
-    add_cycler_if_not_none(axis, cycler)
+    add_cycler_if_not_none(ax, cycler)
     for dataset_name in result_map:
         if result_map[dataset_name].coords["time"].to_numpy().size == 1:
             continue
@@ -96,18 +119,18 @@ def plot_data_and_fits(
             scale = extract_dataset_scale(result_data, divide_by_scale)
             irf_loc = extract_irf_location(result_data, center_λ, main_irf_nr)
             result_data = result_data.assign_coords(time=result_data.coords["time"] - irf_loc)
-            (result_data.data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_data")
-            (result_data.fitted_data / scale).plot(x="time", ax=axis, label=f"{dataset_name}_fit")
+            (result_data.data / scale).plot(x="time", ax=ax, label=f"{dataset_name}_data")
+            (result_data.fitted_data / scale).plot(x="time", ax=ax, label=f"{dataset_name}_fit")
         else:
-            [get_next_cycler_color(axis) for _ in range(2)]
+            [get_next_cycler_color(ax) for _ in range(2)]
     if linlog:
-        axis.set_xscale("symlog", linthresh=linthresh)
-        axis.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
+        ax.set_xscale("symlog", linthresh=linthresh)
+        ax.xaxis.set_minor_locator(MinorSymLogLocator(linthresh))
     if show_zero_line is True:
-        axis.axhline(0, color="k", linewidth=1)
-    axis.set_ylabel(y_label)
+        ax.axhline(0, color="k", linewidth=1)
+    ax.set_ylabel(y_label)
     if per_axis_legend is True:
-        axis.legend()
+        ax.legend()
 
 
 @use_plot_config(exclude_from_config=("cycler",))
@@ -126,7 +149,7 @@ def plot_fitted_traces(
     y_label: str = "a.u.",
     cycler: Cycler | None = PlotStyle().data_cycler_solid,
     show_zero_line: bool = True,
-) -> tuple[Figure, Axes]:
+) -> tuple[Figure, np.ndarray[Any, Axes]]:
     """Plot data and their fit in per wavelength plot grid.
 
     Parameters
@@ -167,7 +190,7 @@ def plot_fitted_traces(
 
     Returns
     -------
-    tuple[Figure, Axes]
+    tuple[Figure, np.ndarray[Any, Axes]]
         Figure and axes which can then be refined by the user.
 
     See Also
@@ -192,11 +215,11 @@ def plot_fitted_traces(
             ),
             stacklevel=2,
         )
-    for wavelength, axis in zip(wavelengths, axes.flatten(), strict=True):
+    for wavelength, ax in zip(wavelengths, axes.flatten(), strict=True):
         plot_data_and_fits(
             result=result_map,
             wavelength=wavelength,
-            axis=axis,
+            ax=ax,
             center_λ=center_λ,
             main_irf_nr=main_irf_nr,
             linlog=linlog,

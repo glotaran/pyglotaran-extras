@@ -14,8 +14,7 @@ from pyglotaran_extras.types import Unset
 if TYPE_CHECKING:
     import xarray as xr
     from cycler import Cycler
-    from matplotlib.axis import Axis
-    from matplotlib.pyplot import Axes
+    from matplotlib.axes import Axes
 
     from pyglotaran_extras.types import UnsetType
 
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 @use_plot_config(exclude_from_config=("cycler", "das_cycler"))
 def plot_spectra(
     res: xr.Dataset,
-    axes: Axes,
+    axes: np.ndarray[(2, 2), Axes],
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
     das_cycler: Cycler | None | UnsetType = Unset,
@@ -34,7 +33,7 @@ def plot_spectra(
     ----------
     res : xr.Dataset
         Result dataset
-    axes : Axes
+    axes : np.ndarray[(2, 2), Axes]
         Axes to plot the spectra on (needs to be at least 2x2).
     cycler : Cycler | None
         Plot style cycler to use. Defaults to PlotStyle().cycler.
@@ -56,7 +55,7 @@ def plot_spectra(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_sas(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     title: str = "SAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
@@ -67,8 +66,8 @@ def plot_sas(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     title : str
         Title of the plot. Defaults to "SAS".
     cycler : Cycler | None
@@ -92,7 +91,7 @@ def plot_sas(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_norm_sas(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     title: str = "norm SAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
@@ -103,8 +102,8 @@ def plot_norm_sas(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     title : str
         Title of the plot. Defaults to "norm SAS".
     cycler : Cycler | None
@@ -130,7 +129,7 @@ def plot_norm_sas(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_das(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     title: str = "DAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
@@ -141,8 +140,8 @@ def plot_das(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     title : str
         Title of the plot. Defaults to "DAS".
     cycler : Cycler | None
@@ -166,7 +165,7 @@ def plot_das(
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_norm_das(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     title: str = "norm DAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
@@ -177,8 +176,8 @@ def plot_norm_das(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     title : str
         Title of the plot. Defaults to "norm DAS".
     cycler : Cycler | None

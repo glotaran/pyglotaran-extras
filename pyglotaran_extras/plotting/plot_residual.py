@@ -16,13 +16,13 @@ from pyglotaran_extras.plotting.utils import shift_time_axis_by_irf_location
 if TYPE_CHECKING:
     import xarray as xr
     from cycler import Cycler
-    from matplotlib.axis import Axis
+    from matplotlib.axes import Axes
 
 
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_residual(
     res: xr.Dataset,
-    ax: Axis,
+    ax: Axes,
     linlog: bool = False,
     linthresh: float = 1,
     show_data: bool | None = False,
@@ -36,8 +36,8 @@ def plot_residual(
     ----------
     res : xr.Dataset
         Result dataset
-    ax : Axis
-        Axis to plot on.
+    ax : Axes
+        Axes to plot on.
     linlog : bool
         Whether to use 'symlog' scale or not. Defaults to False.
     linthresh : float
