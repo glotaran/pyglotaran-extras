@@ -115,7 +115,7 @@ jobs:
 
       - name: Codecov Upload
         continue-on-error: true
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           name: ${{ matrix.os }}-py${{ matrix.python-version }}
@@ -151,7 +151,7 @@ jobs:
 
       - name: Codecov Upload
         continue-on-error: true
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           name: test-pyglotaran-dev
@@ -186,7 +186,7 @@ jobs:
 
       - name: Codecov Upload
         continue-on-error: true
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml
           name: test-min-versions
