@@ -171,3 +171,12 @@ _summary.ps
 
 # vscode config files
 .vscode
+
+# MacOs OS files
+.DS_store
+
+# Frontend dependencies
+node_modules/
+
+# Generated widget frontend files
+**/widgets/**/static
