@@ -7,6 +7,7 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![codecov](https://codecov.io/gh/glotaran/pyglotaran-extras/branch/main/graph/badge.svg?token=I6F412Y390)](https://codecov.io/gh/glotaran/pyglotaran-extras)
+[![interrogate](https://raw.githubusercontent.com/econchick/interrogate/acbfb5ad55046b3ac7549811b6d73ea8072e7568/tests/unit/fixtures/plastic/100.svg)](https://github.com/econchick/interrogate)
 [![Discord](https://img.shields.io/discord/883443835135475753.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/KfnEYRSTJx)
 
 Supplementary package for pyglotaran with (example) plotting code for use with the pyglotaran package.
