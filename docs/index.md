@@ -1,10 +1,11 @@
-# Welcome to pyglotaran_extras's documentation!
+```{include} ../README.md
+
+```
 
 ```{toctree}
 :caption: 'Contents:'
 :maxdepth: 2
 
-readme
 installation
 usage
 config/project/subproject/config_docs

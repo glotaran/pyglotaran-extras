@@ -40,7 +40,7 @@ extensions = [
     "myst_nb",
     'sphinxcontrib.mermaid',
     "sphinx_copybutton",
-    "sphinx_rtd_theme",
+    "pydata_sphinx_theme",
 ]
 
 myst_fence_as_directive = ["mermaid"]
@@ -97,9 +97,6 @@ language = "en"
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
-
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
@@ -109,9 +106,34 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+image_gh_raw_base = "https://raw.githubusercontent.com/glotaran/pyglotaran/eb8a1ea0e4e0e499c829766a3298e79ea4975f58/docs/source/images"
+html_theme = "pydata_sphinx_theme"
+html_logo =f"{image_gh_raw_base}/pyglotaran_logo_light_theme.svg"
+html_favicon = f"{image_gh_raw_base}/pyglotaran_favicon_transparent.svg"
 html_theme_options = {
-    "navigation_depth": 7,
+    "pygments_dark_style": "monokai",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/glotaran/pyglotaran-extras",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        }
+    ],
+    "logo": {
+        "text": "Pyglotaran-Extras",
+        "image_dark": f"{image_gh_raw_base}/pyglotaran_logo_dark_theme.svg",
+    },
+
+}
+# Hide empty sidebars
+# Ref.: https://github.com/pydata/pydata-sphinx-theme/issues/1662#issuecomment-1913672649
+html_sidebars = {
+    'installation': [],
+    'usage': [],
+    'contributing': [],
+    'changelog': [],
+    'config/project/subproject/config_docs': [],
 }
 
 # Theme options are theme-specific and customize the look and feel of a
