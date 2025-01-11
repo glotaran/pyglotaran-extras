@@ -7,7 +7,7 @@ on:
     branches-ignore:
       - "dependabot/**"
       - "sourcery/**"
-      - "pre-commit-ci-update-config"
+      - "create-pr-action/pre-commit-config-update*"
   pull_request:
 
 jobs:
