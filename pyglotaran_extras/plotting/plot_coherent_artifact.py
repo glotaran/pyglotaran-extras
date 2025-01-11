@@ -134,7 +134,7 @@ def plot_coherent_artifact(
     #
     if dataset.coords["coherent_artifact_order"][0] == 1:
         axes[0].legend(
-            [f"{int(ax_label)-1}" for ax_label in dataset.coords["coherent_artifact_order"]],
+            [f"{int(ax_label) - 1}" for ax_label in dataset.coords["coherent_artifact_order"]],
             title="coherent_artifact_order",
         )
     if title:

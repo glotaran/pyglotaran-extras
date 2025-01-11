@@ -47,7 +47,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.8.3
+    rev: v0.9.1
     hooks:
       - id: ruff
         name: "ruff sort imports notebooks"
@@ -73,7 +73,7 @@ repos:
   # Linters
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+    rev: v1.14.1
     hooks:
       - id: mypy
         exclude: ^docs
@@ -89,7 +89,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.8.3
+    rev: v0.9.1
     hooks:
       - id: ruff
         name: "ruff sort imports"
@@ -128,7 +128,7 @@ repos:
         args: ["--ignore-words-list=doas"]
 
   - repo: https://github.com/rhysd/actionlint
-    rev: "v1.7.4"
+    rev: "v1.7.6"
     hooks:
       - id: actionlint
 

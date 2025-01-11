@@ -35,7 +35,7 @@ def wrap_in_details_tag(
     -------
     str
     """
-    out_str = f'\n<details {"open" if is_open else ""}>\n'
+    out_str = f"\n<details {'open' if is_open else ''}>\n"
     if summary_content is not None:
         out_str += "<summary>\n"
         if summary_heading_level is None:

@@ -446,9 +446,9 @@ def test_load_config_on_import_no_local_config(tmp_path: Path, import_load_scrip
     assert (tmp_path / "plotting.json").is_file() is True
 
     source_files = json.loads((tmp_path / "source_files.json").read_text())
-    assert (
-        any(tmp_path in Path(source_file).parents for source_file in source_files) is False
-    ), f"{tmp_path=}, {source_files=}"
+    assert any(tmp_path in Path(source_file).parents for source_file in source_files) is False, (
+        f"{tmp_path=}, {source_files=}"
+    )
 
 
 def check_config(tmp_path: Path, plot_config_path: Path):
@@ -461,9 +461,9 @@ def check_config(tmp_path: Path, plot_config_path: Path):
     assert (tmp_path / "plotting.json").is_file() is True
 
     source_files = json.loads((tmp_path / "source_files.json").read_text())
-    assert (
-        any(plot_config_path == Path(source_file) for source_file in source_files) is True
-    ), f"{tmp_path=}, {source_files=}"
+    assert any(plot_config_path == Path(source_file) for source_file in source_files) is True, (
+        f"{tmp_path=}, {source_files=}"
+    )
 
     plotting_dict = json.loads((tmp_path / "plotting.json").read_text())
 

@@ -57,7 +57,7 @@ def a_matrix_to_html_table(
     header = (
         ["species<br>initial concentration<br>lifetime↓"]
         + [
-            f"{sp}<br>{pretty_format_numerical(ic,decimal_places)}<br>&nbsp;"
+            f"{sp}<br>{pretty_format_numerical(ic, decimal_places)}<br>&nbsp;"
             for sp, ic in zip(species, initial_concentration, strict=True)
         ]
         + ["Sum"]
