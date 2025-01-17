@@ -59,7 +59,6 @@ def plot_sas(
     title: str = "SAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
-    selected_species: list[str] | None = None,
     scale_factors: dict[str, float] | None = None,
 ) -> None:
     """Plot SAS (Species Associated Spectra) on ``ax``.
@@ -76,8 +75,6 @@ def plot_sas(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
-    selected_species : list[str] | None
-        List of species to plot. If None, plot all species. Defaults to None.
     scale_factors : dict[str, float] | None
         Dictionary of species to scale and their corresponding factors. Defaults to None.
     """
@@ -87,10 +84,7 @@ def plot_sas(
     ]
     for key in reversed(keys):
         sas = res[key]
-        species_to_plot = (
-            selected_species if selected_species is not None else sas.coords["species"]
-        )
-        for zorder, species in zip(range(100)[::-1], species_to_plot, strict=False):
+        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
             data = sas.sel(species=species)
             if scale_factors and species in scale_factors:
                 data = data * scale_factors[species]
@@ -107,7 +101,6 @@ def plot_norm_sas(
     title: str = "norm SAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
-    selected_species: list[str] | None = None,
 ) -> None:
     """Plot normalized SAS (Species Associated Spectra) on ``ax``.
 
@@ -123,8 +116,6 @@ def plot_norm_sas(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
-    selected_species : list[str] | None
-        List of species to plot. If None, plot all species. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
     keys = [
@@ -132,12 +123,10 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        species_to_plot = (
-            selected_species if selected_species is not None else sas.coords["species"]
-        )
-        for zorder, species in zip(range(100)[::-1], species_to_plot, strict=False):
-            data = sas.sel(species=species)
-            (data / np.abs(data).max(dim="spectral")).plot.line(x="spectral", ax=ax, zorder=zorder)
+        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
+            (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
+                x="spectral", ax=ax, zorder=zorder
+            )
         ax.set_title(title)
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)

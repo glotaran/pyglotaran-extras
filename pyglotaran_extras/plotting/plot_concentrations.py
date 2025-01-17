@@ -27,7 +27,6 @@ def plot_concentrations(
     main_irf_nr: int = 0,
     cycler: Cycler | None = PlotStyle().cycler,
     title: str = "Concentrations",
-    selected_species: list[str] | None = None,
 ) -> None:
     """Plot traces on the given axis ``ax``.
 
@@ -58,8 +57,6 @@ def plot_concentrations(
         Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
     title : str
         Title used for the plot axis. Defaults to "Concentrations".
-    selected_species : list[str] | None
-        List of species to plot. If None, plot all species. Defaults to None.
 
     See Also
     --------
@@ -67,9 +64,6 @@ def plot_concentrations(
     """
     add_cycler_if_not_none(ax, cycler)
     traces = get_shifted_traces(res, center_λ, main_irf_nr)
-
-    if selected_species is not None:
-        traces = traces.sel(species=selected_species)
 
     if "spectral" in traces.coords:
         traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
