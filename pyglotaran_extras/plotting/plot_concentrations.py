@@ -28,7 +28,6 @@ def plot_concentrations(
     cycler: Cycler | None = PlotStyle().cycler,
     title: str = "Concentrations",
     selected_species: list[str] | None = None,
-    linetype: str = '-'
 ) -> None:
     """Plot traces on the given axis ``ax``.
 
@@ -61,8 +60,6 @@ def plot_concentrations(
         Title used for the plot axis. Defaults to "Concentrations".
     selected_species : list[str] | None
         List of species to plot. If None, plot all species. Defaults to None.
-    linetype : str, optional
-        Line type for the plot. Defaults to '-'.
 
     See Also
     --------
@@ -75,9 +72,9 @@ def plot_concentrations(
         traces = traces.sel(species=selected_species)
 
     if "spectral" in traces.coords:
-        traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax, linestyle=linetype)
+        traces.sel(spectral=center_λ, method="nearest").plot.line(x="time", ax=ax)
     else:
-        traces.plot.line(x="time", ax=ax, linestyle=linetype)
+        traces.plot.line(x="time", ax=ax)
     ax.set_title(title)
 
     if linlog:
