@@ -104,7 +104,6 @@ class DataColorCode(str, Enum):
     indigo = "#4b0082"
     brown = "#964b00"
     maroon = "#800000"
-    # 20241231 added 2 pairs to allow plotting 9 different data sets
     olive = "#808000"
     olive4 = "#556b2f"
     turquoise = "#40e0d0"
