@@ -54,7 +54,7 @@ def plot_concentrations(
         Index of the main ``irf`` component when using an ``irf``
         parametrized with multiple peaks. Defaults to 0.
     cycler : Cycler | None
-        Plot style cycler to use. Defaults to PlotStyle().data_cycler_solid.
+        Plot style cycler to use. Defaults to PlotStyle().cycler.
     title : str
         Title used for the plot axis. Defaults to "Concentrations".
 
