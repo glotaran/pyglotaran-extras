@@ -53,44 +53,6 @@ def plot_spectra(
 
 
 @use_plot_config(exclude_from_config=("cycler",))
-# def plot_sas(
-#     res: xr.Dataset,
-#     ax: Axis,
-#     title: str = "SAS",
-#     cycler: Cycler | None = PlotStyle().cycler,
-#     show_zero_line: bool = True,
-#     selected_species: list[str] | None = None,
-# ) -> None:
-#     """Plot SAS (Species Associated Spectra) on ``ax``.
-
-#     Parameters
-#     ----------
-#     res : xr.Dataset
-#         Result dataset
-#     ax : Axis
-#         Axis to plot on.
-#     title : str
-#         Title of the plot. Defaults to "SAS".
-#     cycler : Cycler | None
-#         Plot style cycler to use. Defaults to PlotStyle().cycler.
-#     show_zero_line : bool
-#         Whether or not to add a horizontal line at zero. Defaults to True.
-#     selected_species : list[str] | None
-#         List of species to plot. If None, plot all species. Defaults to None.
-#     """
-#     add_cycler_if_not_none(ax, cycler)
-#     keys = [
-#         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
-#     ]
-#     for key in reversed(keys):
-#         sas = res[key]
-#         species_to_plot = selected_species if selected_species is not None else sas.coords["species"]
-#     for zorder, species in zip(range(100)[::-1], species_to_plot, strict=False):
-#             sas.sel(species=species).plot.line(x="spectral", ax=ax, zorder=zorder)
-#     ax.set_title(title)
-#     if show_zero_line is True:
-#         ax.axhline(0, color="k", linewidth=1)
-
 def plot_sas(
     res: xr.Dataset,
     ax: Axes,
@@ -118,8 +80,6 @@ def plot_sas(
         List of species to plot. If None, plot all species. Defaults to None.
     scale_factors : dict[str, float] | None
         Dictionary of species to scale and their corresponding factors. Defaults to None.
-    NB The current implementation of the plot_sas function does only apply scale factors when 
-    selected_species is not None. This is because the check for scale_factors is nested within the if selected_species is not None condition.
     """
     add_cycler_if_not_none(ax, cycler)
     keys = [
@@ -127,7 +87,9 @@ def plot_sas(
     ]
     for key in reversed(keys):
         sas = res[key]
-        species_to_plot = selected_species if selected_species is not None else sas.coords["species"]
+        species_to_plot = (
+            selected_species if selected_species is not None else sas.coords["species"]
+        )
         for zorder, species in zip(range(100)[::-1], species_to_plot, strict=False):
             data = sas.sel(species=species)
             if scale_factors and species in scale_factors:
@@ -136,6 +98,7 @@ def plot_sas(
     ax.set_title(title)
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
+
 
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_norm_sas(
@@ -169,14 +132,12 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        species_to_plot = selected_species if selected_species is not None else sas.coords["species"]
+        species_to_plot = (
+            selected_species if selected_species is not None else sas.coords["species"]
+        )
         for zorder, species in zip(range(100)[::-1], species_to_plot, strict=False):
             data = sas.sel(species=species)
-            (data/ np.abs(data).max(dim="spectral")).plot.line(x="spectral", ax=ax, zorder=zorder)
-        # for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
-        #     (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
-        #         x="spectral", ax=ax, zorder=zorder
-        #     )
+            (data / np.abs(data).max(dim="spectral")).plot.line(x="spectral", ax=ax, zorder=zorder)
         ax.set_title(title)
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
