@@ -24,6 +24,10 @@ HERE = Path(__file__).parent
 
 pyglotaran_extras.create_config_schema(HERE/"_static")
 
+# Workaround for error caused by pydata-sphinx-theme==0.16.1 during link check
+# TODO: Remove workaround when fix is available
+(HERE / "_build/linkcheck/_static").mkdir(parents=True, exist_ok=True)
+
 # -- General configuration ---------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
