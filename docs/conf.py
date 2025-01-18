@@ -24,6 +24,10 @@ HERE = Path(__file__).parent
 
 pyglotaran_extras.create_config_schema(HERE/"_static")
 
+# Workaround for error caused by pydata-sphinx-theme==0.16.1 during link check
+# TODO: Remove workaround when fix is available
+(HERE / "_build/linkcheck/_static").mkdir(parents=True, exist_ok=True)
+
 # -- General configuration ---------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -40,7 +44,7 @@ extensions = [
     "myst_nb",
     'sphinxcontrib.mermaid',
     "sphinx_copybutton",
-    "sphinx_rtd_theme",
+    "pydata_sphinx_theme",
 ]
 
 myst_fence_as_directive = ["mermaid"]
@@ -97,9 +101,6 @@ language = "en"
 # This patterns also effect to html_static_path and html_extra_path
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
-
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
@@ -109,9 +110,34 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+image_gh_raw_base = "https://raw.githubusercontent.com/glotaran/pyglotaran/eb8a1ea0e4e0e499c829766a3298e79ea4975f58/docs/source/images"
+html_theme = "pydata_sphinx_theme"
+html_logo =f"{image_gh_raw_base}/pyglotaran_logo_light_theme.svg"
+html_favicon = f"{image_gh_raw_base}/pyglotaran_favicon_transparent.svg"
 html_theme_options = {
-    "navigation_depth": 7,
+    "pygments_dark_style": "monokai",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/glotaran/pyglotaran-extras",
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        }
+    ],
+    "logo": {
+        "text": "Pyglotaran-Extras",
+        "image_dark": f"{image_gh_raw_base}/pyglotaran_logo_dark_theme.svg",
+    },
+
+}
+# Hide empty sidebars
+# Ref.: https://github.com/pydata/pydata-sphinx-theme/issues/1662#issuecomment-1913672649
+html_sidebars = {
+    'installation': [],
+    'usage': [],
+    'contributing': [],
+    'changelog': [],
+    'config/project/subproject/config_docs': [],
 }
 
 # Theme options are theme-specific and customize the look and feel of a
@@ -124,7 +150,9 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-
+html_css_files = [
+    'css/mermaid_dark.css',
+]
 
 # -- Options for HTMLHelp output ---------------------------------------
 

@@ -1,0 +1,10 @@
+/* Overwrite edge colors and arror marker color in dakr mode. in */
+html[data-theme="dark"] pre.mermaid {
+  & .marker {
+    fill: #e3e3e3 !important;
+    stroke: #e3e3e3 !important;
+  }
+  & .flowchart-link {
+    stroke: #e3e3e3 !important;
+  }
+}
