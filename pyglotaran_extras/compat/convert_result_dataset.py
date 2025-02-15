@@ -15,6 +15,7 @@ def _adjust_fitted_data(ds: xr.Dataset, *, cleanup: bool = False) -> None:
         if cleanup:
             ds = ds.drop_vars("fit")
 
+
 def _adjust_concentrations(ds: xr.Dataset, *, cleanup: bool = False) -> None:
     """Adjust the concentrations to spectra names."""
     # Check for species associated concentration variables
@@ -178,8 +179,10 @@ def convert_result(result: Result, cleanup: bool = False) -> CompatResult:
     converted_result = CompatResult.from_result(result)
 
     # convert the datasets
-    for key in converted_result.data:
-        converted_result.data[key] = convert_dataset(converted_result.data[key], cleanup=cleanup)
+    for key in converted_result.datasets:
+        converted_result.datasets[key] = convert_dataset(
+            converted_result.datasets[key], cleanup=cleanup
+        )
 
     # convert the parameters
     return converted_result

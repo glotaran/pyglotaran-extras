@@ -6,8 +6,8 @@ from typing import Any
 import numpy as np
 
 if TYPE_CHECKING:
+    import xarray as xr
     from glotaran.model.experiment_model import ExperimentModel
-    from glotaran.parameter.parameters import Parameters
 
 from glotaran.project.result import Result
 from glotaran.utils.ipython import MarkdownStr
@@ -15,63 +15,71 @@ from tabulate import tabulate
 
 
 class CompatResult(Result):
-    """A compatibility class for Result.
+    """A v0.7 compatibility wrapper for a v0.8 Result.
 
     Inherits:
-    data: dict[str, xr.Dataset]
+    datasets: dict[str, OptimizationResult]
     experiments: dict[str, ExperimentModel]
-    optimization: OptimizationResult
-    parameters_intitial: Parameters
-    parameters_optimized: Parameters
+    optimization_info: OptimizationInfo
+    initial_parameters: Parameters
+    optimized_parameters: Parameters
     """
 
     @property
     def number_of_function_evaluations(self) -> int:
-        return self.optimization.number_of_function_evaluations
+        return self.optimization_info.number_of_function_evaluations
+
+    @property
+    def success(self) -> bool:
+        return self.optimization_info.success
+
+    @property
+    def termination_reason(self) -> str:
+        return self.optimization_info.termination_reason
+
+    @property
+    def glotaran_version(self) -> str:
+        return "v0.7.3"  # self.optimization_info.glotaran_version
 
     @property
     def number_of_residuals(self) -> int:
-        return self.optimization.number_of_data_points
+        return self.optimization_info.number_of_data_points
 
     @property
     def number_of_free_parameters(self) -> int:
-        return self.optimization.number_of_parameters
+        return self.optimization_info.number_of_parameters
 
     @property
     def number_of_clps(self) -> int:
-        return self.optimization.number_of_clps
+        return self.optimization_info.number_of_clps
 
     @property
     def degrees_of_freedom(self) -> int:
-        return self.optimization.degrees_of_freedom
+        return self.optimization_info.degrees_of_freedom
 
     @property
     def chi_square(self) -> float:
-        return self.optimization.chi_square
+        return self.optimization_info.chi_square
 
     @property
     def reduced_chi_square(self) -> float:
-        return self.optimization.reduced_chi_square
+        return self.optimization_info.reduced_chi_square
 
     @property
     def reduced_chi_squared(self) -> float:
-        return self.optimization.reduced_chi_square
+        return self.optimization_info.reduced_chi_square
 
     @property
     def root_mean_square_error(self) -> float:
-        return self.optimization.root_mean_square_error
+        return self.optimization_info.root_mean_square_error
 
     @property
     def additional_penalty(self) -> float | None:
-        return self.optimization.additional_penalty
+        return self.optimization_info.additional_penalty
 
     @property
-    def optimized_parameters(self) -> Parameters:
-        return self.parameters_optimized
-
-    @property
-    def initial_parameters(self) -> Parameters:
-        return self.parameters_intitial
+    def data(self) -> dict[str, xr.Dataset]:
+        return self.datasets
 
     @property
     def model(self) -> ExperimentModel:
@@ -79,12 +87,14 @@ class CompatResult(Result):
 
     @classmethod
     def from_result(cls, result: Result) -> CompatResult:
+        """Create a CompatResult from a Result object."""
+        # new format
         return cls(
-            data=result.data,
+            datasets=result.datasets,
             experiments=result.experiments,
-            optimization=result.optimization,
-            parameters_intitial=result.parameters_intitial,
-            parameters_optimized=result.parameters_optimized,
+            optimization_info=result.optimization_info,
+            initial_parameters=result.initial_parameters,
+            optimized_parameters=result.optimized_parameters,
         )
 
     def markdown(
