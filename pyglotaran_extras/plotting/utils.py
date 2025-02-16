@@ -399,7 +399,9 @@ def get_shifted_traces(
     ValueError
         If no known concentration was found in the result.
     """
-    if "species_concentration" in res:
+    if "concentrations" in res:
+        traces = res.concentrations
+    elif "species_concentration" in res:
         traces = res.species_concentration
     elif "species_associated_concentrations" in res:
         traces = res.species_associated_concentrations
