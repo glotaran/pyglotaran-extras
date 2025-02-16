@@ -179,9 +179,9 @@ def convert_result(result: Result, cleanup: bool = False) -> CompatResult:
     converted_result = CompatResult.from_result(result)
 
     # convert the datasets
-    for key in converted_result.datasets:
-        converted_result.datasets[key] = convert_dataset(
-            converted_result.datasets[key], cleanup=cleanup
+    for key in converted_result.optimization_results:
+        converted_result.optimization_results[key] = convert_dataset(
+            converted_result.optimization_results[key], cleanup=cleanup
         )
 
     # convert the parameters

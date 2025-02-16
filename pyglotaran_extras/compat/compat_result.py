@@ -90,7 +90,7 @@ class CompatResult(Result):
         """Create a CompatResult from a Result object."""
         # new format
         return cls(
-            datasets=result.datasets,
+            optimization_results=result.optimization_results,
             experiments=result.experiments,
             optimization_info=result.optimization_info,
             initial_parameters=result.initial_parameters,
