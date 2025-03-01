@@ -198,7 +198,7 @@ jobs:
         run: hatch build
 
       - name: Publish package
-        uses: pypa/gh-action-pypi-publish@v1.12.3
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           print-hash: true
           attestations: true
