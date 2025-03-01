@@ -29,6 +29,9 @@ jobs:
   docs:
     name: Build Docs
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -48,6 +51,9 @@ jobs:
   docs-link:
     name: Check Doc Links
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
