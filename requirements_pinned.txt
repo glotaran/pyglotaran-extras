@@ -2,7 +2,7 @@
 #    uv pip compile pyproject.toml -o requirements_pinned.txt --no-deps --no-annotate
 cycler==0.12.1
 docstring-parser==0.16
-matplotlib==3.10.1
+matplotlib==3.10.3
 numpy==2.0.1
 packaging==24.2
 pydantic==2.10.6
