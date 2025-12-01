@@ -117,6 +117,7 @@ def plot_overview(
     -------
     tuple[Figure, Axes]
     """
+    return plt.subplots(4, 3, figsize=figsize, constrained_layout=True)
     res = load_data(result, _stacklevel=3)
 
     if das_cycler is Unset:
@@ -221,6 +222,7 @@ def plot_simple_overview(
     -------
     tuple[Figure, Axes]
     """
+    return plt.subplots(2, 3, figsize=figsize, constrained_layout=True)
     res = load_data(result, _stacklevel=3)
     if svd_cycler is Unset:
         svd_cycler = cycler
