@@ -343,25 +343,60 @@ result.scheme.experiments  # accessed via scheme property
 
 ### Phase 2: Rewrite Dataset Conversion Functions
 
-**Important:** The conversion functions must be completely rewritten. They can no longer modify datasets in-place since the new result structure splits data across multiple datasets.
+**Important:** The conversion functions must work on a per-element level. Each function accepts a target dataset (which it modifies in-place) and the `OptimizationResult` to extract data from.
 
-1. [ ] Create new `build_compat_dataset(optimization_result: OptimizationResult)` function
+1. [ ] Create per-element data extraction functions:
+
+   ```python
+   def add_kinetic_data(
+       target_dataset: xr.Dataset,
+       optimization_result: OptimizationResult,
+       element_name: str,
+   ) -> None:
+       """Add kinetic element data to the target dataset in-place."""
+       element_ds = optimization_result.elements[element_name]
+       # Extract and rename variables with element suffix
+       ...
+
+   def add_damped_oscillation_data(
+       target_dataset: xr.Dataset,
+       optimization_result: OptimizationResult,
+       element_name: str,
+   ) -> None:
+       """Add damped oscillation element data to the target dataset in-place."""
+       element_ds = optimization_result.elements[element_name]
+       # Extract and rename variables
+       ...
+
+   def add_activation_data(
+       target_dataset: xr.Dataset,
+       optimization_result: OptimizationResult,
+       activation_name: str,
+   ) -> None:
+       """Add activation (IRF) data to the target dataset in-place."""
+       activation_ds = optimization_result.activations[activation_name]
+       # Extract and rename IRF variables
+       ...
+   ```
+
+2. [ ] Create `build_compat_dataset(optimization_result: OptimizationResult)` function:
 
    - Creates a new empty `xr.Dataset`
-   - Populates it by gathering data from all sources
+   - Populates core data first
+   - Calls per-element functions for each element in `optimization_result.elements`
+   - Calls activation function for first activation
 
-2. [ ] Extract data from `OptimizationResult.input_data`
+3. [ ] Extract core data from `OptimizationResult`:
 
-   - Copy `data` variable
-   - Copy coordinate information
+   | Target Variable | Source                           | Notes                                        |
+   | --------------- | -------------------------------- | -------------------------------------------- |
+   | `data`          | `OptimizationResult.input_data`  | The original input data                      |
+   | `residual`      | `OptimizationResult.residuals`   | Residuals from optimization                  |
+   | `fit`           | `OptimizationResult.fitted_data` | Computed property (`input_data - residuals`) |
 
-3. [ ] Extract data from `OptimizationResult.residuals`
+   - Copy coordinate information (`time`, `spectral`) from `input_data`
 
-   - Copy `residual` variable
-
-4. [ ] Extract `fitted_data` from computed property
-
-5. [ ] Process `OptimizationResult.elements` by `element_uid`:
+4. [ ] Process `OptimizationResult.elements` by `element_uid`:
 
    **For Kinetic Elements** (`element_uid == "glotaran.builtin.elements.kinetic.KineticElement"`):
 
@@ -374,7 +409,7 @@ result.scheme.experiments  # accessed via scheme property
 
    - Extract `damped_oscillation_*` → `damped_oscillation_associated_spectra`
 
-6. [ ] Process first activation from `OptimizationResult.activations`:
+5. [ ] Process first activation from `OptimizationResult.activations`:
 
    - Extract IRF information:
      - `gaussian_activation_center` → `irf_center`
@@ -383,14 +418,14 @@ result.scheme.experiments  # accessed via scheme property
      - `gaussian_activation_function` → `irf`
      - `gaussian_activation_dispersion` → `irf_center_location`
 
-7. [ ] Set dataset attributes from `OptimizationResult.meta`:
+6. [ ] Set dataset attributes from `OptimizationResult.meta`:
 
    - `root_mean_square_error`
    - `weighted_root_mean_square_error`
    - `global_dimension`
    - `model_dimension`
 
-8. [ ] Update `convert_result()` to use new `build_compat_dataset()`:
+7. [ ] Update `convert_result()` to use new `build_compat_dataset()`:
    ```python
    def convert_result(result: Result) -> CompatResult:
        converted_result = CompatResult.from_result(result)
@@ -446,17 +481,15 @@ result.scheme.experiments  # accessed via scheme property
    - **Answer:** Yes, we must flatten the structure to create a v0.7-compatible flat dataset
    - A new dataset must be created and populated from the split result structure
 
-2. **How to handle the `scheme` vs `experiments` change?**
+2. ~~**How to handle the `scheme` vs `experiments` change?**~~ ✅ RESOLVED
 
-   - `CompatResult` currently accepts `experiments` directly
-   - New Result gets experiments from `scheme.experiments`
-   - Need to determine if CompatResult should store scheme or keep extracting experiments
+   - **Answer:** Keep extracting experiments from scheme
+   - `CompatResult` will access `scheme.experiments` via property delegation
 
-3. **What about the missing `datasets` attribute?**
+3. ~~**What about the missing `datasets` attribute?**~~ ✅ RESOLVED
 
-   - CompatResult inherits from Result and expects `datasets`
-   - New Result has `optimization_results` instead
-   - **Proposed solution:** Store flattened datasets in `_compat_datasets` and expose via `data` property
+   - **Answer:** Store flattened datasets in `_compat_datasets` and expose via `data` property
+   - The `data` property will return `self._compat_datasets`
 
 4. ~~**Element and activation dataset structure?**~~ ✅ RESOLVED
 
@@ -465,15 +498,28 @@ result.scheme.experiments  # accessed via scheme property
      - Damped oscillation: `element_uid == "glotaran.builtin.elements.damped_oscillation.DampedOscillationElement"`
    - IRF data is in the first activation dataset
 
-5. **How to handle multiple elements of the same type?**
+5. ~~**How to handle multiple elements of the same type?**~~ ✅ RESOLVED
 
-   - With element name suffixes, we can have `species_associated_spectra_kinetic1`, `species_associated_spectra_kinetic2`, etc.
-   - Need to verify this doesn't break existing plotting functions
+   - **Answer:** For kinetic elements, always suffix variable names with `_{element_name}`
+   - Examples: `species_associated_spectra_kinetic1`, `species_concentration_kinetic1`
+   - This ensures unique variable names when multiple kinetic elements are present
 
-6. **Should old `_adjust_*` functions be kept or removed?**
-   - They were designed for in-place modification
-   - The new approach builds a fresh dataset
-   - Consider removing them entirely and using a clean implementation
+6. ~~**Should old `_adjust_*` functions be kept or removed?**~~ ✅ RESOLVED
+
+   - **Answer:** Keep functions that do in-place mutation of a dataset, but refactor them:
+     - Functions should work on a per-element level
+     - Functions should accept the `OptimizationResult` (not just dataset)
+     - Remove the `cleanup` parameter (no longer needed)
+   - New function signature pattern:
+     ```python
+     def add_kinetic_data(
+         target_dataset: xr.Dataset,
+         optimization_result: OptimizationResult,
+         element_name: str,
+     ) -> None:
+         """Add kinetic element data to the target dataset in-place."""
+         ...
+     ```
 
 ---
 
