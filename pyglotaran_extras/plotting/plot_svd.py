@@ -24,6 +24,18 @@ if TYPE_CHECKING:
     from matplotlib.pyplot import Axes
 
 
+def ensure_residual_svd(res:xr.Dataset)->None:
+    """Add SVD of residual and weighted residual to dataset.
+
+    Parameters
+    ----------
+    res : xr.Dataset
+        Result dataset
+    """
+    if "weighted_residual" in res:
+        add_svd_to_dataset(dataset=res, name="weighted_residual")
+    add_svd_to_dataset(dataset=res, name="residual")
+
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_svd(
     res: xr.Dataset,
@@ -68,10 +80,7 @@ def plot_svd(
         Whether to use singular value number (starts at 1) instead of singular value index
         (starts at 0) for labeling in plot. Defaults to False.
     """
-    if "weighted_residual" in res:
-        add_svd_to_dataset(dataset=res, name="weighted_residual")
-    else:
-        add_svd_to_dataset(dataset=res, name="residual")
+    ensure_residual_svd(res)
     plot_lsv_residual(
         res,
         axes[0, 0],
@@ -299,6 +308,7 @@ def plot_lsv_residual(
         (starts at 0) for labeling in plot. Defaults to False.
     """
     add_cycler_if_not_none(ax, cycler)
+    ensure_residual_svd(res)
     rLSV: xr.DataArray = (  # noqa: N806
         res.weighted_residual_left_singular_vectors
         if "weighted_residual_left_singular_vectors" in res
@@ -352,6 +362,7 @@ def plot_rsv_residual(
         (starts at 0) for labeling in plot. Defaults to False.
     """
     add_cycler_if_not_none(ax, cycler)
+    ensure_residual_svd(res)
     rRSV: xr.DataArray = (  # noqa: N806
         res.weighted_residual_right_singular_vectors
         if "weighted_residual_right_singular_vectors" in res
@@ -399,6 +410,7 @@ def plot_sv_residual(
             new_qual_name_usage="matplotlib on the axis directly",
             to_be_removed_in_version="0.9.0",
         )
+    ensure_residual_svd(res)
     rSV: xr.DataArray = (  # noqa: N806
         res.weighted_residual_singular_values
         if "weighted_residual_singular_values" in res
