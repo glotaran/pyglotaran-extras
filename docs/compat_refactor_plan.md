@@ -4,6 +4,12 @@
 
 This document outlines the plan for updating the `pyglotaran-extras` compatibility layer (`compat` module) to accommodate the fundamental structural changes in the pyglotaran `Result` object between v0.7 and v0.8.
 
+### Scope
+
+**In Scope:** Only the compat module functions (`compat_result.py`, `convert_result_dataset.py`)
+
+**Out of Scope:** The plotting functions themselves (`plot_overview`, `plot_doas`, etc.) will NOT be modified. The compat layer is responsible for transforming the new v0.8 Result structure into a flat dataset format that the existing plotting functions already expect.
+
 ---
 
 ## Current Compat Implementation Analysis
@@ -27,7 +33,7 @@ The `CompatResult` class inherits from the new `Result` and provides v0.7-style 
 | `number_of_function_evaluations` | Same      | `optimization_info.number_of_function_evaluations` |
 | `success`                        | Same      | `optimization_info.success`                        |
 | `termination_reason`             | Same      | `optimization_info.termination_reason`             |
-| `glotaran_version`               | Same      | Hardcoded to "v0.7.3"                              |
+| `glotaran_version`               | Same      | `optimization_info.glotaran_version`               |
 | `number_of_residuals`            | Same      | `optimization_info.number_of_data_points`          |
 | `number_of_free_parameters`      | Same      | `optimization_info.number_of_parameters`           |
 | `number_of_clps`                 | Same      | `optimization_info.number_of_clps`                 |
@@ -289,6 +295,108 @@ def extract_doas_data(element_dataset: xr.Dataset, element_name: str) -> dict[st
 
     return result
 ```
+
+---
+
+## Required Data Variables for `plot_overview`
+
+The `plot_overview` function calls several sub-functions, each requiring specific data variables:
+
+### 1. `plot_concentrations` (via `get_shifted_traces`)
+
+| Variable Name (expected)            | Source                                          | Notes                          |
+| ----------------------------------- | ----------------------------------------------- | ------------------------------ |
+| `species_concentration`             | Kinetic element dataset                         | Primary concentration variable |
+| `species_associated_concentrations` | Kinetic element dataset                         | Alternative name               |
+| `irf_center`                        | First activation dataset                        | For time axis shifting         |
+| `irf_center_location`               | First activation dataset (if dispersion exists) | Spectral-dependent IRF center  |
+
+### 2. `plot_spectra` (SAS and DAS)
+
+| Variable Name (expected)       | Source                  | Notes                                       |
+| ------------------------------ | ----------------------- | ------------------------------------------- |
+| `species_associated_spectra_*` | Kinetic element dataset | SAS - searched with prefix match            |
+| `species_spectra_*`            | Kinetic element dataset | Alternative SAS name - searched with prefix |
+| `decay_associated_spectra_*`   | Kinetic element dataset | DAS - searched with prefix match            |
+
+**Note:** The plotting functions search for variables starting with these prefixes, so element name suffixes like `species_associated_spectra_kinetic1` will be found.
+
+### 3. `plot_residual`
+
+| Variable Name (expected) | Source                          | Notes                             |
+| ------------------------ | ------------------------------- | --------------------------------- |
+| `data`                   | `OptimizationResult.input_data` | Original input data               |
+| `residual`               | `OptimizationResult.residuals`  | Residual from optimization        |
+| `weighted_residual`      | (if weighted fitting was used)  | Weighted residual (optional)      |
+| `irf_center_location`    | First activation dataset        | For IRF dispersion center overlay |
+
+### 4. `plot_svd` (via `add_svd_to_dataset`)
+
+The SVD is computed dynamically by `glotaran.io.prepare_dataset.add_svd_to_dataset()` from:
+
+| Input Variable      | Source                          | Notes                |
+| ------------------- | ------------------------------- | -------------------- |
+| `data`              | `OptimizationResult.input_data` | For data SVD         |
+| `residual`          | `OptimizationResult.residuals`  | For residual SVD     |
+| `weighted_residual` | (if weighted fitting)           | Alternative residual |
+
+After SVD computation, these variables are added to the dataset:
+
+| Generated Variable                         | Used By             |
+| ------------------------------------------ | ------------------- |
+| `data_left_singular_vectors`               | `plot_lsv_data`     |
+| `data_right_singular_vectors`              | `plot_rsv_data`     |
+| `data_singular_values`                     | `plot_sv_data`      |
+| `residual_left_singular_vectors`           | `plot_lsv_residual` |
+| `residual_right_singular_vectors`          | `plot_rsv_residual` |
+| `residual_singular_values`                 | `plot_sv_residual`  |
+| `weighted_residual_left_singular_vectors`  | `plot_lsv_residual` |
+| `weighted_residual_right_singular_vectors` | `plot_rsv_residual` |
+| `weighted_residual_singular_values`        | `plot_sv_residual`  |
+
+### 5. IRF-Related Variables (shared across functions)
+
+| Variable Name (expected) | Source                    | Notes                                 |
+| ------------------------ | ------------------------- | ------------------------------------- |
+| `irf_center`             | First activation dataset  | Center of IRF (may have `irf_nr` dim) |
+| `irf_center_location`    | First activation dataset  | Spectral-dependent IRF dispersion     |
+| `center_dispersion_1`    | Legacy (pyglotaran<0.5.0) | Old dispersion variable name          |
+
+### Required Coordinates
+
+| Coordinate Name | Source               | Notes                    |
+| --------------- | -------------------- | ------------------------ |
+| `time`          | Model dimension      | Time axis                |
+| `spectral`      | Global dimension     | Spectral/wavelength axis |
+| `species`       | From kinetic element | Species labels for SAS   |
+
+### Summary: Minimal Variables for `plot_overview`
+
+For `plot_overview` to work, the compat dataset must contain at minimum:
+
+1. **Core data:**
+
+   - `data` (from `input_data`)
+   - `residual` (from `residuals`)
+   - `fit` (from `fitted_data`)
+
+2. **Kinetic data (if present):**
+
+   - `species_concentration_{element_name}`
+   - `species_associated_spectra_{element_name}`
+   - `decay_associated_spectra_{element_name}`
+
+3. **IRF data (if present):**
+
+   - `irf_center`
+   - `irf_center_location` (if dispersion)
+
+4. **Coordinates:**
+   - `time`
+   - `spectral`
+   - `species_{element_name}` (for kinetic elements)
+
+---
 
 ### 4. Dataset Attributes Change
 
