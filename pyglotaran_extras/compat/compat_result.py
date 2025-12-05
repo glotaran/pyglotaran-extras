@@ -18,12 +18,15 @@ class CompatResult(Result):
     """A v0.7 compatibility wrapper for a v0.8 Result.
 
     Inherits:
-    datasets: dict[str, OptimizationResult]
-    experiments: dict[str, ExperimentModel]
+    optimization_results: dict[str, OptimizationResult]
+    scheme: Scheme
     optimization_info: OptimizationInfo
     initial_parameters: Parameters
     optimized_parameters: Parameters
     """
+
+    # Storage for converted flat datasets (v0.7 style)
+    _compat_datasets: dict[str, xr.Dataset] | None = None
 
     @property
     def number_of_function_evaluations(self) -> int:
@@ -39,7 +42,7 @@ class CompatResult(Result):
 
     @property
     def glotaran_version(self) -> str:
-        return "v0.7.3"  # self.optimization_info.glotaran_version
+        return self.optimization_info.glotaran_version
 
     @property
     def number_of_residuals(self) -> int:
@@ -79,7 +82,11 @@ class CompatResult(Result):
 
     @property
     def data(self) -> dict[str, xr.Dataset]:
-        return self.datasets
+        """Return v0.7-style flat datasets."""
+        if self._compat_datasets is not None:
+            return self._compat_datasets
+        # Fallback: return empty dict if not yet converted
+        return {}
 
     @property
     def model(self) -> ExperimentModel:
@@ -88,10 +95,10 @@ class CompatResult(Result):
     @classmethod
     def from_result(cls, result: Result) -> CompatResult:
         """Create a CompatResult from a Result object."""
-        # new format
         return cls(
+            saving_options=result.saving_options,
             optimization_results=result.optimization_results,
-            experiments=result.experiments,
+            scheme=result.scheme,
             optimization_info=result.optimization_info,
             initial_parameters=result.initial_parameters,
             optimized_parameters=result.optimized_parameters,
