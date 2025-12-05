@@ -201,6 +201,95 @@ Each element dataset has a dataset attribute `element_uid` that identifies the e
   - `gaussian_activation_function` → `irf`
   - `gaussian_activation_dispersion` → `irf_center_location`
 
+---
+
+## Detailed Variable Mapping for `plot_doas`
+
+The `plot_doas` function in `pyglotaran-extras` expects the following data variables and coordinates:
+
+### Required Data Variables
+
+| Variable Name (expected by `plot_doas`) | Source in v0.8 `DampedOscillationElement.create_result()` | Notes                                          |
+| --------------------------------------- | --------------------------------------------------------- | ---------------------------------------------- |
+| `damped_oscillation_cos`                | `cos_concentrations`                                      | Cosine component of oscillation concentrations |
+| `damped_oscillation_sin`                | `sin_concentrations`                                      | Sine component of oscillation concentrations   |
+| `damped_oscillation_associated_spectra` | `amplitudes`                                              | DOAS amplitudes (√(sin² + cos²))               |
+| `damped_oscillation_phase`              | `phase_amplitudes`                                        | Unwrapped phase from arctan2(sin, cos)         |
+
+### Required Coordinates
+
+| Coordinate Name (expected)     | Source in v0.8          | Notes                                            |
+| ------------------------------ | ----------------------- | ------------------------------------------------ |
+| `damped_oscillation`           | `oscillation`           | Oscillation labels                               |
+| `damped_oscillation_frequency` | `oscillation_frequency` | Frequency values (coordinate on oscillation dim) |
+| `damped_oscillation_rate`      | `oscillation_rate`      | Rate values (coordinate on oscillation dim)      |
+| `time`                         | From model dimension    | Time axis                                        |
+| `spectral`                     | From global dimension   | Spectral axis                                    |
+
+### IRF-Related Variables (for time axis shifting)
+
+| Variable Name (expected) | Source                                   | Notes                         |
+| ------------------------ | ---------------------------------------- | ----------------------------- |
+| `irf_center`             | First activation dataset                 | For shifting time axis        |
+| `irf_center_location`    | First activation dataset (if dispersion) | Spectral-dependent IRF center |
+
+### Mapping from `DampedOscillationElement.create_result()` Output
+
+The element's `create_result()` method returns an `xr.Dataset` with:
+
+```python
+xr.Dataset({
+    "amplitudes": doas_amplitudes,           # → damped_oscillation_associated_spectra
+    "phase_amplitudes": phase_amplitudes,    # → damped_oscillation_phase
+    "sin_amplitudes": sin_amplitudes,        # (keep as is or rename)
+    "cos_amplitudes": cos_amplitudes,        # (keep as is or rename)
+    "concentrations": doas_concentrations,   # (magnitude of concentration)
+    "phase_concentrations": phase_concentrations,  # (phase of concentration)
+    "sin_concentrations": sin_concentrations,  # → damped_oscillation_sin
+    "cos_concentrations": cos_concentrations,  # → damped_oscillation_cos
+})
+```
+
+With coordinates:
+
+```python
+{
+    "oscillation": oscillations,                    # → damped_oscillation
+    "oscillation_frequency": ("oscillation", ...),  # → damped_oscillation_frequency
+    "oscillation_rate": ("oscillation", ...),       # → damped_oscillation_rate
+}
+```
+
+### Conversion Implementation for DOAS
+
+```python
+def extract_doas_data(element_dataset: xr.Dataset, element_name: str) -> dict[str, xr.DataArray]:
+    """Extract DOAS data from a DampedOscillationElement result dataset."""
+    result = {}
+
+    # Rename oscillation dimension and coordinates
+    rename_map = {
+        "oscillation": "damped_oscillation",
+        "oscillation_frequency": "damped_oscillation_frequency",
+        "oscillation_rate": "damped_oscillation_rate",
+    }
+
+    # Data variable mapping
+    var_mapping = {
+        "cos_concentrations": "damped_oscillation_cos",
+        "sin_concentrations": "damped_oscillation_sin",
+        "amplitudes": "damped_oscillation_associated_spectra",
+        "phase_amplitudes": "damped_oscillation_phase",
+    }
+
+    for src_name, dst_name in var_mapping.items():
+        if src_name in element_dataset:
+            da = element_dataset[src_name].rename(rename_map)
+            result[dst_name] = da
+
+    return result
+```
+
 ### 4. Dataset Attributes Change
 
 **Old:** Attributes on the flat dataset like `weighted_root_mean_square_error`
@@ -283,7 +372,7 @@ result.scheme.experiments  # accessed via scheme property
 
    **For Damped Oscillation Elements** (`element_uid == "glotaran.builtin.elements.damped_oscillation.DampedOscillationElement"`):
 
-   - Extract `damped_oscillation_*` → `damped_oscillation_associated_spectra_{element_name}`
+   - Extract `damped_oscillation_*` → `damped_oscillation_associated_spectra`
 
 6. [ ] Process first activation from `OptimizationResult.activations`:
 
