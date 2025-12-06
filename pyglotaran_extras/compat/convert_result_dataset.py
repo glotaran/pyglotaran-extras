@@ -189,8 +189,7 @@ def add_activation_data(
 
     # IRF dispersion (center location)
     if "center" in activation_ds:
-        target_dataset["center_dispersion_1"] = activation_ds["center"]
-        target_dataset["center_dispersion_1"] = xr.DataArray([activation_ds["center"]], dims=["irf_nr","spectral"])
+        target_dataset["irf_center_location"] = activation_ds["center"].rename({"component_index": "irf_nr"})
 
 
 def build_compat_dataset(optimization_result: OptimizationResult) -> xr.Dataset:
