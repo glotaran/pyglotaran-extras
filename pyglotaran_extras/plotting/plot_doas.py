@@ -120,13 +120,13 @@ def plot_doas(
 
     damped_oscillation_phase = dataset["damped_oscillation_phase"].sel(**osc_sel_kwargs)
 
-    osc_max = abs_max((oscillations - 1), result_dims="damped_oscillation")
+    osc_max = abs_max((oscillations), result_dims="damped_oscillation")
     spectra_max = abs_max(oscillations_spectra, result_dims="damped_oscillation")
     scales = np.sqrt(osc_max * spectra_max)
 
     norm_factor = scales.max() if normalize is True else 1
 
-    oscillations_to_plot = ((oscillations - 1) / osc_max * scales * norm_factor).sel(
+    oscillations_to_plot = ((oscillations) / osc_max * scales * norm_factor).sel(
         **time_sel_kwargs
     )
 
