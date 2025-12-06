@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     import xarray as xr
     from glotaran.model.experiment_model import ExperimentModel
 
+from glotaran.io import SavingOptions  # noqa: F401
 from glotaran.project.result import Result
 from glotaran.utils.ipython import MarkdownStr
 from tabulate import tabulate
