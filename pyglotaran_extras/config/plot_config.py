@@ -205,7 +205,7 @@ class PerFunctionPlotConfig(BaseModel):
             serialized["default_args_override"] = self.default_args_override
         if len(self.axis_label_override) > 0:
             serialized["axis_label_override"] = cast(
-                PlotLabelOverrideMap, self.axis_label_override
+                "PlotLabelOverrideMap", self.axis_label_override
             ).model_dump()
         return serialized
 
@@ -270,7 +270,7 @@ class PerFunctionPlotConfig(BaseModel):
             if isinstance(ax, Axes):
                 orig_x_label = ax.get_xlabel()
                 orig_y_label = ax.get_ylabel()
-                axis_label_override = cast(PlotLabelOverrideMap, self.axis_label_override)
+                axis_label_override = cast("PlotLabelOverrideMap", self.axis_label_override)
 
                 if (
                     override_label := axis_label_override.find_axis_label(orig_x_label, "x")
@@ -362,19 +362,21 @@ class PlotConfig(BaseModel):
         updated: dict[str, PerFunctionPlotConfig] = {}
         # Update general field
         for key in self.model_fields_set:
-            updated[key] = cast(PerFunctionPlotConfig, getattr(self, key))
+            updated[key] = cast("PerFunctionPlotConfig", getattr(self, key))
             if key in other.model_fields_set:
-                updated[key] = updated[key].merge(cast(PerFunctionPlotConfig, getattr(other, key)))
+                updated[key] = updated[key].merge(
+                    cast("PerFunctionPlotConfig", getattr(other, key))
+                )
         for key in other.model_fields_set:
             if key not in updated:
                 updated[key] = getattr(other, key)
         # Update model_extra
         if self.model_extra is not None:
             for key, value in self.model_extra.items():
-                updated[key] = cast(PerFunctionPlotConfig, value)
+                updated[key] = cast("PerFunctionPlotConfig", value)
                 if other.model_extra is not None and key in other.model_extra:
                     updated[key] = updated[key].merge(
-                        cast(PerFunctionPlotConfig, other.model_extra[key])
+                        cast("PerFunctionPlotConfig", other.model_extra[key])
                     )
         if other.model_extra is not None:
             for key, value in other.model_extra.items():
@@ -525,8 +527,8 @@ def use_plot_config(  # noqa: DOC201, DOC203
             function_config = CONFIG.plotting.get_function_config(func.__name__)
             override_kwargs = function_config.find_override_kwargs(not_user_provided_kwargs)
             updated_kwargs = kwargs | override_kwargs
-            arg_axes = find_axes(getcallargs(func, *args, **updated_kwargs).values())
-            return_values = func(*args, **updated_kwargs)
+            arg_axes = find_axes(getcallargs(func, *args, **updated_kwargs).values())  # type: ignore[arg-type]
+            return_values = func(*args, **updated_kwargs)  # type: ignore[arg-type]
             function_config.update_axes_labels(arg_axes)
 
             if isinstance(return_values, Iterable):
