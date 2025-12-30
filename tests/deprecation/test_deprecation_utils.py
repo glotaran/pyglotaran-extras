@@ -117,9 +117,9 @@ def test_warn_deprecated():
             to_be_removed_in_version="0.6.0",
         )
 
-        assert len(record) == 1
-        assert record[0].message.args[0] == DEPRECATION_WARN_MESSAGE
-        assert Path(record[0].filename) == Path(__file__)
+    assert len(record) == 1
+    assert record[0].message.args[0] == DEPRECATION_WARN_MESSAGE
+    assert Path(record[0].filename) == Path(__file__)
 
 
 @pytest.mark.usefixtures("_pyglotaran_extras_1_0_0")

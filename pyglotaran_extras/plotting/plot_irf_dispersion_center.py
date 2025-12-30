@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from typing import cast
 
 import matplotlib.pyplot as plt
-import xarray as xr
 
 from pyglotaran_extras.config.plot_config import use_plot_config
 from pyglotaran_extras.io.utils import result_dataset_mapping
@@ -17,6 +16,7 @@ from pyglotaran_extras.plotting.utils import extract_irf_dispersion_center
 if TYPE_CHECKING:
     from typing import Literal
 
+    import xarray as xr
     from cycler import Cycler
     from matplotlib.axes import Axes
     from matplotlib.figure import Figure
@@ -104,7 +104,7 @@ def _plot_irf_dispersion_center(
         If it is None the time axis will not be shifted. Defaults to None.
     """
     add_cycler_if_not_none(ax, cycler)
-    irf = cast(xr.DataArray, extract_irf_dispersion_center(res, as_dataarray=True))
+    irf = cast("xr.DataArray", extract_irf_dispersion_center(res, as_dataarray=True))
     if irf_location is not None:
         (irf - irf_location).plot(ax=ax, label=label, **{spectral_axis: "spectral"})
     else:
