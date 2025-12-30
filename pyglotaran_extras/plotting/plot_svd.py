@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from matplotlib.axes import Axes
 
 
-def ensure_residual_svd(res:xr.Dataset)->None:
+def ensure_residual_svd(res: xr.Dataset) -> None:
     """Add SVD of residual and weighted residual to dataset.
 
     Parameters
@@ -35,6 +35,7 @@ def ensure_residual_svd(res:xr.Dataset)->None:
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
     add_svd_to_dataset(dataset=res, name="residual")
+
 
 @use_plot_config(exclude_from_config=("cycler",))
 def plot_svd(
