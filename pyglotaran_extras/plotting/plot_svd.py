@@ -34,7 +34,8 @@ def ensure_residual_svd(res: xr.Dataset) -> None:
     """
     if "weighted_residual" in res:
         add_svd_to_dataset(dataset=res, name="weighted_residual")
-    add_svd_to_dataset(dataset=res, name="residual")
+    else:
+        add_svd_to_dataset(dataset=res, name="residual")
 
 
 @use_plot_config(exclude_from_config=("cycler",))
