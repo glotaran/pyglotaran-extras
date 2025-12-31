@@ -10,7 +10,7 @@
 - 🚇⬆️ Combined GHA updates (#380)
 - 🩹 Fix find_axes inside use_plot_config causing TypeError with DataArray (#303)
 - 🩹 Ensure residual SVD in always available in SVD plot functions (#381 + #382)
-- ⌨️🩹 Fix wrong typing using `Axis` instead of `Axes` (#384)
+- ⌨️🩹 Fix wrong typing using `Axis` instead of `Axes` (#314)
 
 (changes-0_7_3)=
 
