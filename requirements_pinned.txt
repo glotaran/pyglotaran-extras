@@ -3,7 +3,7 @@
 cycler==0.12.1
 matplotlib==3.10.8
 docstring-parser==0.17.0
-numpy==2.0.1
+numpy==2.2.6
 packaging==25.0
 pydantic==2.12.5
 pyglotaran==0.7.3
