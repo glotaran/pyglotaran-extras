@@ -5,6 +5,7 @@ dependencies:
   # Python interpreter
   - python=3.10
   - pandoc>=3.2.1
+  - just
   - pip
   - pip:
       - -r ../requirements_pinned.txt

@@ -46,7 +46,7 @@ jobs:
         run: pip freeze
 
       - name: Build docs
-        run: make --directory=docs clean html
+        run: just docs/html
 
   docs-link:
     name: Check Doc Links
@@ -68,7 +68,7 @@ jobs:
         run: pip freeze
 
       - name: Build docs
-        run: make --directory=docs clean linkcheck
+        run: just docs/linkcheck
 
   test:
     name: Test pyglotaran stable

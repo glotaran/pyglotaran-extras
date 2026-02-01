@@ -1,0 +1,50 @@
+# Sphinx documentation build recipes
+# Use 'just --list' to see all available recipes
+
+# Set shell for Windows compatibility
+set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
+
+# Sphinx configuration
+SPHINXOPTS := ""
+SPHINXBUILD := "uv run python -m sphinx"
+SOURCEDIR := "."
+BUILDDIR := "_build"
+API_TOCTREE_DIR := "api"
+
+# Default recipe (show help)
+default:
+    @just --list
+
+# ============================================================================
+# Hidden helpers (cross-platform using Python)
+# ============================================================================
+
+# Remove directory recursively (cross-platform)
+[private]
+_rm-rf path:
+    uv run python -c "import shutil, pathlib; p = pathlib.Path('{{path}}'); shutil.rmtree(p, ignore_errors=True) if p.exists() else None"
+
+# Remove build directory and API toctree
+clean_all:
+    @just _rm-rf {{BUILDDIR}}
+    @just _rm-rf {{API_TOCTREE_DIR}}
+
+# Remove build directory contents
+clean:
+    {{SPHINXBUILD}} -M clean {{SOURCEDIR}} {{BUILDDIR}} {{SPHINXOPTS}}
+
+# Generate HTML documentation
+html:
+    {{SPHINXBUILD}} -M html {{SOURCEDIR}} {{BUILDDIR}} {{SPHINXOPTS}}
+
+# Generate LaTeX files and build PDF
+latexpdf:
+    {{SPHINXBUILD}} -M latexpdf {{SOURCEDIR}} {{BUILDDIR}} {{SPHINXOPTS}}
+
+# Check all external links for integrity
+linkcheck:
+    {{SPHINXBUILD}} -M linkcheck {{SOURCEDIR}} {{BUILDDIR}} {{SPHINXOPTS}}
+
+# Run any Sphinx builder - Available: dirhtml, singlehtml, pickle, json, htmlhelp, qthelp, applehelp, devhelp, epub, latex, latexpdfja, text, man, texinfo, info, gettext, changes, doctest, coverage, xml, pseudoxml
+sphinx builder:
+    {{SPHINXBUILD}} -M {{builder}} {{SOURCEDIR}} {{BUILDDIR}} {{SPHINXOPTS}}
