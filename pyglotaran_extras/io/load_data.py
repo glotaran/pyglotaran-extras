@@ -59,5 +59,7 @@ def load_data(
         return result.data[keys[0]]
     if isinstance(result, str | Path):
         return load_data(load_dataset(result))
-    msg = f"Result needs to be of type {DatasetConvertible!r}, but was {result!r}."
+    msg = f"Result needs to be of type {DatasetConvertible!r}, but was {result!r}.".replace(
+        "pathlib._local.Path", "pathlib.Path"
+    )
     raise TypeError(msg)
