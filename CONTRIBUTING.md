@@ -60,18 +60,20 @@ Ready to contribute? Here's how to set up `pyglotaran_extras` for local developm
    $ git clone git@github.com:your_name_here/pyglotaran_extras.git
    ```
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development:
+3. Install your local copy. This is how you set up your fork for local development:
 
    ```
-   $ mkvirtualenv pyglotaran_extras
    $ cd pyglotaran-extras/
-   $ pip install -e .
+   $ uv sync --frozen
    ```
 
-4. install the `pre-commit` and `pre-push` hooks:
+   This will create a virtual environment and install all dependencies including development tools.
+
+4. Install the `pre-commit` and `git` hooks:
 
    ```
-   $ pre-commit install && pre-commit install -t pre-push
+   $ uv tool install pre-commit --with pre-commit-uv
+   $ pre-commit install && pre-commit install
    ```
 
 5. Create a branch for local development:
@@ -109,5 +111,5 @@ Before you submit a pull request, check that it meets these guidelines:
 To run a subset of tests:
 
 ```
-$ pytest tests.test_pyglotaran_extras
+$ uv run pytest tests.test_pyglotaran_extras
 ```
