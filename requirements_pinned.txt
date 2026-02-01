@@ -4,7 +4,7 @@ cycler==0.12.1
 docstring-parser==0.17.0
 matplotlib==3.10.8
 numpy==2.2.6
-packaging==25.0
+packaging==26.0
 pydantic==2.12.5
 pyglotaran==0.7.4
 ruamel-yaml==0.19.1
