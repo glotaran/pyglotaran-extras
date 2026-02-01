@@ -174,7 +174,7 @@ jobs:
         run: uv pip list
 
       - name: Run tests
-        run: uv run pytest --nbval --cov=./ --cov-report term --cov-report xml --cov-config pyproject.toml tests
+        run: uv run --resolution lowest-direct pytest --nbval --cov=./ --cov-report term --cov-report xml --cov-config pyproject.toml tests
 
       - name: Codecov Upload
         continue-on-error: true
