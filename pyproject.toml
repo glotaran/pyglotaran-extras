@@ -36,7 +36,7 @@ dynamic = [
 dependencies = [
   "cycler>=0.10",
   "docstring-parser>=0.16",
-  "matplotlib>=3.5",
+  "matplotlib>=3.10",
   "numpy>=1.22",
   "packaging>=23.1",
   "pydantic>=2.7",
@@ -57,10 +57,10 @@ dev = [ { include-group = "docs" }, { include-group = "test" } ]
 test = [
   "coverage[toml]>=7.13.2",
   "jsonschema>=4.22",
-  "nbval>=0.9.6",
-  "pluggy>=0.7",
+  "nbval>=0.11",
+  "pluggy>=1.6",
   "pytest>=9.0.2",
-  "pytest-cov>=2.5.1",
+  "pytest-cov>=7",
 ]
 docs = [
   "autodoc-pydantic>=2.2",
