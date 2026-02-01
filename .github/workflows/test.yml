@@ -31,9 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install uv
@@ -55,9 +55,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install uv
@@ -82,7 +82,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Check out repo
@@ -132,7 +132,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --frozen --group test
-          uv add git+https://github.com/glotaran/pyglotaran
+          uv pip install git+https://github.com/glotaran/pyglotaran
 
       - name: Show installed dependencies
         run: uv pip list
@@ -174,7 +174,7 @@ jobs:
         run: uv pip list
 
       - name: Run tests
-        run: uv run --resolution lowest-direct pytest --nbval --cov=./ --cov-report term --cov-report xml --cov-config pyproject.toml tests
+        run: uv run --resolution lowest-direct pytest --nbval --cov=pyglotaran_extras --cov-report term --cov-report xml --cov-config pyproject.toml tests
 
       - name: Codecov Upload
         continue-on-error: true

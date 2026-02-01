@@ -6,13 +6,21 @@
 
 ## Stable release
 
-To install pyglotaran_extras, run this command in your terminal:
+To install `pyglotaran_extras` for a new project, run this command in your terminal:
+
+```console
+$ uv init --bare
+$ uv add pyglotaran_extras
+```
+
+This is the preferred method to install pyglotaran_extras, as it will always install the most recent stable release.
+Additionally this will create a `uv.lock` file allowing you to recreate and share the same environment you use by running `uv sync --frozen`.
+
+Or if you have an existing project and environment
 
 ```console
 $ uv pip install pyglotaran_extras
 ```
-
-This is the preferred method to install pyglotaran_extras, as it will always install the most recent stable release.
 
 If you don't have [uv] installed, see the [uv installation guide].
 

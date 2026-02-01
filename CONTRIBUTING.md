@@ -73,7 +73,7 @@ Ready to contribute? Here's how to set up `pyglotaran_extras` for local developm
 
    ```
    $ uv tool install pre-commit --with pre-commit-uv
-   $ pre-commit install && pre-commit install
+   $ pre-commit install
    ```
 
 5. Create a branch for local development:
@@ -102,7 +102,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.md.
-3. The pull request should work for Python 3.10 and 3.11. Check
+3. The pull request should work for Python 3.10, 3.11, 3.12, 3.13 and 3.14. Check
    <https://github.com/glotaran/pyglotaran-extras/actions>
    and make sure that the tests pass for all supported Python versions.
 
@@ -111,5 +111,5 @@ Before you submit a pull request, check that it meets these guidelines:
 To run a subset of tests:
 
 ```
-$ uv run pytest tests.test_pyglotaran_extras
+$ uv run pytest tests/plotting
 ```

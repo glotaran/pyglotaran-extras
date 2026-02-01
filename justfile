@@ -78,7 +78,7 @@ test:
 
 # Check code coverage and open HTML report
 cov:
-    uv run pytest
+    uv run pytest --cov=pyglotaran_extras --cov-report html
     @just _open-browser htmlcov/index.html
 
 # ============================================================================
