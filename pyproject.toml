@@ -81,6 +81,9 @@ path = "pyglotaran_extras/__init__.py"
 [tool.hatch.build.targets.sdist]
 include = [
   "/pyglotaran_extras",
+  "/docs",
+  "/tests",
+  "changelog.md",
 ]
 
 [tool.hatch.envs.default]
