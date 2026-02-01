@@ -52,7 +52,7 @@ jobs:
           install_extras: false
 
       - name: Upload Example Plots Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: example-notebooks-${{ matrix.example_name }}
           path: ${{ steps.example-run.outputs.notebook-path }}
@@ -70,7 +70,7 @@ jobs:
           merge-multiple: true
 
       - name: Upload Example Plots Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: example-notebooks
           path: example-notebooks
