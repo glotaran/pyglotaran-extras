@@ -75,9 +75,6 @@ urls.Homepage = "https://github.com/glotaran/pyglotaran-extras"
 urls.Source = "https://github.com/glotaran/pyglotaran-extras"
 urls.Tracker = "https://github.com/glotaran/pyglotaran-extras/issues"
 
-[tool.hatch.version]
-path = "pyglotaran_extras/__init__.py"
-
 [tool.hatch.build.targets.sdist]
 include = [
   "/pyglotaran_extras",
@@ -87,6 +84,9 @@ include = [
 features = [
   "dev",
 ]
+
+[tool.hatch.version]
+path = "pyglotaran_extras/__init__.py"
 
 [tool.docformatter]
 black = true
@@ -107,13 +107,6 @@ source = [
   "pyglotaran_extras",
   "*/site-packages/pyglotaran_extras",
 ]
-[tool.coverage.run]
-branch = true
-omit = [
-  'tests/*',
-  # comment the above line if you want to see if all tests did run
-]
-
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
 exclude_lines = [
@@ -132,6 +125,13 @@ exclude_lines = [
   'if 0:',
   'if __name__ == .__main__.:',
   'if TYPE_CHECKING:',
+]
+
+[tool.coverage.run]
+branch = true
+omit = [
+  'tests/*',
+  # comment the above line if you want to see if all tests did run
 ]
 
 [tool.mypy]
