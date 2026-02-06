@@ -17,7 +17,7 @@ Can be installed as a python package or from sources.
 
 Prerequisites:
 
-- Python 3.10 or 3.11
+- [uv](https://docs.astral.sh/uv/) or python 3.10-3.14
 - Python package `pyglotaran` v0.7.0 (or later)
 
 ### Stable Release
