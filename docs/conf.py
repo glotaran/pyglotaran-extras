@@ -40,7 +40,6 @@ extensions = [
     "myst_nb",
     'sphinxcontrib.mermaid',
     "sphinx_copybutton",
-    "pydata_sphinx_theme",
 ]
 
 myst_fence_as_directive = ["mermaid"]

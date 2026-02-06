@@ -14,5 +14,5 @@ extend-ignore = [
 ]
 
 [lint.isort]
-required-imports = []
+required-imports = [  ]
 force-single-line = false

@@ -17,7 +17,7 @@ Can be installed as a python package or from sources.
 
 Prerequisites:
 
-- Python 3.10 or 3.11
+- [uv](https://docs.astral.sh/uv/) or python 3.10-3.14
 - Python package `pyglotaran` v0.7.0 (or later)
 
 ### Stable Release
@@ -25,7 +25,7 @@ Prerequisites:
 To install pyglotaran-extras from [PyPI](https://pypi.org/), run this command in your terminal:
 
 ```console
-pip install pyglotaran-extras
+uv pip install pyglotaran-extras
 ```
 
 If you want to install it via conda, you can run the following command:
@@ -41,11 +41,11 @@ To install pyglotaran-extras from sources, either clone this repository or downl
 ```console
 git clone https://github.com/glotaran/pyglotaran-extras.git
 cd pyglotaran-extras
-pip install -e .
+uv sync --frozen
 ```
 
 or directly
 
 ```console
-pip install git+https://github.com/glotaran/pyglotaran-extras.git
+uv pip install git+https://github.com/glotaran/pyglotaran-extras.git
 ```
