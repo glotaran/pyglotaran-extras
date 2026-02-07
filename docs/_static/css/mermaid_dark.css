@@ -1,4 +1,4 @@
-/* Overwrite edge colors and arror marker color in dakr mode. in */
+/* Overwrite edge colors and arrow marker color in dark mode. */
 html[data-theme="dark"] pre.mermaid {
   & .marker {
     fill: #e3e3e3 !important;
