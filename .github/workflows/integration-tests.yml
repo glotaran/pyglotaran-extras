@@ -37,12 +37,12 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-
-      - name: Install pyglotaran-extras
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+      - name: Install dependencies
         run: |
-          pip install wheel
-          pip install -r requirements_pinned.txt
-          pip install .
+          export UV_PROJECT_ENVIRONMENT="${pythonLocation}"
+          uv sync --frozen --no-default-groups
 
       - name: ${{ matrix.example_name }}
         id: example-run

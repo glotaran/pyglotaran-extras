@@ -6,16 +6,26 @@
 
 ## Stable release
 
-To install pyglotaran_extras, run this command in your terminal:
+To install `pyglotaran_extras` for a new project, run this command in your terminal:
 
 ```console
-$ pip install pyglotaran_extras
+$ uv init --bare
+$ uv add pyglotaran_extras
 ```
 
 This is the preferred method to install pyglotaran_extras, as it will always install the most recent stable release.
+Additionally this will create a `uv.lock` file allowing you to recreate and share the same environment you use by running `uv sync --frozen`.
 
-If you don't have [pip] installed, this [Python installation guide] can guide
-you through the process.
+Or if you have an existing project and environment
+
+```console
+$ uv pip install pyglotaran_extras
+```
+
+If you don't have [uv] installed, see the [uv installation guide].
+
+[uv]: https://docs.astral.sh/uv/
+[uv installation guide]: https://docs.astral.sh/uv/getting-started/installation/
 
 ## From sources
 
@@ -36,10 +46,8 @@ $ curl -OJL https://github.com/glotaran/pyglotaran-extras/tarball/main
 Once you have a copy of the source, you can install it with:
 
 ```console
-$ pip install .
+$ uv pip install .
 ```
 
 [github repo]: https://github.com/glotaran/pyglotaran-extras
-[pip]: https://pip.pypa.io
-[python installation guide]: http://docs.python-guide.org/en/latest/starting/installation/
 [tarball]: https://github.com/glotaran/pyglotaran-extras/tarball/main
