@@ -1,5 +1,5 @@
 # Set shell for Windows compatibility
-set windows-shell := ["powershell.exe", "-NoLogo", "-Command"]
+set windows-shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 
 # Default recipe (show available recipes)
 default:
