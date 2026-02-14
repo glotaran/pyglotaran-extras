@@ -46,6 +46,7 @@ def create_preview_cycler(cycler: Cycler) -> Cycler:
         ax.get_yaxis().set_ticks([])
         buffer.seek(0)
         fig.savefig(buffer, format="jpg")
+        buffer.truncate()
         buffer.seek(0)
         preview_images.append(
             f'<img src="data:image/jpg;base64, {base64.b64encode(buffer.read()).decode()}">'
