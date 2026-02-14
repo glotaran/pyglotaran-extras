@@ -110,13 +110,17 @@ paths.source = [
 ]
 # Regexes for lines to exclude from consideration
 report.exclude_lines = [
-  " Don't complain about missing debug-only code",
-  " Don't complain if non-runnable code isn't run",
-  " Don't complain if tests don't hit defensive assertion code",
-  " Have to re-enable the standard pragm",
+  # Don't complain about missing debug-only code:
+  "def __repr__",
   "if __name__ == .__main__.:",
+  # Don't complain if non-runnable code isn't run:
+  "if 0:",
   "if self\\.debug",
   "if TYPE_CHECKING:",
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
   "raise NotImplementedError",
 ]
 
