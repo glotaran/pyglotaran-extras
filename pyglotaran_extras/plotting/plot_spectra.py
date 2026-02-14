@@ -127,7 +127,9 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
+        for zorder, species in zip(
+            range(100)[::-1], sas.coords["species"].to_numpy(), strict=False
+        ):
             (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
                 x="spectral", ax=ax, zorder=zorder
             )
