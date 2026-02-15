@@ -66,6 +66,7 @@ class KineticEdge:
         unit: Literal["ps", "ns"] = "ns",
         decimal_places: int | None = None,
         show_label: bool = False,
+        include_unit: bool = True,
     ) -> str:
         """Format the rate constant for display.
 
@@ -77,6 +78,8 @@ class KineticEdge:
             Number of decimal places. If None, uses smart rounding.
         show_label : bool
             Whether to prefix with the short parameter label (e.g., ``"k21 = "``).
+        include_unit : bool
+            Whether to append the unit suffix (e.g., ``"ns⁻¹"``). Defaults to True.
 
         Returns
         -------
@@ -97,7 +100,7 @@ class KineticEdge:
         else:
             formatted = f"{value:.2f}"
 
-        result = f"{formatted} {unit_suffix}"
+        result = f"{formatted} {unit_suffix}" if include_unit else formatted
 
         if show_label:
             short_label = self.parameter_label.split(".")[-1]

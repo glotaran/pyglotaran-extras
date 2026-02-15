@@ -96,12 +96,17 @@ class KineticSchemeConfig(BaseModel):
         Default edge color.
     edge_linewidth : float
         Default edge line width.
+    rate_fontsize : int
+        Font size for rate constant labels on edges.
     rate_unit : Literal["ps", "ns"]
         Unit for displaying rate constants.
     rate_decimal_places : int | None
         Decimal places for rate constant display. None for smart rounding.
     show_rate_labels : bool
         Whether to show parameter label prefix on edges.
+    show_rate_unit_per_label : bool
+        Whether to show the unit suffix on every edge label. When False,
+        the unit is shown once as an annotation in the figure corner.
     show_ground_state : Literal[False, "shared", "per_megacomplex"]
         Ground state bar rendering mode.
     layout_algorithm : Literal["hierarchical", "spring", "manual"]
@@ -139,11 +144,13 @@ class KineticSchemeConfig(BaseModel):
     # Edge styling
     edge_color: str = DEFAULT_EDGE_COLOR
     edge_linewidth: float = DEFAULT_EDGE_LINEWIDTH
+    rate_fontsize: int = DEFAULT_RATE_FONTSIZE
 
     # Rate formatting
     rate_unit: Literal["ps", "ns"] = "ns"
     rate_decimal_places: int | None = None
     show_rate_labels: bool = False
+    show_rate_unit_per_label: bool = False
 
     # Ground state rendering
     show_ground_state: Literal[False, "shared", "per_megacomplex"] = False
@@ -313,6 +320,23 @@ def show_dataset_kinetic_scheme(
 # ---------------------------------------------------------------------------
 
 
+def _get_rate_unit_annotation(unit: Literal["ps", "ns"]) -> str:
+    """Build the unit annotation string for the figure corner.
+
+    Parameters
+    ----------
+    unit : Literal["ps", "ns"]
+        The rate constant unit.
+
+    Returns
+    -------
+    str
+        Annotation text, e.g. ``"rates in ns\u207b\u00b9"``.
+    """
+    suffix = "ps\u207b\u00b9" if unit == "ps" else "ns\u207b\u00b9"
+    return f"rates in {suffix}"
+
+
 def _render_kinetic_scheme(
     graph: KineticGraph,
     positions: NodePositions,
@@ -374,6 +398,19 @@ def _render_kinetic_scheme(
 
     # Auto-fit margins
     ax.margins(0.15)
+
+    # Draw unit annotation if per-label units are suppressed
+    if not config.show_rate_unit_per_label:
+        ax.annotate(
+            _get_rate_unit_annotation(config.rate_unit),
+            xy=(1.0, 0.0),
+            xycoords="axes fraction",
+            ha="right",
+            va="bottom",
+            fontsize=config.rate_fontsize,
+            color="#666666",
+            fontstyle="italic",
+        )
 
     return fig, ax
 
@@ -662,6 +699,19 @@ def _draw_all_edges(
     # Track edge pairs to handle parallel edges (back-transfer)
     edge_count: dict[tuple[str, str], int] = {}
 
+    # Pre-compute convergence totals per target for label spreading
+    target_edge_total: dict[str, int] = {}
+    for edge in graph.edges:
+        target_node = graph.nodes.get(edge.target)
+        if target_node is None or target_node.is_ground_state:
+            continue
+        if edge.source not in positions or edge.target not in positions:
+            continue
+        target_edge_total.setdefault(edge.target, 0)
+        target_edge_total[edge.target] += 1
+
+    target_edge_count: dict[str, int] = {}
+
     for edge in graph.edges:
         target_node = graph.nodes.get(edge.target)
         if target_node is None:
@@ -688,7 +738,16 @@ def _draw_all_edges(
         edge_count[pair_key] += 1
         edge_index = edge_count[pair_key]
 
-        _draw_transfer_edge(ax, edge, positions, config, edge_index)
+        # Count convergence index for label spreading
+        target_edge_count.setdefault(edge.target, 0)
+        target_edge_count[edge.target] += 1
+        convergence_index = target_edge_count[edge.target]
+        convergence_total = target_edge_total.get(edge.target, 1)
+
+        _draw_transfer_edge(
+            ax, edge, positions, config, edge_index,
+            convergence_index, convergence_total,
+        )
 
 
 def _draw_transfer_edge(
@@ -697,6 +756,8 @@ def _draw_transfer_edge(
     positions: NodePositions,
     config: KineticSchemeConfig,
     edge_index: int,
+    convergence_index: int = 1,
+    convergence_total: int = 1,
 ) -> None:
     """Draw a transfer edge between two compartment nodes.
 
@@ -712,6 +773,10 @@ def _draw_transfer_edge(
         Configuration.
     edge_index : int
         Index among parallel edges (1-based). Used for curvature.
+    convergence_index : int
+        This edge's index among edges sharing the same target (1-based).
+    convergence_total : int
+        Total number of edges sharing this edge's target node.
     """
     source_w, source_h = _get_node_dimensions(edge.source, config)
     target_w, target_h = _get_node_dimensions(edge.target, config)
@@ -741,13 +806,23 @@ def _draw_transfer_edge(
     )
     ax.add_patch(arrow)
 
-    # Rate label at t=0.35 (closer to source) to reduce overlap when edges converge
+    # Rate label with parametric t-value spreading for convergent edges
     rate_text = edge.format_rate(
         unit=config.rate_unit,
         decimal_places=config.rate_decimal_places,
         show_label=config.show_rate_labels,
+        include_unit=config.show_rate_unit_per_label,
     )
-    t = 0.35
+
+    # When multiple edges converge on the same target, spread labels
+    # along each edge to avoid overlap
+    if convergence_total <= 1:
+        t = 0.35
+    else:
+        t_min = 0.20
+        t_max = 0.50
+        t = t_min + (convergence_index - 1) * (t_max - t_min) / (convergence_total - 1)
+
     label_x = start[0] + t * (end[0] - start[0])
     label_y = start[1] + t * (end[1] - start[1])
 
@@ -764,7 +839,7 @@ def _draw_transfer_edge(
         rate_text,
         ha="center",
         va="center",
-        fontsize=DEFAULT_RATE_FONTSIZE,
+        fontsize=config.rate_fontsize,
         zorder=5,
         bbox={
             "boxstyle": "round,pad=0.1",
@@ -820,6 +895,7 @@ def _draw_ground_state_decay_arrow(
         unit=config.rate_unit,
         decimal_places=config.rate_decimal_places,
         show_label=config.show_rate_labels,
+        include_unit=config.show_rate_unit_per_label,
     )
     mid_y = (start[1] + end[1]) / 2
     ax.text(
@@ -828,7 +904,7 @@ def _draw_ground_state_decay_arrow(
         rate_text,
         ha="left",
         va="center",
-        fontsize=DEFAULT_RATE_FONTSIZE,
+        fontsize=config.rate_fontsize,
         zorder=5,
         bbox={
             "boxstyle": "round,pad=0.1",
@@ -885,6 +961,7 @@ def _draw_ground_state_arrow(
         unit=config.rate_unit,
         decimal_places=config.rate_decimal_places,
         show_label=config.show_rate_labels,
+        include_unit=config.show_rate_unit_per_label,
     )
     mid_y = (start[1] + end[1]) / 2
     ax.text(
@@ -893,7 +970,7 @@ def _draw_ground_state_arrow(
         rate_text,
         ha="left",
         va="center",
-        fontsize=DEFAULT_RATE_FONTSIZE,
+        fontsize=config.rate_fontsize,
         zorder=5,
         bbox={
             "boxstyle": "round,pad=0.1",

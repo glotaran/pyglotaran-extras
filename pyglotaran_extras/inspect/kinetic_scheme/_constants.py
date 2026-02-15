@@ -19,7 +19,7 @@ DEFAULT_FONTSIZE: int = 10
 DEFAULT_EDGE_COLOR: str = "#555555"
 DEFAULT_EDGE_LINEWIDTH: float = 1.5
 DEFAULT_ARROWSTYLE: str = "->,head_length=0.4,head_width=0.2"
-DEFAULT_RATE_FONTSIZE: int = 8
+DEFAULT_RATE_FONTSIZE: int = 9
 
 # Ground state bar styling
 DEFAULT_GROUND_STATE_COLOR: str = "#222222"

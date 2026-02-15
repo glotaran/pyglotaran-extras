@@ -80,6 +80,27 @@ class TestKineticEdgeFormatRate:
         # 0.0005 * 1000 = 0.5, should show as "0.50"
         assert "0.50" in result
 
+    def test_include_unit_false(self) -> None:
+        """When include_unit is False, unit suffix should be omitted."""
+        edge = KineticEdge("A", "B", 0.5, "rates.k_AB")
+        result = edge.format_rate(unit="ns", include_unit=False)
+        assert result == "500"
+        assert "ns" not in result
+
+    def test_include_unit_false_with_label(self) -> None:
+        """include_unit=False should still work with show_label=True."""
+        edge = KineticEdge("A", "B", 0.5, "rates.k_AB")
+        result = edge.format_rate(unit="ns", include_unit=False, show_label=True)
+        assert "k_AB" in result
+        assert "=" in result
+        assert "ns" not in result
+
+    def test_include_unit_true_default(self) -> None:
+        """Default include_unit=True should include the unit suffix."""
+        edge = KineticEdge("A", "B", 0.5, "rates.k_AB")
+        result = edge.format_rate(unit="ns")
+        assert "ns" in result
+
 
 class TestKineticGraphFromTransitions:
     """Tests for KineticGraph.from_transitions factory."""

@@ -294,3 +294,118 @@ class TestShowKineticSchemeWithNodeStyles:
         texts = [t.get_text() for t in ax.texts]
         # At least one text should contain "=" from "k_label = value"
         assert any("=" in t for t in texts)
+
+
+class TestRateFontsizeConfig:
+    """Tests for rate_fontsize configuration."""
+
+    def test_rate_fontsize_default(self) -> None:
+        """Default rate_fontsize should be 9."""
+        config = KineticSchemeConfig()
+        assert config.rate_fontsize == 9
+
+    def test_rate_fontsize_custom(self) -> None:
+        """Custom rate_fontsize should be accepted."""
+        config = KineticSchemeConfig(rate_fontsize=12)
+        assert config.rate_fontsize == 12
+
+
+class TestUnitAnnotation:
+    """Tests for rate unit legend annotation."""
+
+    def test_unit_annotation_present_by_default(self) -> None:
+        """When show_rate_unit_per_label is False (default), unit annotation appears."""
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        assert any("rates in" in t for t in texts)
+
+    def test_no_unit_annotation_when_per_label(self) -> None:
+        """When show_rate_unit_per_label is True, no annotation should appear."""
+        config = KineticSchemeConfig(show_rate_unit_per_label=True)
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+            config=config,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        assert not any("rates in" in t for t in texts)
+
+    def test_labels_omit_unit_by_default(self) -> None:
+        """Rate labels should not contain unit suffix by default."""
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        # Filter to just texts containing digits (rate values)
+        # The only text with "ns" should be the annotation itself
+        ns_texts = [t for t in texts if "ns\u207b\u00b9" in t]
+        assert len(ns_texts) <= 1  # At most the annotation
+
+    def test_labels_include_unit_when_per_label(self) -> None:
+        """Rate labels should contain unit when show_rate_unit_per_label is True."""
+        config = KineticSchemeConfig(show_rate_unit_per_label=True)
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+            config=config,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        # Rate labels should contain "ns⁻¹"
+        ns_texts = [t for t in texts if "ns\u207b\u00b9" in t]
+        assert len(ns_texts) >= 1
+
+    def test_ps_unit_annotation(self) -> None:
+        """Unit annotation should reflect the rate_unit setting."""
+        config = KineticSchemeConfig(rate_unit="ps")
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+            config=config,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        assert any("ps\u207b\u00b9" in t for t in texts)
+
+
+class TestLabelAntiOverlap:
+    """Tests for label spreading when edges converge on a target."""
+
+    def test_convergent_labels_at_distinct_positions(self) -> None:
+        """Labels on edges sharing a target should be at different positions."""
+        from pyglotaran_extras.inspect.kinetic_scheme._k_matrix_parser import Transition
+        from pyglotaran_extras.inspect.kinetic_scheme._kinetic_graph import KineticGraph
+        from pyglotaran_extras.inspect.kinetic_scheme._layout import LayoutAlgorithm
+        from pyglotaran_extras.inspect.kinetic_scheme._layout import compute_layout
+        from pyglotaran_extras.inspect.kinetic_scheme.plot_kinetic_scheme import _draw_all_edges
+
+        # 3 edges converging on D
+        transitions = [
+            Transition("A", "D", 0.5, "rates.k_AD", False, "mc1"),
+            Transition("B", "D", 0.3, "rates.k_BD", False, "mc1"),
+            Transition("C", "D", 0.2, "rates.k_CD", False, "mc1"),
+        ]
+        graph = KineticGraph.from_transitions(transitions)
+        config = KineticSchemeConfig()
+        positions = compute_layout(graph, LayoutAlgorithm.HIERARCHICAL)
+
+        fig = Figure()
+        ax = fig.add_subplot(111)
+        _draw_all_edges(ax, graph, positions, config)
+
+        # Collect rate label positions (texts with digits = rate values)
+        rate_texts = [t for t in ax.texts if any(c.isdigit() for c in t.get_text())]
+        text_positions = [
+            (round(t.get_position()[0], 6), round(t.get_position()[1], 6))
+            for t in rate_texts
+        ]
+
+        # All positions should be distinct
+        assert len(text_positions) == len(set(text_positions))

@@ -174,9 +174,4 @@ _summary.ps
 
 # MacOs OS files
 .DS_store
-
-# Frontend dependencies
-node_modules/
-
-# Generated widget frontend files
-**/widgets/**/static
+*.local.json
