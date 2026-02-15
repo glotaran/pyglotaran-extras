@@ -1,8 +1,0 @@
-# runtime requirements
-# pinned so the bot can create PRs to test with new versions
-
-anywidget
-pydantic
-pyglotaran
-networkx
-xarray
