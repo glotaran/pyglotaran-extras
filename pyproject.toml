@@ -45,10 +45,6 @@ dependencies = [
   "tabulate>=0.8.9",
   "xarray>=2022.3",
 ]
-optional-dependencies.widgets = [
-  "anywidget>=0.9.13",
-  "networkx>=3.3",
-]
 urls."GloTarAn Ecosystem" = "https://glotaran.org"
 urls.Changelog = "https://pyglotaran-extras.readthedocs.io/en/latest/changelog.html"
 urls.Documentation = "https://pyglotaran-extras.readthedocs.io"
@@ -73,7 +69,6 @@ docs = [
   "myst-parser>=0.12",
   "numpydoc>=0.8",
   "pydata-sphinx-theme>=0.16.1",
-  "pyglotaran-extras[widgets]",
   "sphinx>=3.2",
   "sphinx-copybutton>=0.3",
   "sphinx-last-updated-by-git>=0.3",
@@ -88,24 +83,6 @@ build.targets.sdist.include = [
   "changelog.md",
 ]
 version.path = "pyglotaran_extras/__init__.py"
-
-[tool.hatch.build]
-only-packages = true
-artifacts = [ "pyglotaran_extras/widgets/kineticschemevisualizer/static/*" ]
-
-[tool.hatch.build.hooks.jupyter-builder]
-build-function = "hatch_jupyter_builder.npm_builder"
-ensured-targets = [
-  "pyglotaran_extras/widgets/kineticschemevisualizer/static/widget.js",
-]
-skip-if-exists = [
-  "pyglotaran_extras/widgets/kineticschemevisualizer/static/widget.js",
-]
-dependencies = [ "hatch-jupyter-builder>=0.5.0" ]
-
-[tool.hatch.build.hooks.jupyter-builder.build-kwargs]
-npm = "npm"
-build_cmd = "build"
 
 [tool.docformatter]
 black = true
