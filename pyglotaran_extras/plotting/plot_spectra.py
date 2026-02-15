@@ -91,8 +91,9 @@ def plot_sas(
         ):
             data = sas.sel(species=species)
             if (scale_factor := scale_factors.get(species)) is not None:
-                data *= scale_factor
-            data.plot.line(x="spectral", ax=ax, zorder=zorder)
+                (data * scale_factor).plot.line(x="spectral", ax=ax, zorder=zorder)
+            else:
+                data.plot.line(x="spectral", ax=ax, zorder=zorder)
     ax.set_title(title)
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
