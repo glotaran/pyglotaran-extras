@@ -155,7 +155,7 @@ Key rendering behaviors:
 
 **Parallel edge curvature**: When edges exist in both directions (A->B and B->A), `edge_index` assigns alternating curvature via `arc3,rad=...` connection style.
 
-**Label anti-overlap**: When multiple edges converge on the same target node, labels are spread along each edge at parametric positions t in [0.20, 0.50] instead of all clustering at t=0.35. Each label also has a perpendicular offset of 0.25 data units from the arrow line.
+**Label anti-overlap**: When multiple edges converge on the same target node, labels are spread along each edge at parametric positions `t` in `[0.35, 0.65]` instead of all clustering at the midpoint. Each label uses a base perpendicular offset of `0.35` data units from the arrow line, with additional outward bumps when needed to avoid collisions.
 
 **Text contrast**: `_compute_text_color()` uses the W3C relative luminance formula on linearized sRGB to decide white vs. black text on node backgrounds.
 
@@ -169,32 +169,33 @@ Key rendering behaviors:
 
 All fields have defaults. Config uses `extra="forbid"` to catch typos.
 
-| Field                          | Type                                     | Default          | Purpose                             |
-| ------------------------------ | ---------------------------------------- | ---------------- | ----------------------------------- |
-| `node_styles`                  | `dict[str, NodeStyleConfig]`             | `{}`             | Per-node style overrides            |
-| `color_mapping`                | `dict[str, list[str]]`                   | `{}`             | Batch color assignment              |
-| `node_facecolor`               | `str`                                    | `"#4A90D9"`      | Default node fill                   |
-| `node_edgecolor`               | `str`                                    | `"#2C3E50"`      | Default node border                 |
-| `node_width`                   | `float`                                  | `1.2`            | Default node width                  |
-| `node_height`                  | `float`                                  | `0.6`            | Default node height                 |
-| `edge_color`                   | `str`                                    | `"#555555"`      | Arrow color                         |
-| `edge_linewidth`               | `float`                                  | `1.5`            | Arrow thickness                     |
-| `rate_fontsize`                | `int`                                    | `9`              | Rate label font size                |
-| `rate_unit`                    | `"ps" \| "ns"`                           | `"ns"`           | Display unit for rates              |
-| `rate_decimal_places`          | `int \| None`                            | `None`           | Fixed decimals (None = smart)       |
-| `show_rate_labels`             | `bool`                                   | `False`          | Show parameter name prefix          |
-| `show_rate_unit_per_label`     | `bool`                                   | `False`          | Unit on every label vs. legend      |
-| `show_ground_state`            | `False \| "shared" \| "per_megacomplex"` | `False`          | Ground state bar mode               |
-| `layout_algorithm`             | `str`                                    | `"hierarchical"` | Layout algorithm                    |
-| `horizontal_layout_preference` | `str \| None`                            | `None`           | Left-to-right ordering hint         |
-| `manual_positions`             | `dict \| None`                           | `None`           | For manual layout                   |
-| `horizontal_spacing`           | `float`                                  | `2.0`            | Node horizontal gap                 |
-| `vertical_spacing`             | `float`                                  | `1.5`            | Layer vertical gap                  |
-| `ground_state_offset`          | `float`                                  | `1.2`            | GS bar vertical offset              |
-| `component_gap`                | `float`                                  | `3.0`            | Gap between disconnected components |
-| `figsize`                      | `tuple[float, float]`                    | `(10.0, 8.0)`    | Figure size in inches               |
-| `title`                        | `str \| None`                            | `None`           | Plot title                          |
-| `omit_parameters`              | `set[str]`                               | `set()`          | Parameters to exclude               |
+| Field                          | Type                                     | Default          | Purpose                                    |
+| ------------------------------ | ---------------------------------------- | ---------------- | ------------------------------------------ |
+| `node_styles`                  | `dict[str, NodeStyleConfig]`             | `{}`             | Per-node style overrides                   |
+| `color_mapping`                | `dict[str, list[str]]`                   | `{}`             | Batch color assignment                     |
+| `node_facecolor`               | `str`                                    | `"#4A90D9"`      | Default node fill                          |
+| `node_edgecolor`               | `str`                                    | `"#2C3E50"`      | Default node border                        |
+| `node_width`                   | `float`                                  | `1.2`            | Default node width                         |
+| `node_height`                  | `float`                                  | `0.6`            | Default node height                        |
+| `edge_color`                   | `str`                                    | `"#555555"`      | Arrow color                                |
+| `edge_linewidth`               | `float`                                  | `1.5`            | Arrow thickness                            |
+| `rate_fontsize`                | `int`                                    | `9`              | Rate label font size                       |
+| `color_edges_by_rate`          | `bool`                                   | `True`           | Color transfer edges by per-source rank    |
+| `rate_unit`                    | `"ps" \| "ns"`                           | `"ns"`           | Display unit for rates                     |
+| `rate_decimal_places`          | `int \| None`                            | `None`           | Fixed decimals (None = smart)              |
+| `show_rate_labels`             | `bool`                                   | `False`          | Show parameter name prefix                 |
+| `show_rate_unit_per_label`     | `bool`                                   | `False`          | Unit on every label vs. legend             |
+| `show_ground_state`            | `False \| "shared" \| "per_megacomplex"` | `False`          | Ground state bar mode                      |
+| `layout_algorithm`             | `str`                                    | `"hierarchical"` | Layout algorithm                           |
+| `horizontal_layout_preference` | `str \| None`                            | `None`           | Left-to-right ordering hint                |
+| `manual_positions`             | `dict \| None`                           | `None`           | For manual layout                          |
+| `horizontal_spacing`           | `float`                                  | `0.0`            | Node spacing (`0` = auto `3 × node_width`) |
+| `vertical_spacing`             | `float`                                  | `2.0`            | Layer vertical gap                         |
+| `ground_state_offset`          | `float`                                  | `1.2`            | GS bar vertical offset                     |
+| `component_gap`                | `float`                                  | `3.0`            | Gap between disconnected components        |
+| `figsize`                      | `tuple[float, float]`                    | `(10.0, 8.0)`    | Figure size in inches                      |
+| `title`                        | `str \| None`                            | `None`           | Plot title                                 |
+| `omit_parameters`              | `set[str]`                               | `set()`          | Parameters to exclude                      |
 
 ### `NodeStyleConfig` Fields
 
@@ -253,7 +254,7 @@ A single model often contains multiple independent megacomplexes (e.g., three re
 
 ### Why parametric t-value spreading?
 
-When 4 edges converge on the same target node, all labels would cluster at `t=0.35` along their respective arrows. Spreading to `t in [0.20, 0.50]` naturally separates labels since each arrow has a different source position. Combined with perpendicular offset, this eliminates label overlap without force-based layout for text.
+When several edges converge on the same target node, midpoint labels would collide. Spreading labels along each edge with `t in [0.35, 0.65]` naturally separates them since each arrow has a different source position. Combined with a perpendicular base offset (plus outward bumps when both sides are crowded), this avoids overlap without text-force simulation.
 
 ### Why unit-as-legend?
 

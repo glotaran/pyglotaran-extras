@@ -42,6 +42,15 @@ class TestKineticSchemeConfig:
         assert style.display_label == "Custom"
         assert style.facecolor == "red"
 
+    def test_node_style_numeric_constraints(self) -> None:
+        """NodeStyleConfig should reject invalid numeric values."""
+        with pytest.raises(ValidationError):
+            NodeStyleConfig(width=0)
+        with pytest.raises(ValidationError):
+            NodeStyleConfig(height=-1)
+        with pytest.raises(ValidationError):
+            NodeStyleConfig(fontsize=0)
+
     def test_color_mapping(self) -> None:
         """Color mapping should accept valid input."""
         config = KineticSchemeConfig(color_mapping={"red": ["A", "B"], "blue": ["C"]})
@@ -57,6 +66,27 @@ class TestKineticSchemeConfig:
 
         config_per_mc = KineticSchemeConfig(show_ground_state="per_megacomplex")
         assert config_per_mc.show_ground_state == "per_megacomplex"
+
+    def test_numeric_constraints(self) -> None:
+        """KineticSchemeConfig should reject invalid numeric values."""
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(node_width=0)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(node_height=-0.1)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(edge_linewidth=0)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(rate_fontsize=0)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(rate_decimal_places=-1)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(horizontal_spacing=-0.1)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(vertical_spacing=0)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(ground_state_offset=0)
+        with pytest.raises(ValidationError):
+            KineticSchemeConfig(component_gap=-0.5)
 
 
 class TestComputeTextColor:
@@ -179,6 +209,25 @@ class TestShowKineticScheme:
             config=config,
         )
         assert len(ax.lines) >= 1
+
+    def test_shared_ground_state_bar_respects_node_width_overrides(self) -> None:
+        """Shared ground-state bar span should account for per-node width overrides."""
+        config = KineticSchemeConfig(
+            show_ground_state="shared",
+            node_styles={"species_1": NodeStyleConfig(width=4.0)},
+        )
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+            config=config,
+        )
+        bar_line = ax.lines[0]
+        x_min = min(bar_line.get_xdata())
+        x_max = max(bar_line.get_xdata())
+        species_1_x = next(t.get_position()[0] for t in ax.texts if t.get_text() == "species_1")
+        assert x_min == pytest.approx(species_1_x - 3.2)
+        assert x_max == pytest.approx(species_1_x + 3.2)
 
     def test_accepts_list_megacomplexes(self) -> None:
         """Function should accept a list of megacomplex labels."""

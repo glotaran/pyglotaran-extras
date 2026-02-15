@@ -60,9 +60,10 @@ def compute_layout(
     algorithm : LayoutAlgorithm
         The layout algorithm to use. Defaults to ``HIERARCHICAL``.
     horizontal_spacing : float
-        Horizontal distance between adjacent nodes. Defaults to 2.0.
+        Horizontal distance between adjacent nodes. Defaults to 0.0
+        (sentinel: auto-computed as ``3 × DEFAULT_NODE_WIDTH``).
     vertical_spacing : float
-        Vertical distance between layers. Defaults to 1.5.
+        Vertical distance between layers. Defaults to 2.0.
     ground_state_offset : float
         Vertical offset for ground state nodes below their parent. Defaults to 1.2.
     component_gap : float

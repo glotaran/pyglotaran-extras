@@ -70,10 +70,10 @@ class NodeStyleConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     display_label: str | None = None
-    width: float = DEFAULT_NODE_WIDTH
-    height: float = DEFAULT_NODE_HEIGHT
+    width: float = Field(default=DEFAULT_NODE_WIDTH, gt=0)
+    height: float = Field(default=DEFAULT_NODE_HEIGHT, gt=0)
     facecolor: str | None = None
-    fontsize: int = DEFAULT_FONTSIZE
+    fontsize: int = Field(default=DEFAULT_FONTSIZE, ge=1)
 
 
 class KineticSchemeConfig(BaseModel):
@@ -100,9 +100,10 @@ class KineticSchemeConfig(BaseModel):
     rate_fontsize : int
         Font size for rate constant labels on edges.
     color_edges_by_rate : bool
-        When True (the default), edges are coloured by descending rate
-        magnitude using the standard glotaran colour palette (black for
-        the fastest, red for the second-fastest, etc.).
+        When True (the default), transfer edges are coloured by descending
+        rate magnitude per source node using the standard glotaran colour
+        palette (black for the fastest outgoing edge from that source, red
+        for the second-fastest, etc.).
     rate_unit : Literal["ps", "ns"]
         Unit for displaying rate constants.
     rate_decimal_places : int | None
@@ -146,18 +147,18 @@ class KineticSchemeConfig(BaseModel):
     color_mapping: dict[str, list[str]] = Field(default_factory=dict)
     node_facecolor: str = DEFAULT_NODE_FACECOLOR
     node_edgecolor: str = DEFAULT_NODE_EDGECOLOR
-    node_width: float = DEFAULT_NODE_WIDTH
-    node_height: float = DEFAULT_NODE_HEIGHT
+    node_width: float = Field(default=DEFAULT_NODE_WIDTH, gt=0)
+    node_height: float = Field(default=DEFAULT_NODE_HEIGHT, gt=0)
 
     # Edge styling
     edge_color: str = DEFAULT_EDGE_COLOR
-    edge_linewidth: float = DEFAULT_EDGE_LINEWIDTH
-    rate_fontsize: int = DEFAULT_RATE_FONTSIZE
+    edge_linewidth: float = Field(default=DEFAULT_EDGE_LINEWIDTH, gt=0)
+    rate_fontsize: int = Field(default=DEFAULT_RATE_FONTSIZE, ge=1)
     color_edges_by_rate: bool = True
 
     # Rate formatting
     rate_unit: Literal["ps", "ns"] = "ns"
-    rate_decimal_places: int | None = None
+    rate_decimal_places: int | None = Field(default=None, ge=0)
     show_rate_labels: bool = False
     show_rate_unit_per_label: bool = False
 
@@ -168,10 +169,10 @@ class KineticSchemeConfig(BaseModel):
     layout_algorithm: Literal["hierarchical", "spring", "manual"] = "hierarchical"
     horizontal_layout_preference: str | None = None
     manual_positions: dict[str, tuple[float, float]] | None = None
-    horizontal_spacing: float = DEFAULT_HORIZONTAL_SPACING
-    vertical_spacing: float = DEFAULT_VERTICAL_SPACING
-    ground_state_offset: float = DEFAULT_GROUND_STATE_OFFSET
-    component_gap: float = DEFAULT_COMPONENT_GAP
+    horizontal_spacing: float = Field(default=DEFAULT_HORIZONTAL_SPACING, ge=0)
+    vertical_spacing: float = Field(default=DEFAULT_VERTICAL_SPACING, gt=0)
+    ground_state_offset: float = Field(default=DEFAULT_GROUND_STATE_OFFSET, gt=0)
+    component_gap: float = Field(default=DEFAULT_COMPONENT_GAP, ge=0)
 
     # Figure
     figsize: tuple[float, float] = DEFAULT_FIGSIZE
@@ -1288,18 +1289,12 @@ def _draw_shared_ground_state_bar(
     config : KineticSchemeConfig
         Configuration.
     """
-    compartment_positions = [
-        positions[n.label] for n in graph.compartment_nodes() if n.label in positions
-    ]
-    if not compartment_positions:
+    compartment_labels = [n.label for n in graph.compartment_nodes() if n.label in positions]
+    if not compartment_labels:
         return
 
-    x_coords = [p[0] for p in compartment_positions]
-    y_coords = [p[1] for p in compartment_positions]
-
-    margin = config.node_width * 0.8
-    x_min = min(x_coords) - margin
-    x_max = max(x_coords) + margin
+    y_coords = [positions[label][1] for label in compartment_labels]
+    x_min, x_max = _compute_ground_state_bar_x_range(compartment_labels, positions, config)
     y_bar = min(y_coords) - config.ground_state_offset
 
     # Update GS node positions to be at the bar level
@@ -1346,15 +1341,9 @@ def _draw_per_megacomplex_ground_state_bars(
         for mc_label in node.megacomplex_labels:
             mc_groups.setdefault(mc_label, []).append(node.label)
 
-    margin = config.node_width * 0.5
-
     for mc_label, node_labels in mc_groups.items():
-        mc_positions = [positions[label] for label in node_labels]
-        x_coords = [p[0] for p in mc_positions]
-        y_coords = [p[1] for p in mc_positions]
-
-        x_min = min(x_coords) - margin
-        x_max = max(x_coords) + margin
+        y_coords = [positions[label][1] for label in node_labels]
+        x_min, x_max = _compute_ground_state_bar_x_range(node_labels, positions, config)
         y_bar = min(y_coords) - config.ground_state_offset
 
         # Update GS node positions for this megacomplex
@@ -1373,3 +1362,44 @@ def _draw_per_megacomplex_ground_state_bars(
             solid_capstyle="butt",
             zorder=1,
         )
+
+
+def _compute_ground_state_bar_x_range(
+    node_labels: list[str],
+    positions: NodePositions,
+    config: KineticSchemeConfig,
+) -> tuple[float, float]:
+    """Compute x-range for a ground state bar covering custom-width nodes.
+
+    Parameters
+    ----------
+    node_labels : list[str]
+        Compartment labels that the bar should span.
+    positions : NodePositions
+        Node positions in data coordinates.
+    config : KineticSchemeConfig
+        Visualization configuration.
+
+    Returns
+    -------
+    tuple[float, float]
+        ``(x_min, x_max)`` span for the bar.
+    """
+    left_edges: list[float] = []
+    right_edges: list[float] = []
+    widths: list[float] = []
+
+    for label in node_labels:
+        if label not in positions:
+            continue
+        x, _ = positions[label]
+        width, _ = _get_node_dimensions(label, config)
+        left_edges.append(x - width / 2)
+        right_edges.append(x + width / 2)
+        widths.append(width)
+
+    if not left_edges or not right_edges or not widths:
+        return (0.0, 0.0)
+
+    margin = max(widths) * 0.3
+    return min(left_edges) - margin, max(right_edges) + margin
