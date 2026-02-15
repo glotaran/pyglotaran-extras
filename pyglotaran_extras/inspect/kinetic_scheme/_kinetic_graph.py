@@ -260,7 +260,18 @@ class KineticGraph:
         gray: set[str] = set()
 
         def _has_cycle(node: str) -> bool:
-            """Check if a cycle is reachable from ``node`` via DFS."""
+            """Check if a cycle is reachable from ``node`` via DFS.
+
+            Parameters
+            ----------
+            node : str
+                The starting node for cycle detection.
+
+            Returns
+            -------
+            bool
+                True if a cycle is reachable from the node.
+            """
             white.discard(node)
             gray.add(node)
             for neighbor in self._adjacency.get(node, []):

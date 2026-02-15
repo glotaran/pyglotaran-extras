@@ -25,13 +25,13 @@ class LayoutAlgorithm(str, Enum):
 
     Attributes
     ----------
-    HIERARCHICAL : str
+    HIERARCHICAL
         Layered layout based on topological ordering. Best for DAGs and
         simple cyclic graphs.
-    SPRING : str
+    SPRING
         Force-directed Fruchterman-Reingold layout. For complex cyclic
         schemes.
-    MANUAL : str
+    MANUAL
         User-supplied positions passed through unchanged.
     """
 
@@ -208,7 +208,18 @@ def _hierarchical_layout(
         pref_index = {name: i for i, name in enumerate(pref_list)}
 
         def _component_sort_key(comp: set[str]) -> tuple[int, str]:
-            """Sort components by earliest preferred label, then alphabetically."""
+            """Sort components by earliest preferred label, then alphabetically.
+
+            Parameters
+            ----------
+            comp : set[str]
+                A set of node labels forming a connected component.
+
+            Returns
+            -------
+            tuple[int, str]
+                Sort key tuple (preference index, minimum label).
+            """
             best = len(pref_list)
             for label in comp:
                 if label in pref_index:
@@ -492,7 +503,18 @@ def _order_within_layer(
         pref_index = {name: i for i, name in enumerate(preference_order)}
 
         def sort_key(label: str) -> tuple[int, int, str]:
-            """Return sort key prioritizing preference order then alphabetical."""
+            """Return sort key prioritizing preference order then alphabetical.
+
+            Parameters
+            ----------
+            label : str
+                Node label to compute sort key for.
+
+            Returns
+            -------
+            tuple[int, int, str]
+                Sort key tuple (priority group, preference index, label).
+            """
             if label in pref_index:
                 return (0, pref_index[label], label)
             return (1, 0, label)
@@ -556,7 +578,13 @@ def _find_back_edges(graph: KineticGraph, compartment_labels: set[str]) -> set[t
     back_edges: set[tuple[str, str]] = set()
 
     def _dfs(node: str) -> None:
-        """Traverse from ``node`` recording back edges that form cycles."""
+        """Traverse from ``node`` recording back edges that form cycles.
+
+        Parameters
+        ----------
+        node : str
+            The starting node for DFS traversal.
+        """
         white.discard(node)
         gray.add(node)
         for neighbor in graph.successors(node):

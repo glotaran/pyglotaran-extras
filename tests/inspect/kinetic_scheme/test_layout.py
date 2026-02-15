@@ -347,9 +347,7 @@ class TestConnectedComponentLayout:
         """Gap between components should be approximately component_gap."""
         graph = _make_two_component_graph()
         gap = 5.0
-        positions = compute_layout(
-            graph, LayoutAlgorithm.HIERARCHICAL, component_gap=gap
-        )
+        positions = compute_layout(graph, LayoutAlgorithm.HIERARCHICAL, component_gap=gap)
 
         comp1_x = [positions[n][0] for n in ["A", "B", "C"]]
         comp2_x = [positions[n][0] for n in ["D", "E", "F"]]

@@ -745,8 +745,13 @@ def _draw_all_edges(
         convergence_total = target_edge_total.get(edge.target, 1)
 
         _draw_transfer_edge(
-            ax, edge, positions, config, edge_index,
-            convergence_index, convergence_total,
+            ax,
+            edge,
+            positions,
+            config,
+            edge_index,
+            convergence_index,
+            convergence_total,
         )
 
 

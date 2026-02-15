@@ -403,8 +403,7 @@ class TestLabelAntiOverlap:
         # Collect rate label positions (texts with digits = rate values)
         rate_texts = [t for t in ax.texts if any(c.isdigit() for c in t.get_text())]
         text_positions = [
-            (round(t.get_position()[0], 6), round(t.get_position()[1], 6))
-            for t in rate_texts
+            (round(t.get_position()[0], 6), round(t.get_position()[1], 6)) for t in rate_texts
         ]
 
         # All positions should be distinct
