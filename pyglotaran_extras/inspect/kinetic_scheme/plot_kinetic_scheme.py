@@ -38,6 +38,7 @@ from pyglotaran_extras.inspect.kinetic_scheme._k_matrix_parser import extract_tr
 from pyglotaran_extras.inspect.kinetic_scheme._kinetic_graph import KineticGraph
 from pyglotaran_extras.inspect.kinetic_scheme._layout import LayoutAlgorithm
 from pyglotaran_extras.inspect.kinetic_scheme._layout import compute_layout
+from pyglotaran_extras.plotting.style import ColorCode
 
 if TYPE_CHECKING:
     from glotaran.model import Model
@@ -93,11 +94,15 @@ class KineticSchemeConfig(BaseModel):
     node_height : float
         Default node height.
     edge_color : str
-        Default edge color.
+        Default edge color.  Ignored when ``color_edges_by_rate`` is True.
     edge_linewidth : float
         Default edge line width.
     rate_fontsize : int
         Font size for rate constant labels on edges.
+    color_edges_by_rate : bool
+        When True (the default), edges are coloured by descending rate
+        magnitude using the standard glotaran colour palette (black for
+        the fastest, red for the second-fastest, etc.).
     rate_unit : Literal["ps", "ns"]
         Unit for displaying rate constants.
     rate_decimal_places : int | None
@@ -116,7 +121,10 @@ class KineticSchemeConfig(BaseModel):
     manual_positions : dict[str, tuple[float, float]] | None
         User-supplied positions for manual layout.
     horizontal_spacing : float
-        Horizontal distance between nodes.
+        Horizontal centre-to-centre distance between nodes.  When 0
+        (the default), computed automatically as ``3 × node_width``
+        so that the gap between adjacent node edges equals 200 % of
+        the node width.
     vertical_spacing : float
         Vertical distance between layers.
     ground_state_offset : float
@@ -145,6 +153,7 @@ class KineticSchemeConfig(BaseModel):
     edge_color: str = DEFAULT_EDGE_COLOR
     edge_linewidth: float = DEFAULT_EDGE_LINEWIDTH
     rate_fontsize: int = DEFAULT_RATE_FONTSIZE
+    color_edges_by_rate: bool = True
 
     # Rate formatting
     rate_unit: Literal["ps", "ns"] = "ns"
@@ -211,6 +220,13 @@ def show_kinetic_scheme(
     effective_figsize = config.figsize if config.figsize != DEFAULT_FIGSIZE else figsize
     effective_title = config.title if config.title is not None else title
 
+    # Compute effective horizontal spacing: when the sentinel value 0 is
+    # used (the default), derive it from node_width so that there is a gap
+    # of 200 % of the node width between adjacent columns.
+    h_spacing = config.horizontal_spacing
+    if h_spacing <= 0:
+        h_spacing = 3.0 * config.node_width
+
     # Layer 1: Extract
     transitions = extract_transitions(
         megacomplexes, model, parameters, omit_parameters=config.omit_parameters
@@ -224,7 +240,7 @@ def show_kinetic_scheme(
     positions = compute_layout(
         graph,
         algorithm,
-        horizontal_spacing=config.horizontal_spacing,
+        horizontal_spacing=h_spacing,
         vertical_spacing=config.vertical_spacing,
         ground_state_offset=config.ground_state_offset,
         component_gap=config.component_gap,
@@ -282,6 +298,10 @@ def show_dataset_kinetic_scheme(
     effective_figsize = config.figsize if config.figsize != DEFAULT_FIGSIZE else figsize
     effective_title = config.title if config.title is not None else title
 
+    h_spacing = config.horizontal_spacing
+    if h_spacing <= 0:
+        h_spacing = 3.0 * config.node_width
+
     # Layer 1: Extract
     transitions = extract_dataset_transitions(
         dataset_name,
@@ -299,7 +319,7 @@ def show_dataset_kinetic_scheme(
     positions = compute_layout(
         graph,
         algorithm,
-        horizontal_spacing=config.horizontal_spacing,
+        horizontal_spacing=h_spacing,
         vertical_spacing=config.vertical_spacing,
         ground_state_offset=config.ground_state_offset,
         component_gap=config.component_gap,
@@ -575,6 +595,31 @@ def _draw_node(
     )
 
 
+def _compute_arrowstyle(num_compartments: int) -> str:
+    """Compute an arrowstyle string scaled to the graph complexity.
+
+    For small graphs (<=3 compartments) the arrowheads use the full default
+    size.  For larger graphs the heads shrink linearly so they remain
+    proportional to the nodes.
+
+    Parameters
+    ----------
+    num_compartments : int
+        Number of compartment (non-ground-state) nodes in the graph.
+
+    Returns
+    -------
+    str
+        A matplotlib arrowstyle specification string.
+    """
+    # Scale between full size at <=3 nodes and half size at >=8 nodes
+    lo, hi = 3, 8
+    t = max(0.0, min(1.0, (num_compartments - lo) / (hi - lo)))
+    head_length = 8 * (1 - 0.5 * t)  # 8 → 4
+    head_width = 5 * (1 - 0.5 * t)  # 5 → 2.5
+    return f"-|>,head_length={head_length:.1f},head_width={head_width:.1f}"
+
+
 def _compute_arrow_endpoints(
     source_center: tuple[float, float],
     target_center: tuple[float, float],
@@ -677,7 +722,7 @@ def _rect_edge_intersection(
     return (cx + dx * t, cy + dy * t)
 
 
-def _draw_all_edges(
+def _draw_all_edges(  # noqa: C901
     ax: Axes,
     graph: KineticGraph,
     positions: NodePositions,
@@ -696,11 +741,42 @@ def _draw_all_edges(
     config : KineticSchemeConfig
         Configuration.
     """
+    # Compute arrowstyle scaled to graph complexity
+    num_compartments = sum(1 for n in graph.nodes.values() if not n.is_ground_state)
+    arrowstyle = _compute_arrowstyle(num_compartments)
+
+    # Assign colours to edges by descending rate magnitude *per source node*.
+    # Within each source, the fastest outgoing transfer edge is black, the
+    # second-fastest is red, etc.  Ground-state decays are always dark grey.
+    edge_colors: dict[int, str] = {}
+    if config.color_edges_by_rate:
+        palette = [c.value for c in ColorCode]
+        # Group transfer-edge indices by source node
+        source_edges: dict[str, list[int]] = {}
+        for idx, edge in enumerate(graph.edges):
+            target_node = graph.nodes.get(edge.target)
+            if target_node is not None and target_node.is_ground_state:
+                # GS decays always get the default ground-state colour
+                edge_colors[idx] = DEFAULT_GROUND_STATE_COLOR
+            else:
+                source_edges.setdefault(edge.source, []).append(idx)
+        # Rank edges within each source by descending |rate|
+        for _src, indices in source_edges.items():
+            ranked = sorted(
+                indices,
+                key=lambda i: abs(graph.edges[i].rate_constant_ps_inverse),
+                reverse=True,
+            )
+            for rank, i in enumerate(ranked):
+                edge_colors[i] = palette[rank % len(palette)]
+
     # Track edge pairs to handle parallel edges (back-transfer)
     edge_count: dict[tuple[str, str], int] = {}
 
     # Pre-compute convergence totals per target for label spreading
     target_edge_total: dict[str, int] = {}
+    # Pre-compute source edge totals for label side alternation
+    source_edge_total: dict[str, int] = {}
     for edge in graph.edges:
         target_node = graph.nodes.get(edge.target)
         if target_node is None or target_node.is_ground_state:
@@ -709,21 +785,35 @@ def _draw_all_edges(
             continue
         target_edge_total.setdefault(edge.target, 0)
         target_edge_total[edge.target] += 1
+        source_edge_total.setdefault(edge.source, 0)
+        source_edge_total[edge.source] += 1
 
     target_edge_count: dict[str, int] = {}
+    source_edge_count: dict[str, int] = {}
 
-    for edge in graph.edges:
+    # Accumulate placed label centres so later labels can avoid earlier ones
+    placed_labels: list[tuple[float, float]] = []
+
+    for edge_idx, edge in enumerate(graph.edges):
         target_node = graph.nodes.get(edge.target)
         if target_node is None:
             continue
 
+        color = edge_colors.get(edge_idx, config.edge_color)
+
         # Skip edges to ground state nodes when ground state is shown
-        # (arrows to the bar are drawn separately)
+        # (arrows to the bar are drawn separately).
+        # Ground-state decays always use the default GS colour (dark grey).
         if target_node.is_ground_state:
+            gs_color = DEFAULT_GROUND_STATE_COLOR
             if config.show_ground_state is not False:
-                _draw_ground_state_arrow(ax, edge, positions, config)
+                _draw_ground_state_arrow(
+                    ax, edge, positions, config, arrowstyle, placed_labels, gs_color
+                )
             else:
-                _draw_ground_state_decay_arrow(ax, edge, positions, config)
+                _draw_ground_state_decay_arrow(
+                    ax, edge, positions, config, arrowstyle, placed_labels, gs_color
+                )
             continue
 
         if edge.source not in positions or edge.target not in positions:
@@ -744,6 +834,12 @@ def _draw_all_edges(
         convergence_index = target_edge_count[edge.target]
         convergence_total = target_edge_total.get(edge.target, 1)
 
+        # Count source index for label side alternation
+        source_edge_count.setdefault(edge.source, 0)
+        source_edge_count[edge.source] += 1
+        source_index = source_edge_count[edge.source]
+        source_total = source_edge_total.get(edge.source, 1)
+
         _draw_transfer_edge(
             ax,
             edge,
@@ -752,10 +848,15 @@ def _draw_all_edges(
             edge_index,
             convergence_index,
             convergence_total,
+            source_index,
+            source_total,
+            arrowstyle,
+            placed_labels,
+            color,
         )
 
 
-def _draw_transfer_edge(
+def _draw_transfer_edge(  # noqa: C901
     ax: Axes,
     edge: KineticEdge,
     positions: NodePositions,
@@ -763,6 +864,11 @@ def _draw_transfer_edge(
     edge_index: int,
     convergence_index: int = 1,
     convergence_total: int = 1,
+    source_index: int = 1,
+    source_total: int = 1,
+    arrowstyle: str = DEFAULT_ARROWSTYLE,
+    placed_labels: list[tuple[float, float]] | None = None,
+    color: str | None = None,
 ) -> None:
     """Draw a transfer edge between two compartment nodes.
 
@@ -782,7 +888,19 @@ def _draw_transfer_edge(
         This edge's index among edges sharing the same target (1-based).
     convergence_total : int
         Total number of edges sharing this edge's target node.
+    source_index : int
+        This edge's index among edges leaving the same source (1-based).
+    source_total : int
+        Total number of edges leaving this edge's source node.
+    arrowstyle : str
+        Matplotlib arrowstyle specification string.
+    placed_labels : list[tuple[float, float]] | None
+        Mutable list of already-placed label centres.  New label positions
+        are appended so subsequent calls can avoid overlap.
+    color : str | None
+        Edge and label colour.  Falls back to ``config.edge_color``.
     """
+    edge_color = color or config.edge_color
     source_w, source_h = _get_node_dimensions(edge.source, config)
     target_w, target_h = _get_node_dimensions(edge.target, config)
 
@@ -803,9 +921,9 @@ def _draw_transfer_edge(
     arrow = FancyArrowPatch(
         start,
         end,
-        arrowstyle=DEFAULT_ARROWSTYLE,
+        arrowstyle=arrowstyle,
         connectionstyle=connection_style,
-        color=config.edge_color,
+        color=edge_color,
         linewidth=config.edge_linewidth,
         zorder=2,
     )
@@ -819,32 +937,117 @@ def _draw_transfer_edge(
         include_unit=config.show_rate_unit_per_label,
     )
 
+    # Compute edge vector and length
+    edge_dx = end[0] - start[0]
+    edge_dy = end[1] - start[1]
+    edge_length = max((edge_dx**2 + edge_dy**2) ** 0.5, 0.01)
+
+    # Place the label at the midpoint of the edge by default.
     # When multiple edges converge on the same target, spread labels
-    # along each edge to avoid overlap
+    # along each edge so they don't stack on top of each other.
     if convergence_total <= 1:
-        t = 0.35
+        t = 0.5
     else:
-        t_min = 0.20
-        t_max = 0.50
+        t_min = 0.35
+        t_max = 0.65
         t = t_min + (convergence_index - 1) * (t_max - t_min) / (convergence_total - 1)
 
     label_x = start[0] + t * (end[0] - start[0])
     label_y = start[1] + t * (end[1] - start[1])
 
-    # Perpendicular offset to avoid overlapping the arrow line
-    dx = end[0] - start[0]
-    dy = end[1] - start[1]
-    length = max((dx**2 + dy**2) ** 0.5, 0.01)
-    offset_x = -dy / length * 0.25
-    offset_y = dx / length * 0.25
+    # Perpendicular offset to keep labels clear of the arrow line, nodes,
+    # and previously placed labels.
+    # Determine which side (left=+1 or right=-1 of the edge direction) is
+    # free of obstacles.  When both sides are free, use a preferred side
+    # derived from source_index alternation for visual variety.
+    perp_x = -edge_dy / edge_length
+    perp_y = edge_dx / edge_length
+    base_offset = 0.35
+    preferred_side = 1 if source_total <= 1 or source_index % 2 == 1 else -1
+
+    # Minimum distance between two label centres to consider them non-
+    # overlapping.  Accounts for typical rate-text width at fontsize 9.
+    label_clearance = 0.55
+
+    def _collides(cx: float, cy: float) -> bool:
+        """Return True if (cx, cy) overlaps any node or previously placed label.
+
+        Parameters
+        ----------
+        cx : float
+            X-coordinate of the candidate label position.
+        cy : float
+            Y-coordinate of the candidate label position.
+
+        Returns
+        -------
+        bool
+            True if the position overlaps with a node or another label.
+        """
+        for nl, (nx, ny) in positions.items():
+            nw, nh = _get_node_dimensions(nl, config)
+            # Use a smaller margin for the edge's own source/target so we
+            # only trigger when the label is truly inside the node box,
+            # but a generous margin for intermediate nodes.
+            margin = 0.05 if nl in (edge.source, edge.target) else 0.15
+            if abs(cx - nx) < (nw / 2 + margin) and abs(cy - ny) < (nh / 2 + margin):
+                return True
+        if placed_labels is not None:
+            for plx, ply in placed_labels:
+                if abs(cx - plx) < label_clearance and abs(cy - ply) < label_clearance:
+                    return True
+        return False
+
+    # Test both sides at the base offset
+    left_clear = not _collides(label_x + perp_x * base_offset, label_y + perp_y * base_offset)
+    right_clear = not _collides(label_x - perp_x * base_offset, label_y - perp_y * base_offset)
+
+    if left_clear and right_clear:
+        side = preferred_side
+        offset_magnitude = base_offset
+    elif left_clear:
+        side = 1
+        offset_magnitude = base_offset
+    elif right_clear:
+        side = -1
+        offset_magnitude = base_offset
+    else:
+        # Both sides collide — try bumping each side outward, pick the
+        # first side that finds a clear spot at the smallest offset.
+        best_side = preferred_side
+        best_mag = base_offset
+        found = False
+        for try_side in (preferred_side, -preferred_side):
+            mag = base_offset
+            for _bump in range(6):
+                mag += 0.3
+                if not _collides(
+                    label_x + try_side * perp_x * mag,
+                    label_y + try_side * perp_y * mag,
+                ):
+                    if not found or mag < best_mag:
+                        best_side = try_side
+                        best_mag = mag
+                        found = True
+                    break
+        side = best_side
+        offset_magnitude = best_mag
+
+    final_x = label_x + side * perp_x * offset_magnitude
+    final_y = label_y + side * perp_y * offset_magnitude
+
+    # Register this label position so later edges can avoid it
+    if placed_labels is not None:
+        placed_labels.append((final_x, final_y))
 
     ax.text(
-        label_x + offset_x,
-        label_y + offset_y,
+        final_x,
+        final_y,
         rate_text,
         ha="center",
         va="center",
         fontsize=config.rate_fontsize,
+        color=edge_color,
         zorder=5,
         bbox={
             "boxstyle": "round,pad=0.1",
@@ -855,11 +1058,54 @@ def _draw_transfer_edge(
     )
 
 
+def _gs_label_side(
+    source_label: str,
+    positions: NodePositions,
+) -> int:
+    """Choose the less-crowded side for a ground state decay label.
+
+    Counts how many other nodes sit to the left vs. right of *source_label*
+    within one vertical spacing unit and returns ``-1`` (left) when the
+    right side is more crowded, ``+1`` (right) otherwise.
+
+    Parameters
+    ----------
+    source_label : str
+        The compartment node that has the ground state decay.
+    positions : NodePositions
+        All node positions.
+
+    Returns
+    -------
+    int
+        ``+1`` to place the label on the right, ``-1`` for the left.
+    """
+    if source_label not in positions:
+        return 1
+    sx, sy = positions[source_label]
+    left_count = 0
+    right_count = 0
+    for nl, (nx, ny) in positions.items():
+        if nl == source_label:
+            continue
+        # Only consider nodes within a reasonable vertical band
+        if abs(ny - sy) > 3.0:
+            continue
+        if nx < sx - 0.3:
+            left_count += 1
+        elif nx > sx + 0.3:
+            right_count += 1
+    return -1 if right_count > left_count else 1
+
+
 def _draw_ground_state_decay_arrow(
     ax: Axes,
     edge: KineticEdge,
     positions: NodePositions,
     config: KineticSchemeConfig,
+    arrowstyle: str = DEFAULT_ARROWSTYLE,
+    placed_labels: list[tuple[float, float]] | None = None,
+    color: str | None = None,
 ) -> None:
     """Draw a ground state decay arrow pointing downward into empty space.
 
@@ -875,9 +1121,17 @@ def _draw_ground_state_decay_arrow(
         Node positions.
     config : KineticSchemeConfig
         Configuration.
+    arrowstyle : str
+        Matplotlib arrowstyle specification string.
+    placed_labels : list[tuple[float, float]] | None
+        Mutable list of already-placed label centres.
+    color : str | None
+        Edge and label colour.  Falls back to ``config.edge_color``.
     """
     if edge.source not in positions:
         return
+
+    edge_color = color or config.edge_color
 
     _, source_h = _get_node_dimensions(edge.source, config)
     sx, sy = positions[edge.source]
@@ -888,14 +1142,14 @@ def _draw_ground_state_decay_arrow(
     arrow = FancyArrowPatch(
         start,
         end,
-        arrowstyle=DEFAULT_ARROWSTYLE,
-        color=config.edge_color,
+        arrowstyle=arrowstyle,
+        color=edge_color,
         linewidth=config.edge_linewidth,
         zorder=2,
     )
     ax.add_patch(arrow)
 
-    # Rate label
+    # Rate label — place on the side with fewer neighbouring edges
     rate_text = edge.format_rate(
         unit=config.rate_unit,
         decimal_places=config.rate_decimal_places,
@@ -903,13 +1157,22 @@ def _draw_ground_state_decay_arrow(
         include_unit=config.show_rate_unit_per_label,
     )
     mid_y = (start[1] + end[1]) / 2
+    side = _gs_label_side(edge.source, positions)
+    label_x = sx + side * 0.3
+    label_y = mid_y
+    ha = "left" if side > 0 else "right"
+
+    if placed_labels is not None:
+        placed_labels.append((label_x, label_y))
+
     ax.text(
-        sx + 0.2,
-        mid_y,
+        label_x,
+        label_y,
         rate_text,
-        ha="left",
+        ha=ha,
         va="center",
         fontsize=config.rate_fontsize,
+        color=edge_color,
         zorder=5,
         bbox={
             "boxstyle": "round,pad=0.1",
@@ -925,6 +1188,9 @@ def _draw_ground_state_arrow(
     edge: KineticEdge,
     positions: NodePositions,
     config: KineticSchemeConfig,
+    arrowstyle: str = DEFAULT_ARROWSTYLE,
+    placed_labels: list[tuple[float, float]] | None = None,
+    color: str | None = None,
 ) -> None:
     """Draw a ground state decay arrow pointing to the ground state bar.
 
@@ -940,9 +1206,17 @@ def _draw_ground_state_arrow(
         Node positions.
     config : KineticSchemeConfig
         Configuration.
+    arrowstyle : str
+        Matplotlib arrowstyle specification string.
+    placed_labels : list[tuple[float, float]] | None
+        Mutable list of already-placed label centres.
+    color : str | None
+        Edge and label colour.  Falls back to ``config.edge_color``.
     """
     if edge.source not in positions or edge.target not in positions:
         return
+
+    edge_color = color or config.edge_color
 
     _, source_h = _get_node_dimensions(edge.source, config)
     sx, sy = positions[edge.source]
@@ -954,14 +1228,14 @@ def _draw_ground_state_arrow(
     arrow = FancyArrowPatch(
         start,
         end,
-        arrowstyle=DEFAULT_ARROWSTYLE,
-        color=config.edge_color,
+        arrowstyle=arrowstyle,
+        color=edge_color,
         linewidth=config.edge_linewidth,
         zorder=2,
     )
     ax.add_patch(arrow)
 
-    # Rate label
+    # Rate label — place on the side with fewer neighbouring edges
     rate_text = edge.format_rate(
         unit=config.rate_unit,
         decimal_places=config.rate_decimal_places,
@@ -969,13 +1243,22 @@ def _draw_ground_state_arrow(
         include_unit=config.show_rate_unit_per_label,
     )
     mid_y = (start[1] + end[1]) / 2
+    side = _gs_label_side(edge.source, positions)
+    label_x = sx + side * 0.3
+    label_y = mid_y
+    ha = "left" if side > 0 else "right"
+
+    if placed_labels is not None:
+        placed_labels.append((label_x, label_y))
+
     ax.text(
-        sx + 0.2,
-        mid_y,
+        label_x,
+        label_y,
         rate_text,
-        ha="left",
+        ha=ha,
         va="center",
         fontsize=config.rate_fontsize,
+        color=edge_color,
         zorder=5,
         bbox={
             "boxstyle": "round,pad=0.1",

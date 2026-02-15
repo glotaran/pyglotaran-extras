@@ -18,7 +18,7 @@ DEFAULT_FONTSIZE: int = 10
 # Default edge styling
 DEFAULT_EDGE_COLOR: str = "#555555"
 DEFAULT_EDGE_LINEWIDTH: float = 1.5
-DEFAULT_ARROWSTYLE: str = "->,head_length=0.4,head_width=0.2"
+DEFAULT_ARROWSTYLE: str = "-|>,head_length=8,head_width=5"
 DEFAULT_RATE_FONTSIZE: int = 9
 
 # Ground state bar styling
@@ -28,8 +28,9 @@ DEFAULT_GROUND_STATE_PER_MC_LINEWIDTH: float = 2.5
 
 # Layout defaults
 DEFAULT_FIGSIZE: tuple[float, float] = (10.0, 8.0)
-DEFAULT_HORIZONTAL_SPACING: float = 2.0
-DEFAULT_VERTICAL_SPACING: float = 1.5
+DEFAULT_HORIZONTAL_SPACING: float = 0.0
+"""Sentinel: when 0, computed as 3 × node_width at render time (200% gap)."""
+DEFAULT_VERTICAL_SPACING: float = 2.0
 DEFAULT_GROUND_STATE_OFFSET: float = 1.2
 DEFAULT_COMPONENT_GAP: float = 3.0
 """Horizontal gap between disconnected graph components in side-by-side layout."""

@@ -84,6 +84,13 @@ def compute_layout(
     ValueError
         If manual layout is selected but positions are missing for some nodes.
     """
+    # Resolve the sentinel value: 0 means "auto-compute from node width".
+    # The default node width (1.2) gives 3 × 1.2 = 3.6.
+    if horizontal_spacing <= 0:
+        from pyglotaran_extras.inspect.kinetic_scheme._constants import DEFAULT_NODE_WIDTH
+
+        horizontal_spacing = 3.0 * DEFAULT_NODE_WIDTH
+
     if algorithm == LayoutAlgorithm.MANUAL:
         return _manual_layout(graph, manual_positions)
 
@@ -104,6 +111,11 @@ def compute_layout(
 
     # Position ground state nodes below their parent compartment
     _position_ground_state_nodes(graph, positions, ground_state_offset)
+
+    # Nudge compartment nodes that sit directly below a node with a ground
+    # state decay arrow, to prevent the transfer edge from overlapping the
+    # decay arrow.
+    _avoid_ground_state_arrow_overlap(graph, positions, horizontal_spacing)
 
     return positions
 
@@ -627,6 +639,58 @@ def _position_ground_state_nodes(
         else:
             # Fallback: place at origin
             positions[gs_node.label] = (0.0, -ground_state_offset)
+
+
+def _avoid_ground_state_arrow_overlap(
+    graph: KineticGraph,
+    positions: NodePositions,
+    horizontal_spacing: float,
+) -> None:
+    """Nudge compartment nodes that overlap a ground state decay arrow.
+
+    When a compartment node ``A`` has a ground state decay AND a transfer
+    edge to another compartment node ``B``, and ``B`` is positioned
+    directly below ``A`` (same x column), the downward decay arrow from
+    ``A`` visually overlaps the edge to ``B``.  This function detects
+    that situation and shifts ``B`` horizontally so the paths separate.
+
+    Parameters
+    ----------
+    graph : KineticGraph
+        The graph.
+    positions : NodePositions
+        Positions dict to update in-place.
+    horizontal_spacing : float
+        Current horizontal spacing (used to size the nudge).
+    """
+    # Identify compartment nodes that have ground state decay edges
+    nodes_with_gs_decay: set[str] = set()
+    for node in graph.compartment_nodes():
+        if graph.ground_state_edges_for_node(node.label):
+            nodes_with_gs_decay.add(node.label)
+
+    if not nodes_with_gs_decay:
+        return
+
+    nudge = horizontal_spacing * 0.4
+
+    for parent_label in nodes_with_gs_decay:
+        if parent_label not in positions:
+            continue
+        px, py = positions[parent_label]
+
+        for successor_label in graph.successors(parent_label):
+            successor_node = graph.nodes.get(successor_label)
+            if successor_node is None or successor_node.is_ground_state:
+                continue
+            if successor_label not in positions:
+                continue
+            sx, sy = positions[successor_label]
+
+            # Check if successor is approximately in the same x column
+            # and below the parent
+            if abs(sx - px) < 0.3 and sy < py:
+                positions[successor_label] = (sx + nudge, sy)
 
 
 def _spring_layout(
