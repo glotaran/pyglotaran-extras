@@ -133,6 +133,7 @@ html_sidebars = {
     'contributing': [],
     'changelog': [],
     'config/project/subproject/config_docs': [],
+    'notebooks/tips_and_tricks': [],
 }
 
 # Theme options are theme-specific and customize the look and feel of a
@@ -147,6 +148,7 @@ html_sidebars = {
 html_static_path = ["_static"]
 html_css_files = [
     'css/mermaid_dark.css',
+    'css/xarray_dark.css',
 ]
 
 # -- Options for HTMLHelp output ---------------------------------------

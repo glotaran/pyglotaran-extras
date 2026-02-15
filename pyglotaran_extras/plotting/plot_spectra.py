@@ -59,6 +59,7 @@ def plot_sas(
     title: str = "SAS",
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
+    scale_factors: dict[str, float] | None = None,
 ) -> None:
     """Plot SAS (Species Associated Spectra) on ``ax``.
 
@@ -74,16 +75,26 @@ def plot_sas(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
+    scale_factors : dict[str, float] | None
+        Dictionary of species to scale and their corresponding factors. Defaults to None.
     """
+    if scale_factors is None:
+        scale_factors = {}
     add_cycler_if_not_none(ax, cycler)
     keys = [
         v for v in res.data_vars if v.startswith(("species_associated_spectra", "species_spectra"))
     ]
     for key in reversed(keys):
         sas = res[key]
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
-            sas.sel(species=species).plot.line(x="spectral", ax=ax, zorder=zorder)
-        ax.set_title(title)
+        for zorder, species in zip(
+            range(100)[::-1], sas.coords["species"].to_numpy(), strict=False
+        ):
+            data = sas.sel(species=species)
+            if (scale_factor := scale_factors.get(species)) is not None:
+                (data * scale_factor).plot.line(x="spectral", ax=ax, zorder=zorder)
+            else:
+                data.plot.line(x="spectral", ax=ax, zorder=zorder)
+    ax.set_title(title)
     if show_zero_line is True:
         ax.axhline(0, color="k", linewidth=1)
 
@@ -117,7 +128,9 @@ def plot_norm_sas(
     ]
     for key in keys:
         sas = res[key]
-        for zorder, species in zip(range(100)[::-1], sas.coords["species"], strict=False):
+        for zorder, species in zip(
+            range(100)[::-1], sas.coords["species"].to_numpy(), strict=False
+        ):
             (sas / np.abs(sas).max(dim="spectral")).sel(species=species).plot.line(
                 x="spectral", ax=ax, zorder=zorder
             )

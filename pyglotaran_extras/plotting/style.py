@@ -104,6 +104,10 @@ class DataColorCode(str, Enum):
     indigo = "#4b0082"
     brown = "#964b00"
     maroon = "#800000"
+    olive = "#808000"
+    olive4 = "#556b2f"
+    turquoise = "#40e0d0"
+    turquoise4 = "#00ced1"
     yellow = "#ffff00"
     # Adding orange a second time needs to be added manually to the list in PlotStyle
     # since Enum doesn't allow duplicates

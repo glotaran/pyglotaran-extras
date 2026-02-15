@@ -9,6 +9,7 @@
 installation
 usage
 config/project/subproject/config_docs
+notebooks/tips_and_tricks
 api_docs
 contributing
 changelog

@@ -45,9 +45,9 @@ dependencies = [
   "tabulate>=0.8.9",
   "xarray>=2022.3",
 ]
+urls."GloTarAn Ecosystem" = "https://glotaran.org"
 urls.Changelog = "https://pyglotaran-extras.readthedocs.io/en/latest/changelog.html"
 urls.Documentation = "https://pyglotaran-extras.readthedocs.io"
-urls."GloTarAn Ecosystem" = "https://glotaran.org"
 urls.Homepage = "https://github.com/glotaran/pyglotaran-extras"
 urls.Source = "https://github.com/glotaran/pyglotaran-extras"
 urls.Tracker = "https://github.com/glotaran/pyglotaran-extras/issues"
@@ -75,16 +75,14 @@ docs = [
   "sphinxcontrib-mermaid>=0.9.2",
 ]
 
-[tool.hatch.version]
-path = "pyglotaran_extras/__init__.py"
-
-[tool.hatch.build.targets.sdist]
-include = [
+[tool.hatch]
+build.targets.sdist.include = [
   "/pyglotaran_extras",
   "/docs",
   "/tests",
   "changelog.md",
 ]
+version.path = "pyglotaran_extras/__init__.py"
 
 [tool.docformatter]
 black = true
@@ -95,41 +93,35 @@ wrap-descriptions = 99
 
 [tool.pydoclint]
 skip-checking-short-docstrings = false
-style = 'numpy'
-exclude = '^(docs/|tests?/)'
+style = "numpy"
+exclude = "^(docs/|tests?/)"
 require-return-section-when-returning-none = false
 allow-init-docstring = true
 
-[tool.coverage.paths]
-source = [
+[tool.coverage]
+run.branch = true
+run.omit = [
+  "tests/*",
+  # comment the above line if you want to see if all tests did run
+]
+paths.source = [
   "pyglotaran_extras",
   "*/site-packages/pyglotaran_extras",
 ]
-[tool.coverage.run]
-branch = true
-omit = [
-  'tests/*',
-  # comment the above line if you want to see if all tests did run
-]
-
-[tool.coverage.report]
 # Regexes for lines to exclude from consideration
-exclude_lines = [
-  # Have to re-enable the standard pragma
-  'pragma: no cover',
-
+report.exclude_lines = [
   # Don't complain about missing debug-only code:
-  'def __repr__',
-  'if self\.debug',
-
-  # Don't complain if tests don't hit defensive assertion code:
-  'raise AssertionError',
-  'raise NotImplementedError',
-
+  "def __repr__",
+  "if __name__ == .__main__.:",
   # Don't complain if non-runnable code isn't run:
-  'if 0:',
-  'if __name__ == .__main__.:',
-  'if TYPE_CHECKING:',
+  "if 0:",
+  "if self\\.debug",
+  "if TYPE_CHECKING:",
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError",
 ]
 
 [tool.mypy]
@@ -148,11 +140,9 @@ disallow_untyped_calls = true
 no_implicit_reexport = true
 warn_unused_configs = true
 check_untyped_defs = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_incomplete_defs = false
-disallow_untyped_defs = false
+overrides = [
+  { module = "tests.*", disallow_incomplete_defs = false, disallow_untyped_defs = false },
+]
 
 [tool.interrogate]
 exclude = [
