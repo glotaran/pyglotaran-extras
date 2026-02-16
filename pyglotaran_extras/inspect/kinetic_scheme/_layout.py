@@ -162,7 +162,7 @@ def _find_connected_components(graph: KineticGraph) -> list[set[str]]:
 
         components.append(component)
 
-    return sorted(components, key=lambda c: min(c))
+    return sorted(components, key=min)
 
 
 def _hierarchical_layout(

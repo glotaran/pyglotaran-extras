@@ -175,11 +175,10 @@ def extract_dataset_transitions(
     exclude = exclude_megacomplexes or set()
     megacomplexes = [mc for mc in associated_megacomplexes if mc not in exclude]
 
-    # Filter to only decay-type megacomplexes (silently skip non-decay)
+    # Filter to only decay-type megacomplexes (silently skip non-decay).
+    # Use the raw megacomplex object to avoid filling each item twice.
     decay_megacomplexes = [
-        mc
-        for mc in megacomplexes
-        if hasattr(fill_item(model.megacomplex[mc], model, parameters), "get_k_matrix")
+        mc for mc in megacomplexes if hasattr(model.megacomplex[mc], "get_k_matrix")
     ]
 
     return extract_transitions(

@@ -213,8 +213,6 @@ initial_concentration:
     compartments: [rcgcr_r1, rcgcr_r2, rcgcr_r3, rcgcr_r4, rcgcr_g, rcgcr_s6]
     parameters:
       [inputs1.s1, inputs1.0, inputs1.0, inputs1.0, inputs1.g_rcgcr, inputs1.0]
-    # exclude_from_normalize: [s7]
-# 6 needed ! why is it called compartment here and source with equal_area? does this mean that s2=s1*rel.r1 ?
 clp_relations:
   - source: rcg_s6
     target: rcgcr_s6
@@ -256,6 +254,10 @@ weights:
     value: 0.2
   - datasets:
       [
+        guide_rcg_r1,
+        guide_rcg_r2,
+        guide_rcg_r3,
+        guide_rcg_r4,
         guide_rcg_g,
         guide_gcrcg_r1,
         guide_gcrcg_r2,

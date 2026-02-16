@@ -182,6 +182,29 @@ class KineticSchemeConfig(BaseModel):
     omit_parameters: set[str] = Field(default_factory=set)
 
 
+def _resolve_effective_figsize(
+    config: KineticSchemeConfig, fallback_figsize: tuple[float, float]
+) -> tuple[float, float]:
+    """Resolve figure size with explicit-config precedence.
+
+    If ``config.figsize`` was explicitly provided by the caller, use it even
+    when it equals ``DEFAULT_FIGSIZE``. Otherwise, keep the function argument.
+
+    Parameters
+    ----------
+    config : KineticSchemeConfig
+        Visualization configuration.
+    fallback_figsize : tuple[float, float]
+        Fallback figure size if not explicitly set in config.
+
+    Returns
+    -------
+    tuple[float, float]
+        The resolved figure size.
+    """
+    return config.figsize if "figsize" in config.model_fields_set else fallback_figsize
+
+
 def show_kinetic_scheme(
     megacomplexes: str | list[str],
     model: Model,
@@ -218,7 +241,7 @@ def show_kinetic_scheme(
     """
     config = config or KineticSchemeConfig()
 
-    effective_figsize = config.figsize if config.figsize != DEFAULT_FIGSIZE else figsize
+    effective_figsize = _resolve_effective_figsize(config, figsize)
     effective_title = config.title if config.title is not None else title
 
     # Compute effective horizontal spacing: when the sentinel value 0 is
@@ -296,7 +319,7 @@ def show_dataset_kinetic_scheme(
     """
     config = config or KineticSchemeConfig()
 
-    effective_figsize = config.figsize if config.figsize != DEFAULT_FIGSIZE else figsize
+    effective_figsize = _resolve_effective_figsize(config, figsize)
     effective_title = config.title if config.title is not None else title
 
     h_spacing = config.horizontal_spacing
@@ -388,13 +411,20 @@ def _render_kinetic_scheme(
     -------
     tuple[Figure, Axes]
         The Figure and Axes.
+
+    Raises
+    ------
+    TypeError
+        If the provided Axes does not belong to a Figure.
     """
     if ax is None:
         fig = Figure(figsize=figsize)
         ax = fig.add_subplot(111)
     else:
         fig_or_none = ax.get_figure()
-        assert isinstance(fig_or_none, Figure), "Axes must belong to a Figure"
+        if not isinstance(fig_or_none, Figure):
+            msg = "Axes must belong to a Figure"
+            raise TypeError(msg)
         fig = fig_or_none
 
     # Draw ground state bars (if enabled)
@@ -709,15 +739,9 @@ def _rect_edge_intersection(
         # Horizontal line
         return (cx + half_w, cy) if dx > 0 else (cx - half_w, cy)
 
-    # Find parameter t for intersection with each edge
-    t_right = half_w / abs(dx)
-    t_left = half_w / abs(dx)
-    t_top = half_h / abs(dy)
-    t_bottom = half_h / abs(dy)
-
-    # The exit point is the one with the smallest positive t
-    t_x = t_right if dx > 0 else t_left
-    t_y = t_top if dy > 0 else t_bottom
+    # The exit point uses the smallest positive parametric t.
+    t_x = half_w / abs(dx)
+    t_y = half_h / abs(dy)
     t = min(t_x, t_y)
 
     return (cx + dx * t, cy + dy * t)
