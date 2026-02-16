@@ -177,9 +177,13 @@ def extract_dataset_transitions(
 
     # Filter to only decay-type megacomplexes (silently skip non-decay).
     # Use the raw megacomplex object to avoid filling each item twice.
-    decay_megacomplexes = [
-        mc for mc in megacomplexes if hasattr(model.megacomplex[mc], "get_k_matrix")
-    ]
+    decay_megacomplexes: list[str] = []
+    for mc in megacomplexes:
+        if mc not in model.megacomplex:
+            msg = f"Megacomplex '{mc}' referenced by dataset '{dataset_name}' not found in model."
+            raise ValueError(msg)
+        if hasattr(model.megacomplex[mc], "get_k_matrix"):
+            decay_megacomplexes.append(mc)
 
     return extract_transitions(
         decay_megacomplexes,

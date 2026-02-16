@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections import deque
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -401,11 +402,16 @@ def _build_in_degrees(
         In-degree for each compartment node.
     """
     in_degree: dict[str, int] = dict.fromkeys(compartment_labels, 0)
+    seen_edges: set[tuple[str, str]] = set()
     for edge in graph.edges:
+        edge_pair = (edge.source, edge.target)
+        if edge_pair in seen_edges:
+            continue
+        seen_edges.add(edge_pair)
         if (
             edge.source in compartment_labels
             and edge.target in compartment_labels
-            and (edge.source, edge.target) not in back_edges
+            and edge_pair not in back_edges
         ):
             in_degree[edge.target] += 1
     return in_degree
@@ -464,6 +470,7 @@ def _propagate_layers(
         Edges to skip.
     """
     processed: set[str] = set()
+    seen_edges: set[tuple[str, str]] = set()
     while queue:
         node = queue.popleft()
         if node in processed:
@@ -471,13 +478,19 @@ def _propagate_layers(
         processed.add(node)
 
         for neighbor in sorted(graph.successors(node)):
-            if neighbor not in compartment_labels or (node, neighbor) in back_edges:
+            edge_pair = (node, neighbor)
+            if (
+                neighbor not in compartment_labels
+                or edge_pair in back_edges
+                or edge_pair in seen_edges
+            ):
                 continue
+            seen_edges.add(edge_pair)
             new_layer = layers[node] + 1
             if neighbor not in layers or new_layer > layers[neighbor]:
                 layers[neighbor] = new_layer
-            in_degree[neighbor] -= 1
-            if in_degree[neighbor] <= 0:
+            in_degree[neighbor] = max(0, in_degree[neighbor] - 1)
+            if in_degree[neighbor] == 0:
                 queue.append(neighbor)
 
 
@@ -552,7 +565,22 @@ def _order_within_layer(
         else:
             barycenters[label] = 0.0
 
-    return sorted(nodes_in_layer, key=lambda n: (barycenters[n], n))
+    def barycenter_sort_key(label: str) -> tuple[float, str]:
+        """Return sort key based on barycenter and label.
+
+        Parameters
+        ----------
+        label : str
+            Node label.
+
+        Returns
+        -------
+        tuple[float, str]
+            Tuple of barycenter value and label for sorting.
+        """
+        return barycenters[label], label
+
+    return sorted(nodes_in_layer, key=barycenter_sort_key)
 
 
 def _node_sort_index(label: str) -> float:
@@ -566,9 +594,10 @@ def _node_sort_index(label: str) -> float:
     Returns
     -------
     float
-        The sort index based on label hash.
+        The sort index based on deterministic label hash.
     """
-    return float(hash(label) % 1000) / 1000.0
+    digest = hashlib.md5(label.encode(), usedforsecurity=False).digest()
+    return int.from_bytes(digest[:4], "big") / 4294967296.0
 
 
 def _find_back_edges(graph: KineticGraph, compartment_labels: set[str]) -> set[tuple[str, str]]:

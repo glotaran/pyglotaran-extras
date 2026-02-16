@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 import pytest
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
 from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
@@ -175,3 +177,14 @@ class TestExtractDatasetTransitions:
             exclude_megacomplexes={"megacomplex_sequential_decay"},
         )
         assert len(transitions) == 0
+
+    def test_missing_dataset_megacomplex_raises(self) -> None:
+        """Dataset referencing undefined megacomplex raises ValueError."""
+        model = deepcopy(SCHEME_SEQ.model)
+        model.dataset["dataset_1"].megacomplex = ["missing_mc"]
+
+        with pytest.raises(
+            ValueError,
+            match="referenced by dataset 'dataset_1' not found in model",
+        ):
+            extract_dataset_transitions("dataset_1", model, SCHEME_SEQ.parameters)

@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from pyglotaran_extras.inspect.kinetic_scheme._k_matrix_parser import Transition
 from pyglotaran_extras.inspect.kinetic_scheme._kinetic_graph import KineticGraph
 from pyglotaran_extras.inspect.kinetic_scheme._layout import LayoutAlgorithm
 from pyglotaran_extras.inspect.kinetic_scheme._layout import _find_connected_components
+from pyglotaran_extras.inspect.kinetic_scheme._layout import _node_sort_index
 from pyglotaran_extras.inspect.kinetic_scheme._layout import compute_layout
 
 
@@ -114,6 +117,15 @@ class TestHierarchicalLayout:
 
         for label in pos1:
             assert pos1[label] == pos2[label]
+
+    def test_node_sort_index_is_deterministic(self) -> None:
+        """Node sort index should use deterministic hashing."""
+        label = "species_2"
+        digest = hashlib.md5(label.encode(), usedforsecurity=False).digest()
+        expected = int.from_bytes(digest[:4], "big") / 4294967296.0
+        actual = _node_sort_index(label)
+        assert actual == expected
+        assert 0.0 <= actual < 1.0
 
     def test_parallel_nodes_side_by_side(self) -> None:
         """Parallel decay nodes (all isolated) should be on the same row."""
