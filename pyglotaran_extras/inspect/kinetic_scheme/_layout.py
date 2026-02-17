@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 from collections import deque
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -19,6 +20,9 @@ if TYPE_CHECKING:
 
 NodePositions = dict[str, tuple[float, float]]
 """Mapping from node label to (x, y) position in data coordinates."""
+
+_LOGGER = logging.getLogger(__name__)
+_SAME_COLUMN_TOLERANCE = 0.3
 
 
 class LayoutAlgorithm(str, Enum):
@@ -667,7 +671,15 @@ def _position_ground_state_nodes(
             positions[gs_node.label] = (parent_x, parent_y - ground_state_offset)
         else:
             # Fallback: place at origin
-            positions[gs_node.label] = (0.0, -ground_state_offset)
+            fallback_position = (0.0, -ground_state_offset)
+            _LOGGER.debug(
+                "Ground-state fallback positioning used for node '%s': "
+                "parents=%s, fallback_position=%s",
+                gs_node.label,
+                parents,
+                fallback_position,
+            )
+            positions[gs_node.label] = fallback_position
 
 
 def _avoid_ground_state_arrow_overlap(
@@ -718,7 +730,7 @@ def _avoid_ground_state_arrow_overlap(
 
             # Check if successor is approximately in the same x column
             # and below the parent
-            if abs(sx - px) < 0.3 and sy < py:
+            if abs(sx - px) < _SAME_COLUMN_TOLERANCE and sy < py:
                 positions[successor_label] = (sx + nudge, sy)
 
 

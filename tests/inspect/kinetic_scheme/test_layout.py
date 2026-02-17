@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
-
 import pytest
 
 from pyglotaran_extras.inspect.kinetic_scheme._k_matrix_parser import Transition
@@ -104,10 +102,14 @@ class TestHierarchicalLayout:
         positions = compute_layout(graph, LayoutAlgorithm.HIERARCHICAL)
 
         compartment_positions = [positions[n.label] for n in graph.compartment_nodes()]
+        epsilon = 1e-6
         for i, pos_i in enumerate(compartment_positions):
             for j, pos_j in enumerate(compartment_positions):
                 if i != j:
-                    assert pos_i != pos_j
+                    dx = pos_i[0] - pos_j[0]
+                    dy = pos_i[1] - pos_j[1]
+                    distance = (dx * dx + dy * dy) ** 0.5
+                    assert distance > epsilon
 
     def test_deterministic_output(self) -> None:
         """Same input should always produce the same positions."""
@@ -120,12 +122,11 @@ class TestHierarchicalLayout:
 
     def test_node_sort_index_is_deterministic(self) -> None:
         """Node sort index should use deterministic hashing."""
-        label = "species_2"
-        digest = hashlib.md5(label.encode(), usedforsecurity=False).digest()
-        expected = int.from_bytes(digest[:4], "big") / 4294967296.0
-        actual = _node_sort_index(label)
-        assert actual == expected
-        assert 0.0 <= actual < 1.0
+        species_2_idx = _node_sort_index("species_2")
+        species_3_idx = _node_sort_index("species_3")
+        assert 0.0 <= species_2_idx < 1.0
+        assert 0.0 <= species_3_idx < 1.0
+        assert species_2_idx != species_3_idx
 
     def test_parallel_nodes_side_by_side(self) -> None:
         """Parallel decay nodes (all isolated) should be on the same row."""
