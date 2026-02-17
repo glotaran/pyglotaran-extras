@@ -33,7 +33,7 @@ class LayoutAlgorithm(str, Enum):
         Force-directed Fruchterman-Reingold layout. For complex cyclic
         schemes.
     MANUAL
-        User-supplied positions passed through unchanged.
+        User-supplied compartment positions with derived GS positioning.
     """
 
     HIERARCHICAL = "hierarchical"
@@ -94,9 +94,8 @@ def compute_layout(
         horizontal_spacing = 3.0 * DEFAULT_NODE_WIDTH
 
     if algorithm == LayoutAlgorithm.MANUAL:
-        return _manual_layout(graph, manual_positions)
-
-    if algorithm == LayoutAlgorithm.SPRING:
+        positions = _manual_layout(graph, manual_positions)
+    elif algorithm == LayoutAlgorithm.SPRING:
         positions = _spring_layout(
             graph,
             horizontal_spacing=horizontal_spacing,

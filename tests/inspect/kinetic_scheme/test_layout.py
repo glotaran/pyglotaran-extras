@@ -233,6 +233,30 @@ class TestManualLayout:
         assert positions["B"] == (1.0, 1.0)
         assert positions["C"] == (2.0, 0.0)
 
+    def test_ground_state_below_parent(self) -> None:
+        """Manual layout should also position ground state nodes below parents."""
+        graph = _make_sequential_graph()
+        manual = {"A": (0.0, 2.0), "B": (1.0, 1.0), "C": (2.0, 0.0)}
+        positions = compute_layout(graph, LayoutAlgorithm.MANUAL, manual_positions=manual)
+
+        assert "GS1" in positions
+        assert positions["GS1"][0] == positions["C"][0]
+        assert positions["GS1"][1] < positions["C"][1]
+
+    def test_avoids_ground_state_arrow_overlap(self) -> None:
+        """Manual layout should nudge a node below a GS-decaying parent."""
+        graph = KineticGraph.from_transitions(
+            [
+                Transition("A", "B", 0.5, "rates.k_AB", False, "mc1"),
+                Transition("A", "GS1", 0.1, "rates.k_A", True, "mc1"),
+            ]
+        )
+        manual = {"A": (0.0, 1.0), "B": (0.0, 0.0)}
+        positions = compute_layout(graph, LayoutAlgorithm.MANUAL, manual_positions=manual)
+
+        assert positions["B"][0] > 0.0
+        assert positions["B"][1] == 0.0
+
     def test_missing_positions_raises(self) -> None:
         """Missing node positions should raise ValueError."""
         graph = _make_sequential_graph()

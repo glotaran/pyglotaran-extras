@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from types import SimpleNamespace
 
 import pytest
 from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
@@ -119,16 +120,23 @@ class TestExtractTransitionsErrors:
         with pytest.raises(ValueError, match="not found"):
             extract_transitions("nonexistent_mc", SCHEME_SEQ.model, SCHEME_SEQ.parameters)
 
-    def test_non_decay_megacomplex_raises_type_error(self) -> None:
+    def test_non_decay_megacomplex_raises_type_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Non-decay megacomplex without get_k_matrix raises TypeError."""
-        # Create a model that has a coherent-artifact megacomplex
-        # For now, we test with a mock approach
-        # The sequential model only has decay megacomplexes, so we test
-        # that valid ones don't raise
-        transitions = extract_transitions(
-            "megacomplex_sequential_decay", SCHEME_SEQ.model, SCHEME_SEQ.parameters
+        model = deepcopy(SCHEME_SEQ.model)
+        mc_label = "megacomplex_coherent_artifact"
+        model.megacomplex[mc_label] = SimpleNamespace(type="coherent-artifact")
+
+        # Simulate filling a non-decay megacomplex object that does not expose
+        # get_k_matrix, which should trigger the TypeError path.
+        monkeypatch.setattr(
+            "pyglotaran_extras.inspect.kinetic_scheme._k_matrix_parser.fill_item",
+            lambda *_args, **_kwargs: SimpleNamespace(),
         )
-        assert len(transitions) > 0
+
+        with pytest.raises(TypeError, match="does not support k-matrix extraction"):
+            extract_transitions(mc_label, model, SCHEME_SEQ.parameters)
 
 
 class TestExtractTransitionsFiltering:
