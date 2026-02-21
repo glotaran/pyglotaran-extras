@@ -134,6 +134,7 @@ html_sidebars = {
     'changelog': [],
     'config/project/subproject/config_docs': [],
     'notebooks/tips_and_tricks': [],
+    'notebooks/kinetic_scheme_visualization': [],
 }
 
 # Theme options are theme-specific and customize the look and feel of a
