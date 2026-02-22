@@ -889,8 +889,8 @@ def _draw_transfer_edge(  # noqa: C901
     edge_index: int,
     convergence_index: int = 1,
     convergence_total: int = 1,
-    source_index: int = 1,
-    source_total: int = 1,
+    source_index: int = 1,  # noqa: ARG001
+    source_total: int = 1,  # noqa: ARG001
     arrowstyle: str = DEFAULT_ARROWSTYLE,
     placed_labels: list[tuple[float, float]] | None = None,
     color: str | None = None,
@@ -938,10 +938,10 @@ def _draw_transfer_edge(  # noqa: C901
         target_h,
     )
 
-    connection_style = "arc3,rad=0.0"
+    rad = 0.0
     if edge_index > 1:
         rad = 0.25 * ((-1) ** edge_index) * ((edge_index + 1) // 2)
-        connection_style = f"arc3,rad={rad:.2f}"
+    connection_style = f"arc3,rad={rad:.2f}"
 
     arrow = FancyArrowPatch(
         start,
@@ -962,10 +962,9 @@ def _draw_transfer_edge(  # noqa: C901
         include_unit=config.show_rate_unit_per_label,
     )
 
-    # Compute edge vector and length
+    # Compute edge vector
     edge_dx = end[0] - start[0]
     edge_dy = end[1] - start[1]
-    edge_length = max((edge_dx**2 + edge_dy**2) ** 0.5, 0.01)
 
     # Place the label at the midpoint of the edge by default.
     # When multiple edges converge on the same target, spread labels
@@ -977,22 +976,34 @@ def _draw_transfer_edge(  # noqa: C901
         t_max = 0.65
         t = t_min + (convergence_index - 1) * (t_max - t_min) / (convergence_total - 1)
 
-    label_x = start[0] + t * (end[0] - start[0])
-    label_y = start[1] + t * (end[1] - start[1])
+    label_x = start[0] + t * edge_dx
+    label_y = start[1] + t * edge_dy
 
-    # Perpendicular offset to keep labels clear of the arrow line, nodes,
-    # and previously placed labels.
-    # Determine which side (left=+1 or right=-1 of the edge direction) is
-    # free of obstacles.  When both sides are free, use a preferred side
-    # derived from source_index alternation for visual variety.
-    perp_x = -edge_dy / edge_length
-    perp_y = edge_dx / edge_length
-    base_offset = 0.35
-    preferred_side = 1 if source_total <= 1 or source_index % 2 == 1 else -1
+    # Account for arc curvature: shift the label onto the actual Bézier
+    # curve instead of the straight chord.  For arc3,rad=r the control
+    # point is offset from the chord midpoint by (r·dy, -r·dx).  At
+    # parameter t the curve deviates from the chord by 2·t·(1-t) times
+    # that offset.
+    if rad != 0.0:
+        bezier_weight = 2 * t * (1 - t)
+        label_x += bezier_weight * rad * edge_dy
+        label_y -= bezier_weight * rad * edge_dx
+
+    # Perpendicular offset to keep labels clear of the arrow line.
+    # Convention: labels are ALWAYS placed on the right-hand side of the
+    # arrow direction.  Use the Bézier tangent at t (not the chord) so
+    # the perpendicular follows the curve.
+    tangent_x = edge_dx + 2 * rad * edge_dy * (1 - 2 * t)
+    tangent_y = edge_dy + 2 * rad * edge_dx * (2 * t - 1)
+    tangent_len = max((tangent_x**2 + tangent_y**2) ** 0.5, 0.01)
+    perp_x = -tangent_y / tangent_len
+    perp_y = tangent_x / tangent_len
+    base_offset = 0.18
+    side = -1  # Always right-hand side of arrow direction
 
     # Minimum distance between two label centres to consider them non-
     # overlapping.  Accounts for typical rate-text width at fontsize 9.
-    label_clearance = 0.55
+    label_clearance = 0.40
 
     def _collides(cx: float, cy: float) -> bool:
         """Return True if (cx, cy) overlaps any node or previously placed label.
@@ -1013,8 +1024,8 @@ def _draw_transfer_edge(  # noqa: C901
             nw, nh = _get_node_dimensions(nl, config)
             # Use a smaller margin for the edge's own source/target so we
             # only trigger when the label is truly inside the node box,
-            # but a generous margin for intermediate nodes.
-            margin = 0.05 if nl in (edge.source, edge.target) else 0.15
+            # but a tight margin for intermediate nodes.
+            margin = 0.05 if nl in (edge.source, edge.target) else 0.10
             if abs(cx - nx) < (nw / 2 + margin) and abs(cy - ny) < (nh / 2 + margin):
                 return True
         if placed_labels is not None:
@@ -1023,40 +1034,48 @@ def _draw_transfer_edge(  # noqa: C901
                     return True
         return False
 
-    # Test both sides at the base offset
-    left_clear = not _collides(label_x + perp_x * base_offset, label_y + perp_y * base_offset)
-    right_clear = not _collides(label_x - perp_x * base_offset, label_y - perp_y * base_offset)
+    # Try the right-hand side at the base offset; if it collides, first
+    # try sliding the label along the edge before bumping perpendicular.
+    offset_magnitude = base_offset
+    if _collides(label_x + side * perp_x * base_offset, label_y + side * perp_y * base_offset):
+        # Strategy 1: slide along the edge to find a gap.
+        _slide_found = False
+        for _dt in [0.1, -0.1, 0.2, -0.2, 0.3, -0.3]:
+            t_try = t + _dt
+            if t_try < 0.15 or t_try > 0.85:
+                continue
+            slide_x = start[0] + t_try * edge_dx
+            slide_y = start[1] + t_try * edge_dy
+            if rad != 0.0:
+                bw = 2 * t_try * (1 - t_try)
+                slide_x += bw * rad * edge_dy
+                slide_y -= bw * rad * edge_dx
+            # Recompute tangent and perpendicular at the new t.
+            tx = edge_dx + 2 * rad * edge_dy * (1 - 2 * t_try)
+            ty = edge_dy + 2 * rad * edge_dx * (2 * t_try - 1)
+            tl = max((tx**2 + ty**2) ** 0.5, 0.01)
+            slid_perp_x = -ty / tl
+            slid_perp_y = tx / tl
+            if not _collides(
+                slide_x + side * slid_perp_x * base_offset,
+                slide_y + side * slid_perp_y * base_offset,
+            ):
+                label_x = slide_x
+                label_y = slide_y
+                perp_x = slid_perp_x
+                perp_y = slid_perp_y
+                _slide_found = True
+                break
 
-    if left_clear and right_clear:
-        side = preferred_side
-        offset_magnitude = base_offset
-    elif left_clear:
-        side = 1
-        offset_magnitude = base_offset
-    elif right_clear:
-        side = -1
-        offset_magnitude = base_offset
-    else:
-        # Both sides collide — try bumping each side outward, pick the
-        # first side that finds a clear spot at the smallest offset.
-        best_side = preferred_side
-        best_mag = base_offset
-        found = False
-        for try_side in (preferred_side, -preferred_side):
-            mag = base_offset
-            for _bump in range(6):
-                mag += 0.3
+        # Strategy 2: bump perpendicular outward with small increments.
+        if not _slide_found:
+            for _bump in range(10):
+                offset_magnitude += 0.12
                 if not _collides(
-                    label_x + try_side * perp_x * mag,
-                    label_y + try_side * perp_y * mag,
+                    label_x + side * perp_x * offset_magnitude,
+                    label_y + side * perp_y * offset_magnitude,
                 ):
-                    if not found or mag < best_mag:
-                        best_side = try_side
-                        best_mag = mag
-                        found = True
                     break
-        side = best_side
-        offset_magnitude = best_mag
 
     final_x = label_x + side * perp_x * offset_magnitude
     final_y = label_y + side * perp_y * offset_magnitude
@@ -1089,9 +1108,9 @@ def _gs_label_side(
 ) -> int:
     """Choose the less-crowded side for a ground state decay label.
 
-    Counts how many other nodes sit to the left vs. right of *source_label*
-    within one vertical spacing unit and returns ``-1`` (left) when the
-    right side is more crowded, ``+1`` (right) otherwise.
+    Prefer the left-hand side of the arrow direction (visual right for
+    downward decay arrows).  Only switch when a neighbouring node would
+    actually overlap the label on the preferred side.
 
     Parameters
     ----------
@@ -1108,19 +1127,25 @@ def _gs_label_side(
     if source_label not in positions:
         return 1
     sx, sy = positions[source_label]
-    left_count = 0
-    right_count = 0
+    # Check whether a node is close enough on either side to overlap a
+    # label placed at sx ± offset.  Only nodes below or at the same
+    # height are relevant (the decay arrow points downward).
+    right_blocked = False
+    left_blocked = False
     for nl, (nx, ny) in positions.items():
         if nl == source_label:
             continue
-        # Only consider nodes within a reasonable vertical band
-        if abs(ny - sy) > 3.0:
+        if ny > sy + 0.5:
             continue
-        if nx < sx - 0.3:
-            left_count += 1
-        elif nx > sx + 0.3:
-            right_count += 1
-    return -1 if right_count > left_count else 1
+        if abs(ny - sy) < 1.2 and 0.0 < (nx - sx) < 1.0:
+            right_blocked = True
+        if abs(ny - sy) < 1.2 and -1.0 < (nx - sx) < 0.0:
+            left_blocked = True
+    # Prefer visual right (+1).  Fall back to left only when right is
+    # blocked and left is free.
+    if right_blocked and not left_blocked:
+        return -1
+    return 1
 
 
 def _draw_ground_state_decay_arrow(
@@ -1183,7 +1208,7 @@ def _draw_ground_state_decay_arrow(
     )
     mid_y = (start[1] + end[1]) / 2
     side = _gs_label_side(edge.source, positions)
-    label_x = sx + side * 0.3
+    label_x = sx + side * 0.18
     label_y = mid_y
     ha = "left" if side > 0 else "right"
 
@@ -1269,7 +1294,7 @@ def _draw_ground_state_arrow(
     )
     mid_y = (start[1] + end[1]) / 2
     side = _gs_label_side(edge.source, positions)
-    label_x = sx + side * 0.3
+    label_x = sx + side * 0.18
     label_y = mid_y
     ha = "left" if side > 0 else "right"
 

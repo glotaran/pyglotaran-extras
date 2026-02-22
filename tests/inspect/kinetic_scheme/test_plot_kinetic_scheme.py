@@ -457,3 +457,71 @@ class TestLabelAntiOverlap:
 
         # All positions should be distinct
         assert len(text_positions) == len(set(text_positions))
+
+
+class TestBidirectionalLabelConvention:
+    """Tests for consistent label placement on bidirectional edge pairs."""
+
+    def test_labels_on_right_hand_side_of_arrow_direction(self) -> None:
+        """Each rate label should be on the right-hand side of its own arrow.
+
+        For a pair A↔B, the A→B label should be on the right of the A→B direction, and the B→A
+        label should be on the right of the B→A direction.  Since the arrow directions are
+        opposite, the labels end up on opposite geometric sides of the line connecting A and B.
+        """
+        from pyglotaran_extras.inspect.kinetic_scheme._k_matrix_parser import Transition
+        from pyglotaran_extras.inspect.kinetic_scheme._kinetic_graph import KineticGraph
+        from pyglotaran_extras.inspect.kinetic_scheme._layout import LayoutAlgorithm
+        from pyglotaran_extras.inspect.kinetic_scheme._layout import compute_layout
+        from pyglotaran_extras.inspect.kinetic_scheme.plot_kinetic_scheme import _draw_all_edges
+
+        # Bidirectional pair: A→B (large rate) and B→A (small rate)
+        transitions = [
+            Transition("A", "B", 0.234, "rates.k_AB", False, "mc1"),
+            Transition("B", "A", 0.070, "rates.k_BA", False, "mc1"),
+        ]
+        graph = KineticGraph.from_transitions(transitions)
+        config = KineticSchemeConfig()
+        positions = compute_layout(graph, LayoutAlgorithm.HIERARCHICAL)
+
+        fig = Figure()
+        ax = fig.add_subplot(111)
+        _draw_all_edges(ax, graph, positions, config)
+
+        # Find the two rate labels by their text content
+        rate_texts = [t for t in ax.texts if any(c.isdigit() for c in t.get_text())]
+        assert len(rate_texts) == 2
+
+        # Identify which label belongs to the forward (A→B) and back (B→A) rate
+        forward_label = next(t for t in rate_texts if "234" in t.get_text())
+        back_label = next(t for t in rate_texts if "70" in t.get_text())
+
+        # Compute the A→B direction vector
+        ax_pos, ay_pos = positions["A"]
+        bx_pos, by_pos = positions["B"]
+        dx = bx_pos - ax_pos
+        dy = by_pos - ay_pos
+        length = (dx**2 + dy**2) ** 0.5
+
+        # Left perpendicular of A→B direction: (-dy, dx)
+        perp_x = -dy / length
+        perp_y = dx / length
+
+        # Midpoint of the edge
+        mid_x = (ax_pos + bx_pos) / 2
+        mid_y = (ay_pos + by_pos) / 2
+
+        # Project label positions onto the perpendicular axis.
+        # Positive projection = left of A→B direction.
+        # Negative projection = right of A→B direction.
+        fwd_proj = (forward_label.get_position()[0] - mid_x) * perp_x + (
+            forward_label.get_position()[1] - mid_y
+        ) * perp_y
+        back_proj = (back_label.get_position()[0] - mid_x) * perp_x + (
+            back_label.get_position()[1] - mid_y
+        ) * perp_y
+
+        # A→B label on the RIGHT of A→B direction = negative projection
+        # B→A label on the RIGHT of B→A direction = LEFT of A→B = positive projection
+        assert fwd_proj < 0, "A→B rate label should be on the right of A→B direction"
+        assert back_proj > 0, "B→A rate label should be on the right of B→A direction"

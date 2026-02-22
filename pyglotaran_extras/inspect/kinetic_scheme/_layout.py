@@ -95,7 +95,7 @@ def compute_layout(
     if horizontal_spacing <= 0:
         from pyglotaran_extras.inspect.kinetic_scheme._constants import DEFAULT_NODE_WIDTH
 
-        horizontal_spacing = 3.0 * DEFAULT_NODE_WIDTH
+        horizontal_spacing = 3.5 * DEFAULT_NODE_WIDTH
 
     if algorithm == LayoutAlgorithm.MANUAL:
         positions = _manual_layout(graph, manual_positions)
