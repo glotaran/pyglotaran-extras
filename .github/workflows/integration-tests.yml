@@ -77,6 +77,6 @@ jobs:
           overwrite: true
 
       - name: Delete Intermediate artifacts
-        uses: GeekyEggo/delete-artifact@v5
+        uses: GeekyEggo/delete-artifact@v6
         with:
           name: example-notebooks-*
