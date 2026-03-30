@@ -90,13 +90,32 @@ wrap-summaries = 99
 wrap-descriptions = 99
 
 # For now this is not used because pydoclint does not support toml when used with flake8
-
 [tool.pydoclint]
 skip-checking-short-docstrings = false
 style = "numpy"
 exclude = "^(docs/|tests?/)"
 require-return-section-when-returning-none = false
 allow-init-docstring = true
+
+[tool.mypy]
+plugins = [
+  "pydantic.mypy",
+]
+python_version = "3.10"
+ignore_missing_imports = true
+scripts_are_modules = true
+show_error_codes = true
+warn_unused_ignores = true
+no_implicit_optional = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+no_implicit_reexport = true
+warn_unused_configs = true
+check_untyped_defs = true
+overrides = [
+  { module = "tests.*", disallow_incomplete_defs = false, disallow_untyped_defs = false },
+]
 
 [tool.coverage]
 run.branch = true
@@ -122,26 +141,6 @@ report.exclude_lines = [
   # Don't complain if tests don't hit defensive assertion code:
   "raise AssertionError",
   "raise NotImplementedError",
-]
-
-[tool.mypy]
-plugins = [
-  "pydantic.mypy",
-]
-python_version = "3.10"
-ignore_missing_imports = true
-scripts_are_modules = true
-show_error_codes = true
-warn_unused_ignores = true
-no_implicit_optional = true
-disallow_incomplete_defs = true
-disallow_untyped_defs = true
-disallow_untyped_calls = true
-no_implicit_reexport = true
-warn_unused_configs = true
-check_untyped_defs = true
-overrides = [
-  { module = "tests.*", disallow_incomplete_defs = false, disallow_untyped_defs = false },
 ]
 
 [tool.interrogate]
