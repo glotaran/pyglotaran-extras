@@ -110,6 +110,10 @@ def extract_irf_dispersion_center(
             res.center_dispersion_1, main_irf_nr=main_irf_nr
         )
 
+    # irf_shift stores (center - shift) per spectral point and is the true IRF peak location
+    if "irf_shift" in res:
+        return res.irf_shift
+
     # No/constant dispersion
     if "irf_center" in res:
         irf_dispersion_center = select_irf_dispersion_center_by_index(
