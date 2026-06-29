@@ -384,6 +384,33 @@ class TestUnitAnnotation:
         texts = [t.get_text() for t in ax.texts]
         assert not any("rates in" in t for t in texts)
 
+    def test_no_unit_annotation_when_disabled_explicitly(self) -> None:
+        """Corner annotation can be disabled independently from per-label units."""
+        config = KineticSchemeConfig(show_rate_unit_annotation=False)
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+            config=config,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        assert not any("rates in" in t for t in texts)
+
+    def test_no_unit_annotation_when_disabled_and_per_label_false(self) -> None:
+        """Disabling corner annotation works even if per-label units are suppressed."""
+        config = KineticSchemeConfig(
+            show_rate_unit_per_label=False,
+            show_rate_unit_annotation=False,
+        )
+        _fig, ax = show_kinetic_scheme(
+            "megacomplex_sequential_decay",
+            SCHEME_SEQ.model,
+            SCHEME_SEQ.parameters,
+            config=config,
+        )
+        texts = [t.get_text() for t in ax.texts]
+        assert not any("rates in" in t for t in texts)
+
     def test_labels_omit_unit_by_default(self) -> None:
         """Rate labels should not contain unit suffix by default."""
         _fig, ax = show_kinetic_scheme(

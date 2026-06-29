@@ -101,6 +101,12 @@ class TestKineticEdgeFormatRate:
         result = edge.format_rate(unit="ns")
         assert "ns" in result
 
+    def test_smart_rounding_very_small_uses_one_decimal_scientific(self) -> None:
+        """Very small rates should use compact scientific notation."""
+        edge = KineticEdge("A", "B", 1.4894e-08, "rates.k_AB")
+        result = edge.format_rate(unit="ns", include_unit=False)
+        assert result == "1.5e-5"
+
 
 class TestKineticGraphFromTransitions:
     """Tests for KineticGraph.from_transitions factory."""

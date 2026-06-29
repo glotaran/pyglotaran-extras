@@ -113,6 +113,9 @@ class KineticSchemeConfig(BaseModel):
     show_rate_unit_per_label : bool
         Whether to show the unit suffix on every edge label. When False,
         the unit is shown once as an annotation in the figure corner.
+    show_rate_unit_annotation : bool
+        Whether to show the corner annotation (e.g. ``"rates in ns⁻¹"``)
+        when ``show_rate_unit_per_label`` is False.
     show_ground_state : Literal[False, "shared", "per_megacomplex"]
         Ground state bar rendering mode.
     layout_algorithm : Literal["hierarchical", "spring", "manual"]
@@ -161,6 +164,7 @@ class KineticSchemeConfig(BaseModel):
     rate_decimal_places: int | None = Field(default=None, ge=0)
     show_rate_labels: bool = False
     show_rate_unit_per_label: bool = False
+    show_rate_unit_annotation: bool = True
 
     # Ground state rendering
     show_ground_state: Literal[False, "shared", "per_megacomplex"] = False
@@ -451,7 +455,7 @@ def _render_kinetic_scheme(
     ax.margins(0.15)
 
     # Draw unit annotation if per-label units are suppressed
-    if not config.show_rate_unit_per_label:
+    if not config.show_rate_unit_per_label and config.show_rate_unit_annotation:
         ax.annotate(
             _get_rate_unit_annotation(config.rate_unit),
             xy=(1.0, 0.0),

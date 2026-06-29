@@ -39,7 +39,7 @@ dataset_2
 <tr><td>2                                              </td><td>1                         </td><td>-2.50                     </td><td>1.87                      </td><td>0.37 </td></tr>
 <tr><td>3.33                                           </td><td>                          </td><td>2.50                      </td><td>-3.75                     </td><td>-1.25</td></tr>
 <tr><td>10                                             </td><td>                          </td><td>                          </td><td>1.88                      </td><td>1.88 </td></tr>
-<tr><td>Sum                                            </td><td>1                         </td><td>                          </td><td>-4.44e-16                 </td><td>1.00 </td></tr>
+<tr><td>Sum                                            </td><td>1                         </td><td>                          </td><td>-4.4e-16                  </td><td>1.00 </td></tr>
 </tbody>
 </table>
 <br>

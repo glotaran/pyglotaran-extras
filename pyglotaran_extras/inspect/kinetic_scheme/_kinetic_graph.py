@@ -61,6 +61,12 @@ class KineticEdge:
     rate_constant_ps_inverse: float
     parameter_label: str
 
+    @staticmethod
+    def _format_scientific_rate(value: float) -> str:
+        """Format a value in scientific notation with a compact exponent."""
+        mantissa, exponent = f"{value:.1e}".split("e")
+        return f"{mantissa}e{int(exponent):+d}"
+
     def format_rate(
         self,
         unit: Literal["ps", "ns"] = "ns",
@@ -95,10 +101,17 @@ class KineticEdge:
 
         if decimal_places is not None:
             formatted = f"{value:.{decimal_places}f}"
-        elif abs(value) >= 1.0:
-            formatted = f"{value:.0f}"
+        elif 0 < abs(value) < 1e-2:
+            formatted = self._format_scientific_rate(value)
         else:
-            formatted = f"{value:.2f}"
+            if abs(value - round(value)) <= 1e-12:
+                formatted = f"{value:.0f}"
+            elif abs(value) >= 10.0:
+                formatted = f"{value:.0f}"
+            elif abs(value) >= 1.0:
+                formatted = f"{value:.1f}"
+            else:
+                formatted = f"{value:.2f}"
 
         result = f"{formatted} {unit_suffix}" if include_unit else formatted
 

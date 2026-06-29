@@ -15,7 +15,7 @@ dataset_1
 </thead>
 <tbody>
 <tr><td>2                                              </td><td>0.333                     </td><td>                          </td><td>                          </td><td>0.333</td></tr>
-<tr><td>3.333                                          </td><td>                          </td><td>0.333                     </td><td>                          </td><td>0.333</td></tr>
+<tr><td>3.33                                           </td><td>                          </td><td>0.333                     </td><td>                          </td><td>0.333</td></tr>
 <tr><td>10                                             </td><td>                          </td><td>                          </td><td>0.333                     </td><td>0.333</td></tr>
 <tr><td>Sum                                            </td><td>0.333                     </td><td>0.333                     </td><td>0.333                     </td><td>1    </td></tr>
 </tbody>
@@ -37,9 +37,9 @@ dataset_2
 </thead>
 <tbody>
 <tr><td>2                                              </td><td>1                         </td><td>-2.500                    </td><td>1.875                     </td><td>0.375 </td></tr>
-<tr><td>3.333                                          </td><td>                          </td><td>2.500                     </td><td>-3.750                    </td><td>-1.250</td></tr>
+<tr><td>3.33                                           </td><td>                          </td><td>2.500                     </td><td>-3.750                    </td><td>-1.250</td></tr>
 <tr><td>10                                             </td><td>                          </td><td>                          </td><td>1.875                     </td><td>1.875 </td></tr>
-<tr><td>Sum                                            </td><td>1                         </td><td>                          </td><td>-4.441e-16                </td><td>1.000 </td></tr>
+<tr><td>Sum                                            </td><td>1                         </td><td>                          </td><td>-4.44e-16                 </td><td>1.000 </td></tr>
 </tbody>
 </table>
 <br>

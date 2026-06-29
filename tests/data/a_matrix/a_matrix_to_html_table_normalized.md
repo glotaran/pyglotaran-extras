@@ -4,7 +4,7 @@
 </thead>
 <tbody>
 <tr><td>2                                              </td><td>0.333                         </td><td>                              </td><td>                              </td><td>0.333</td></tr>
-<tr><td>3.333                                          </td><td>                              </td><td>0.333                         </td><td>                              </td><td>0.333</td></tr>
+<tr><td>3.33                                           </td><td>                              </td><td>0.333                         </td><td>                              </td><td>0.333</td></tr>
 <tr><td>10                                             </td><td>                              </td><td>                              </td><td>0.333                         </td><td>0.333</td></tr>
 <tr><td>Sum                                            </td><td>0.333                         </td><td>0.333                         </td><td>0.333                         </td><td>1    </td></tr>
 </tbody>
