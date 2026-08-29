@@ -41,6 +41,18 @@ Each element dataset has an `element_uid` attribute:
 | `OptimizationResult.residuals`   | `residual`    |
 | `OptimizationResult.fitted_data` | `fitted_data` |
 
+### Global Result Element
+
+Global v0.8 fits store the model and global matrices in a generic result element. For plotting,
+these are exposed under the v0.7 full-model names:
+
+| v0.8 Source             | v0.7 Target           |
+| ----------------------- | --------------------- |
+| `global_concentrations` | `species_concentration` |
+| `model_concentrations`  | `species_spectra`      |
+
+Dimension rename: `amplitude_label` → `species_model`
+
 ### Kinetic Element
 
 | v0.8 Source                             | v0.7 Target                                 |

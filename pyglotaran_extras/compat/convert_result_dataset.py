@@ -26,6 +26,20 @@ COHERENT_ARTIFACT_ELEMENT_UID = (
     "glotaran.builtin.elements.coherent_artifact.element.CoherentArtifactElement"
 )
 
+
+def add_global_data(target_dataset: xr.Dataset, element_ds: xr.Dataset) -> None:
+    """Add legacy plotting variables for a global result element."""
+    if not {"global_concentrations", "model_concentrations"}.issubset(element_ds.data_vars):
+        return
+
+    target_dataset["species_concentration"] = element_ds["global_concentrations"].rename(
+        {"amplitude_label": "species_model"}
+    )
+    target_dataset["species_spectra"] = element_ds["model_concentrations"].rename(
+        {"amplitude_label": "species_model"}
+    )
+
+
 def add_kinetic_data(
     target_dataset: xr.Dataset,
     optimization_result: OptimizationResult,
@@ -257,7 +271,9 @@ def build_compat_dataset(optimization_result: OptimizationResult) -> xr.Dataset:
     for element_name, element_ds in optimization_result.elements.items():
         element_uid = element_ds.attrs.get("element_uid", "")
 
-        if element_uid == KINETIC_ELEMENT_UID:
+        if {"global_concentrations", "model_concentrations"}.issubset(element_ds.data_vars):
+            add_global_data(target_ds, element_ds)
+        elif element_uid == KINETIC_ELEMENT_UID:
             add_kinetic_data(target_ds, optimization_result, element_name)
         elif element_uid == DAMPED_OSCILLATION_ELEMENT_UID:
             add_damped_oscillation_data(target_ds, optimization_result, element_name)
