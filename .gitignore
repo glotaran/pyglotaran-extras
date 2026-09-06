@@ -171,3 +171,7 @@ _summary.ps
 
 # vscode config files
 .vscode
+
+# MacOs OS files
+.DS_store
+*.local.json

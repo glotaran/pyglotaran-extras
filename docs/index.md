@@ -10,6 +10,7 @@ installation
 usage
 config/project/subproject/config_docs
 notebooks/tips_and_tricks
+notebooks/kinetic_scheme_visualization
 api_docs
 contributing
 changelog

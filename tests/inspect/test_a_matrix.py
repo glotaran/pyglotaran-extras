@@ -5,10 +5,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from typing import Any
 
+import numpy as np
 import pytest
 import xarray as xr
 
 from pyglotaran_extras.inspect.a_matrix import a_matrix_to_html_table
+from pyglotaran_extras.inspect.a_matrix import BASE_LEGEND_LABEL_MAP
 from pyglotaran_extras.inspect.a_matrix import show_a_matrixes
 from tests import TEST_DATA
 
@@ -104,3 +106,123 @@ def test_show_a_matrixes_multiple_a_matrixes_in_dataset(
         {"a_matrix_megacomplex_one": a_matrix_one, "a_matrix_megacomplex_two": a_matrix_two}
     )
     assert str(show_a_matrixes(dummy_dataset)) == expected.rstrip("\n")
+
+
+def test_a_matrix_to_html_table_scientific_decimal_places_and_empty_threshold():
+    """Render scientific notation with custom precision and hide tiny values."""
+    a_matrix = xr.DataArray(
+        np.array([[-6.942e-4, 5.0e-12]], dtype=np.float64),
+        dims=["lifetime_index", "species_megacomplex_test"],
+        coords={
+            "species_megacomplex_test": ("species_megacomplex_test", ["S1", "S2"]),
+            "initial_concentration_megacomplex_test": (
+                "species_megacomplex_test",
+                [1.0, 1.0],
+            ),
+            "lifetime_megacomplex_test": ("lifetime_index", [1.0]),
+        },
+    )
+
+    rendered = a_matrix_to_html_table(
+        a_matrix,
+        "megacomplex_test",
+        decimal_places=3,
+        scientific_decimal_places=1,
+        empty_cell_threshold=1e-10,
+    )
+
+    assert "-6.9e-4" in rendered
+    assert "-6.942e-04" not in rendered
+    assert "5.0e-12" not in rendered
+
+
+def test_a_matrix_to_html_table_species_label_map_default_and_custom():
+    """Replace species labels with mapped legend labels when requested."""
+    a_matrix = xr.DataArray(
+        np.array([[1.0, 2.0, 3.0]], dtype=np.float64),
+        dims=["lifetime_index", "species_megacomplex_test"],
+        coords={
+            "species_megacomplex_test": (
+                "species_megacomplex_test",
+                ["s1", "s2", "unmapped"],
+            ),
+            "initial_concentration_megacomplex_test": (
+                "species_megacomplex_test",
+                [1.0, 1.0, 1.0],
+            ),
+            "lifetime_megacomplex_test": ("lifetime_index", [1.0]),
+        },
+    )
+
+    rendered_default = a_matrix_to_html_table(a_matrix, "megacomplex_test")
+    assert f"{BASE_LEGEND_LABEL_MAP['s1']}<br>" in rendered_default
+    assert f"{BASE_LEGEND_LABEL_MAP['s2']}<br>" in rendered_default
+    assert "unmapped<br>" in rendered_default
+
+    rendered_custom = a_matrix_to_html_table(
+        a_matrix,
+        "megacomplex_test",
+        species_label_map={"s1": "custom-1", "s2": "custom-2"},
+    )
+    assert "custom-1<br>" in rendered_custom
+    assert "custom-2<br>" in rendered_custom
+    assert "unmapped<br>" in rendered_custom
+
+
+def test_show_a_matrixes_defaults_scientific_decimal_places_to_decimal_minus_one():
+    """Use one fewer decimal place for scientific notation when not explicitly configured."""
+    a_matrix = xr.DataArray(
+        np.array([[1.14e-3]], dtype=np.float64),
+        dims=["lifetime_index", "species_megacomplex_test"],
+        coords={
+            "species_megacomplex_test": ("species_megacomplex_test", ["s1"]),
+            "initial_concentration_megacomplex_test": ("species_megacomplex_test", [1.14e-3]),
+            "lifetime_megacomplex_test": ("lifetime_index", [1.0]),
+        },
+    )
+    dataset = xr.Dataset({"a_matrix_megacomplex_test": a_matrix})
+
+    rendered = str(show_a_matrixes(dataset, decimal_places=2))
+
+    assert "1.1e-3" in rendered
+    assert "1.14e-3" not in rendered
+
+
+def test_show_a_matrixes_decimal_places_scientific_argument():
+    """Allow explicitly controlling scientific notation decimals with new argument."""
+    a_matrix = xr.DataArray(
+        np.array([[1.14e-3]], dtype=np.float64),
+        dims=["lifetime_index", "species_megacomplex_test"],
+        coords={
+            "species_megacomplex_test": ("species_megacomplex_test", ["s1"]),
+            "initial_concentration_megacomplex_test": ("species_megacomplex_test", [1.14e-3]),
+            "lifetime_megacomplex_test": ("lifetime_index", [1.0]),
+        },
+    )
+    dataset = xr.Dataset({"a_matrix_megacomplex_test": a_matrix})
+
+    rendered = str(show_a_matrixes(dataset, decimal_places=2, decimal_places_scientific=2))
+
+    assert "1.14e-3" in rendered
+
+
+def test_show_a_matrixes_scientific_decimal_places_conflict_raises():
+    """Reject conflicting scientific precision values from new and legacy argument names."""
+    a_matrix = xr.DataArray(
+        np.array([[1.14e-3]], dtype=np.float64),
+        dims=["lifetime_index", "species_megacomplex_test"],
+        coords={
+            "species_megacomplex_test": ("species_megacomplex_test", ["s1"]),
+            "initial_concentration_megacomplex_test": ("species_megacomplex_test", [1.14e-3]),
+            "lifetime_megacomplex_test": ("lifetime_index", [1.0]),
+        },
+    )
+    dataset = xr.Dataset({"a_matrix_megacomplex_test": a_matrix})
+
+    with pytest.raises(ValueError, match="decimal_places_scientific"):
+        show_a_matrixes(
+            dataset,
+            decimal_places=2,
+            decimal_places_scientific=2,
+            scientific_decimal_places=1,
+        )

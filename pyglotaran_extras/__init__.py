@@ -8,6 +8,9 @@ from pyglotaran_extras.config.config import load_config
 from pyglotaran_extras.config.plot_config import PerFunctionPlotConfig
 from pyglotaran_extras.config.plot_config import plot_config_context
 from pyglotaran_extras.config.plot_config import use_plot_config
+from pyglotaran_extras.inspect.kinetic_scheme import KineticSchemeConfig
+from pyglotaran_extras.inspect.kinetic_scheme import show_dataset_kinetic_scheme
+from pyglotaran_extras.inspect.kinetic_scheme import show_kinetic_scheme
 from pyglotaran_extras.io.load_data import load_data
 from pyglotaran_extras.io.setup_case_study import setup_case_study
 from pyglotaran_extras.plotting.plot_coherent_artifact import plot_coherent_artifact
@@ -37,6 +40,7 @@ from pyglotaran_extras.plotting.utils import add_subplot_labels
 
 __all__ = [
     "CONFIG",
+    "KineticSchemeConfig",
     "PerFunctionPlotConfig",
     "add_subplot_labels",
     "create_config_schema",
@@ -66,6 +70,8 @@ __all__ = [
     "plot_svd",
     "select_plot_wavelengths",
     "setup_case_study",
+    "show_dataset_kinetic_scheme",
+    "show_kinetic_scheme",
     "use_plot_config",
 ]
 

@@ -110,6 +110,10 @@ def extract_irf_dispersion_center(
             res.center_dispersion_1, main_irf_nr=main_irf_nr
         )
 
+    # irf_shift stores (center - shift) per spectral point and is the true IRF peak location
+    if "irf_shift" in res:
+        return res.irf_shift
+
     # No/constant dispersion
     if "irf_center" in res:
         irf_dispersion_center = select_irf_dispersion_center_by_index(
@@ -303,8 +307,16 @@ def select_plot_wavelengths(
     return spectral_coords[spectral_indices].to_numpy()
 
 
-def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> float:
+def extract_dataset_scale(
+    res: xr.Dataset,
+    divide_by_scale: bool = True,
+    spectral: float | None = None,
+) -> float:
     """Extract 'dataset_scale' attribute from optimization result dataset.
+
+    If ``res.attrs`` contains a ``dataset_scale_list`` (a sequence parallel to the
+    spectral axis) **and** ``spectral`` is provided, the total scale is the product
+    of ``dataset_scale`` and the list element nearest to ``spectral``.
 
     Parameters
     ----------
@@ -313,6 +325,10 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
     divide_by_scale : bool
         Whether or not to divide the data by the dataset scale used for optimization.
         Defaults to True.
+    spectral : float | None
+        Spectral coordinate value (e.g. wavelength in nm) used to look up the
+        per-wavelength scale factor from ``dataset_scale_list``. When ``None`` the
+        list is ignored. Defaults to None.
 
     Returns
     -------
@@ -332,6 +348,22 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
                 ),
                 stacklevel=2,
             )
+        scale_list = res.attrs.get("dataset_scale_list")
+        if scale_list is not None and spectral is not None:
+            if len(scale_list) == 0:
+                return scale
+            spectral_arr = res.coords["spectral"].to_numpy()
+            idx = int(np.argmin(np.abs(spectral_arr - spectral)))
+            if idx < len(scale_list):
+                scale *= scale_list[idx]
+            else:
+                warn(
+                    UserWarning(
+                        "Skipping per-wavelength dataset scaling because "
+                        "'dataset_scale_list' length does not match the spectral axis."
+                    ),
+                    stacklevel=2,
+                )
     return scale
 
 

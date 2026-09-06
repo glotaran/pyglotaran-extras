@@ -116,7 +116,10 @@ def plot_data_and_fits(
         spectral_coords = result_map[dataset_name].coords["spectral"].to_numpy()
         if spectral_coords.min() <= wavelength <= spectral_coords.max():
             result_data = result_map[dataset_name].sel(spectral=[wavelength], method="nearest")
-            scale = extract_dataset_scale(result_data, divide_by_scale)
+            actual_spectral = result_data.coords["spectral"].item()
+            scale = extract_dataset_scale(
+                result_map[dataset_name], divide_by_scale, spectral=actual_spectral
+            )
             irf_loc = extract_irf_location(result_data, center_λ, main_irf_nr)
             result_data = result_data.assign_coords(time=result_data.coords["time"] - irf_loc)
             (result_data.data / scale).plot(x="time", ax=ax, label=f"{dataset_name}_data")
@@ -215,7 +218,7 @@ def plot_fitted_traces(
             ),
             stacklevel=2,
         )
-    for wavelength, ax in zip(wavelengths, axes.flatten(), strict=True):
+    for wavelength, ax in zip(wavelengths, axes.flatten()):
         plot_data_and_fits(
             result=result_map,
             wavelength=wavelength,
