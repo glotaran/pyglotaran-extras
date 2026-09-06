@@ -255,21 +255,19 @@ def a_matrix_to_html_table(
     if normalize_initial_concentration is True:
         initial_concentration /= initial_concentration.sum()
 
-    header = (
-        ["species<br>initial concentration<br>lifetime↓"]
-        + [
-            f"{resolved_species_label_map.get(str(sp), str(sp))}<br>{
-                _pretty_format_a_matrix_value(
-                    ic,
-                    decimal_places=decimal_places,
-                    scientific_decimal_places=resolved_scientific_decimal_places,
-                    empty_cell_threshold=empty_cell_threshold,
-                )
-            }<br>&nbsp;"
-            for sp, ic in zip(species, initial_concentration, strict=True)
-        ]
-        + ["Sum"]
-    )
+    header = ["species<br>initial concentration<br>lifetime↓"]
+    for sp, ic in zip(species, initial_concentration, strict=True):
+        formatted_initial_concentration = _pretty_format_a_matrix_value(
+            ic,
+            decimal_places=decimal_places,
+            scientific_decimal_places=resolved_scientific_decimal_places,
+            empty_cell_threshold=empty_cell_threshold,
+        )
+        header.append(
+            f"{resolved_species_label_map.get(str(sp), str(sp))}<br>"
+            f"{formatted_initial_concentration}<br>&nbsp;"
+        )
+    header.append("Sum")
 
     data = []
     for lifetime_value, amps in zip(lifetime, a_matrix.values, strict=True):
