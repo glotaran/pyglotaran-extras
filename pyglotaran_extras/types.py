@@ -45,11 +45,11 @@ class CyclerColor(TypedDict):
 
 DatasetConvertible: TypeAlias = xr.Dataset | xr.DataArray | str | Path
 """Types of data which can be converted to a dataset."""
+
 ResultLike: TypeAlias = (
     Result | DatasetConvertible | Mapping[str, DatasetConvertible] | Sequence[DatasetConvertible]
 )
 """Result like data which can be converted to a per dataset mapping."""
-
 
 BuiltinSubPlotLabelFormatFunctionKey: TypeAlias = Literal[
     "number", "upper_case_letter", "lower_case_letter"
