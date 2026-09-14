@@ -87,7 +87,6 @@ def result_sequential_spectral_decay():
 @pytest.fixture
 def mock_home(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     """Mock ``pathlib.Path.home`` to return ``tmp_path/"home"``."""
-
     mock_home_path = tmp_path / "home"
     mock_home_path.mkdir()
 
