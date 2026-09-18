@@ -65,6 +65,7 @@ source_suffix = {'.rst': 'restructuredtext', '.md': 'restructuredtext'}
 linkcheck_ignore = [
     r"https://github\.com/glotaran/pyglotaran-extras/actions",
     r"https://github\.com/glotaran/pyglotaran-extras/workflows/Tests/badge\.svg",
+    r"https://stackoverflow\.com",
 ]
 
 # The master toctree document.
