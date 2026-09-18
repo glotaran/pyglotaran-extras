@@ -34,8 +34,10 @@ def test_get_script_dir_tmp_path(tmp_path: Path):
     """File in temp folder."""
     tmp_file = tmp_path / "foo.py"
     content = dedent(
-        """From pyglotaran_extras.io.setup_case_study import get_script_dir
-        print(get_script_dir())"""
+        """
+        from pyglotaran_extras.io.setup_case_study import get_script_dir
+        print(get_script_dir())
+        """
     )
     tmp_file.write_text(content)
     printed_result = subprocess.run(
