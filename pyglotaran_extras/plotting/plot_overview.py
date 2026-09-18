@@ -53,8 +53,8 @@ def plot_overview(
     show_residual_svd_legend: bool = True,
     show_irf_dispersion_center: bool = True,
     show_zero_line: bool = True,
-    das_cycler: Cycler | None | UnsetType = Unset,
-    svd_cycler: Cycler | None | UnsetType = Unset,
+    das_cycler: Cycler | UnsetType | None = Unset,
+    svd_cycler: Cycler | UnsetType | None = Unset,
     use_svd_number: bool = False,
 ) -> tuple[Figure, Axes]:
     """Plot overview of the optimization result.
@@ -103,10 +103,10 @@ def plot_overview(
     show_zero_line : bool
         Whether or not to add a horizontal line at zero to the plots of the spectra.
         Defaults to True.
-    das_cycler : Cycler | None | UnsetType
+    das_cycler : Cycler | UnsetType | None
         Plot style cycler to use for DAS plots. Defaults to ``Unset`` which means that the value
         of ``cycler`` is used.
-    svd_cycler : Cycler | None | UnsetType
+    svd_cycler : Cycler | UnsetType | None
         Plot style cycler to use for SVD plots. Defaults to ``Unset`` which means that the value
         of ``cycler`` is used.
     use_svd_number : bool
@@ -187,7 +187,7 @@ def plot_simple_overview(
     figure_only: bool | None = None,
     show_irf_dispersion_center: bool = True,
     show_data: bool | None = False,
-    svd_cycler: Cycler | None | UnsetType = Unset,
+    svd_cycler: Cycler | UnsetType | None = Unset,
     use_svd_number: bool = False,
 ) -> tuple[Figure, Axes]:
     """Plot simple overview.
@@ -210,7 +210,7 @@ def plot_simple_overview(
     show_data : bool | None
         Whether to show the input data or residual. If set to ``None`` the plot is skipped
         which improves plotting performance for big datasets. Defaults to False.
-    svd_cycler : Cycler | None | UnsetType
+    svd_cycler : Cycler | UnsetType | None
         Plot style cycler to use for SVD plots. Defaults to ``Unset`` which means that the value
         of ``cycler`` is used.
     use_svd_number : bool

@@ -603,8 +603,10 @@ def test_create_config_schema_errors(tmp_path: Path):
         "Additional properties are not allowed ('invalid_kw_root' was unexpected)",
         "Additional properties are not allowed ('invalid_kw_general' was unexpected)",
         "Additional properties are not allowed ('will_be_kept_arg' was unexpected)",
-        "{'will_update_label': 'will change label', 'will_be_kept_label': {'not_allowed_general': "
-        "False}} is not valid under any of the given schemas",
+        (
+            "{'will_update_label': 'will change label', 'will_be_kept_label': "
+            "{'not_allowed_general': False}} is not valid under any of the given schemas"
+        ),
         "Additional properties are not allowed ('invalid_kw_test_func' was unexpected)",
         "Additional properties are not allowed ('will_be_added_arg' was unexpected)",
         "{'not_allowed_test_func': False} is not valid under any of the given schemas",

@@ -25,7 +25,7 @@ def plot_spectra(
     axes: np.ndarray[(2, 2), Axes],
     cycler: Cycler | None = PlotStyle().cycler,
     show_zero_line: bool = True,
-    das_cycler: Cycler | None | UnsetType = Unset,
+    das_cycler: Cycler | UnsetType | None = Unset,
 ) -> None:
     """Plot spectra such as SAS and DAS as well as their normalize version on ``axes``.
 
@@ -39,7 +39,7 @@ def plot_spectra(
         Plot style cycler to use. Defaults to PlotStyle().cycler.
     show_zero_line : bool
         Whether or not to add a horizontal line at zero. Defaults to True.
-    das_cycler : Cycler | None | UnsetType
+    das_cycler : Cycler | UnsetType | None
         Plot style cycler to use for DAS plots. Defaults to ``Unset`` which means that the value
         of ``cycler`` is used.
     """

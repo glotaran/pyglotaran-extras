@@ -233,7 +233,7 @@ def plot_sv_data(
     res: xr.Dataset,
     ax: Axes,
     indices: Sequence[int] = tuple(range(10)),
-    cycler: Cycler | None | UnsetType = Unset,
+    cycler: Cycler | UnsetType | None = Unset,
     use_svd_number: bool = False,
 ) -> None:
     """Plot singular values of the data matrix.
@@ -246,7 +246,7 @@ def plot_sv_data(
         Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(10)).
-    cycler : Cycler | None | UnsetType
+    cycler : Cycler | UnsetType | None
         Deprecated since it has no effect. Defaults to Unset.
     use_svd_number : bool
         Whether to use singular value number (starts at 1) instead of singular value index
@@ -387,7 +387,7 @@ def plot_sv_residual(
     res: xr.Dataset,
     ax: Axes,
     indices: Sequence[int] = tuple(range(10)),
-    cycler: Cycler | None | UnsetType = Unset,
+    cycler: Cycler | UnsetType | None = Unset,
     use_svd_number: bool = False,
 ) -> None:
     """Plot singular values of the residual matrix.
@@ -400,7 +400,7 @@ def plot_sv_residual(
         Axes to plot on.
     indices : Sequence[int]
         Indices of the singular vector to plot. Defaults to tuple(range(10)).
-    cycler : Cycler | None | UnsetType
+    cycler : Cycler | UnsetType | None
         Deprecated since it has no effect. Defaults to Unset.
     use_svd_number : bool
         Whether to use singular value number (starts at 1) instead of singular value index

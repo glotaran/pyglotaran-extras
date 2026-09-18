@@ -452,7 +452,7 @@ def create_config_schema(
             json_schema["$defs"]["PlotConfig"]["properties"][function_name] = (
                 {"$ref": f"#/$defs/{config_model_name}"}
                 if Version(pydantic_version) >= Version("2.9")
-                else {"allOf": [{"$ref": f"#/$defs/{config_model_name}"}]}  # type:ignore[dict-item]
+                else {"allOf": [{"$ref": f"#/$defs/{config_model_name}"}]}
             )
         except PydanticUserError as error:
             raise UsePlotConfigError(function_name, error)  # noqa: B904
