@@ -1,6 +1,9 @@
 ci:
   skip: [flake8, taplo-lint]
 
+default_language_version:
+  python: python3.10
+
 repos:
   # Formatters
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -23,7 +26,7 @@ repos:
         args: [--in-place, --config, ./pyproject.toml]
 
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "v2.16.0"
+    rev: "v2.29.4"
     hooks:
       - id: pyproject-fmt
 
@@ -39,14 +42,14 @@ repos:
 
   # Notebook tools
   - repo: https://github.com/kynan/nbstripout
-    rev: 186d22f
+    rev: 0.9.1
     hooks:
       - id: nbstripout
         args: [--drop-empty-cells]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.1
+    rev: v0.16.8
     hooks:
       - id: ruff
         name: "ruff sort imports notebooks"
@@ -72,7 +75,7 @@ repos:
   # Linters
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+    rev: v2.3.1
     hooks:
       - id: mypy
         exclude: ^docs
@@ -88,7 +91,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.15.1
+    rev: v0.16.8
     hooks:
       - id: ruff
         name: "ruff sort imports"
@@ -119,7 +122,7 @@ repos:
         additional_dependencies: [pydoclint==0.5.6]
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.3
     hooks:
       - id: codespell
         types: [file]
@@ -127,7 +130,7 @@ repos:
         args: ["--ignore-words-list=doas"]
 
   - repo: https://github.com/rhysd/actionlint
-    rev: "v1.7.10"
+    rev: "v1.7.12"
     hooks:
       - id: actionlint
 
@@ -136,3 +139,5 @@ repos:
     hooks:
       - id: taplo-format
       - id: taplo-lint
+        args:
+          - --no-schema

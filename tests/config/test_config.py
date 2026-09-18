@@ -76,7 +76,6 @@ def test_config_reset(tmp_path: Path, test_config_values: dict[str, Any]):
 
     If another config is passed all values (including source files) are reset.
     """
-
     test_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     test_config = Config.model_validate(test_config_values)
     test_config._source_files = [test_config_path]
@@ -97,7 +96,6 @@ def test_config_reset(tmp_path: Path, test_config_values: dict[str, Any]):
 
 def test_config_reload(tmp_path: Path, test_config_values: dict[str, Any]):
     """Config values get reloaded from file."""
-
     test_config_path = tmp_path / f"{CONFIG_FILE_STEM}.yml"
     test_config = Config.model_validate(test_config_values)
     test_config._source_files = [test_config_path]
@@ -119,7 +117,6 @@ def test_config_reload(tmp_path: Path, test_config_values: dict[str, Any]):
 
 def test_config_load(tmp_path: Path, test_config_values: dict[str, Any], test_config_file: Path):
     """Loading config replaces its values and and source files."""
-
     test_config = Config()
     test_config._source_files = [test_config_file]
     test_config.reload()
@@ -358,8 +355,8 @@ def test_load_config_files(tmp_path: Path, test_config_file: Path):
 def test_merge_configs():
     """Check that the most right config overrides other values.
 
-    Since we already tested all permutations for 2 configs in ``test_config_merge``
-    this test can fucus on the case with more than 2 configs.
+    Since we already tested all permutations for 2 configs in ``test_config_merge`` this test can
+    fucus on the case with more than 2 configs.
     """
     assert merge_configs([]) == Config()
 
@@ -606,8 +603,10 @@ def test_create_config_schema_errors(tmp_path: Path):
         "Additional properties are not allowed ('invalid_kw_root' was unexpected)",
         "Additional properties are not allowed ('invalid_kw_general' was unexpected)",
         "Additional properties are not allowed ('will_be_kept_arg' was unexpected)",
-        "{'will_update_label': 'will change label', 'will_be_kept_label': {'not_allowed_general': "
-        "False}} is not valid under any of the given schemas",
+        (
+            "{'will_update_label': 'will change label', 'will_be_kept_label': "
+            "{'not_allowed_general': False}} is not valid under any of the given schemas"
+        ),
         "Additional properties are not allowed ('invalid_kw_test_func' was unexpected)",
         "Additional properties are not allowed ('will_be_added_arg' was unexpected)",
         "{'not_allowed_test_func': False} is not valid under any of the given schemas",

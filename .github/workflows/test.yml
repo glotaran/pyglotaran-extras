@@ -8,6 +8,7 @@ on:
       - "dependabot/**"
       - "sourcery/**"
       - "create-pr-action/pre-commit-config-update*"
+      - "pre-commit-ci-update-config"
   pull_request:
 
 jobs:

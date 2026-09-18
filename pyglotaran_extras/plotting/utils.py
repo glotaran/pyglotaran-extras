@@ -662,14 +662,14 @@ class MinorSymLogLocator(Locator):
         raise NotImplementedError(msg)
 
 
-def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: None | int = None) -> str:
+def format_sub_plot_number_upper_case_letter(sub_plot_number: int, size: int | None = None) -> str:
     """Format ``sub_plot_number`` into an upper case letter, that can be used as label.
 
     Parameters
     ----------
     sub_plot_number : int
         Number of the subplot starting at One.
-    size : None | int
+    size : int | None
         Size of the axes array (number of plots). Defaults to None
 
     Returns

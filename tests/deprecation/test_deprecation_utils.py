@@ -125,7 +125,6 @@ def test_warn_deprecated():
 @pytest.mark.usefixtures("_pyglotaran_extras_1_0_0")
 def test_warn_deprecated_overdue_deprecation(monkeypatch: MonkeyPatch):
     """Current version is equal or bigger than drop_version."""
-
     with pytest.raises(OverdueDeprecationError) as excinfo:
         warn_deprecated(
             deprecated_qual_name_usage=DEPRECATION_QUAL_NAME,

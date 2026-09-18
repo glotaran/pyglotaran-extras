@@ -466,7 +466,6 @@ def test_find_not_user_provided_kwargs():
 
 def test_find_axes():
     """Get axes value from iterable of values."""
-
     data_array = xr.DataArray([[0, 1]], coords={"time": [0], "spectral": [500, 510]})
     data_set = xr.Dataset({"data": data_array})
 

@@ -11,6 +11,12 @@ updates:
     assignees:
       - jsnel
       - s-weigand
+    groups:
+      Python:
+        update-types:
+          - minor
+          - patch
+    rebase-strategy: "disabled"
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -19,3 +25,11 @@ updates:
       day: friday
       time: "18:00"
       timezone: Europe/Amsterdam
+    assignees:
+      - s-weigand
+    groups:
+      GH-Actions:
+        update-types:
+          - minor
+          - patch
+    rebase-strategy: "disabled"
