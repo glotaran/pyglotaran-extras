@@ -1,6 +1,9 @@
 ci:
   skip: [flake8, taplo-lint]
 
+default_language_version:
+  python: python3.10
+
 repos:
   # Formatters
   - repo: https://github.com/pre-commit/pre-commit-hooks
