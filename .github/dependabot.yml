@@ -8,6 +8,7 @@ updates:
       time: "18:00"
       timezone: Europe/Amsterdam
     open-pull-requests-limit: 20
+    rebase-strategy: "disabled"
     assignees:
       - jsnel
       - s-weigand
@@ -16,7 +17,11 @@ updates:
         update-types:
           - minor
           - patch
-    rebase-strategy: "disabled"
+      Python-CVE:
+        update-types:
+          - minor
+          - patch
+        applies-to: security-updates
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
