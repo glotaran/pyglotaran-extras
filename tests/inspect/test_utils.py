@@ -40,12 +40,10 @@ if TYPE_CHECKING:
             5,
             False,
             dedent(
-                """
-                <details >
+                """<details >
 
-                FOO
-                <br>
-                </details>"""
+                FOO <br> </details>
+                """
             ),
             id="heading no summary",
         ),
@@ -55,12 +53,10 @@ if TYPE_CHECKING:
             None,
             True,
             dedent(
-                """
-                <details open>
+                """<details open>
 
-                FOO
-                <br>
-                </details>"""
+                FOO <br> </details>
+                """
             ),
             id="defaults open details",
         ),
@@ -70,15 +66,10 @@ if TYPE_CHECKING:
             None,
             False,
             dedent(
-                """
-                <details >
-                <summary>
-                Bar
-                </summary>
+                """<details > <summary> Bar </summary>
 
-                FOO
-                <br>
-                </details>"""
+                FOO <br> </details>
+                """
             ),
             id="defaults with simple summary",
         ),
@@ -88,17 +79,10 @@ if TYPE_CHECKING:
             5,
             False,
             dedent(
-                """
-                <details >
-                <summary>
-                <h5 style="display:inline;">
-                Bar
-                </h5>
-                </summary>
+                """<details > <summary> <h5 style="display:inline;"> Bar </h5> </summary>
 
-                FOO
-                <br>
-                </details>"""
+                FOO <br> </details>
+                """
             ),
             id="defaults with heading summary",
         ),
