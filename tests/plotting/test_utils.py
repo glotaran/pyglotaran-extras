@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING
 
 import matplotlib
@@ -17,6 +18,7 @@ from pyglotaran_extras.plotting.utils import add_subplot_labels
 from pyglotaran_extras.plotting.utils import calculate_ticks_in_units_of_pi
 from pyglotaran_extras.plotting.utils import condense_numbered_strings
 from pyglotaran_extras.plotting.utils import ensure_axes_array
+from pyglotaran_extras.plotting.utils import extract_dataset_scale
 from pyglotaran_extras.plotting.utils import format_sub_plot_number_upper_case_letter
 from pyglotaran_extras.plotting.utils import get_next_cycler_color
 from pyglotaran_extras.plotting.utils import not_single_element_dims
@@ -217,3 +219,17 @@ def test_condense_numbered_strings():
     assert condense_numbered_strings(["abc1", "abc3", "abc4", "abc5", "abc7"]) == "abc1,3-5,7"
     assert condense_numbered_strings(["aa1", "aa3", "aa4", "aa5", "aa7"]) == "aa1,3-5,7"
     # TODO: handle case where substring is not all the same (e.g. abc1, def2)
+
+
+@pytest.mark.parametrize("attr_name", ["dataset_scale", "scale"])
+def test_extract_dataset_scale(attr_name: str):
+    """Scale is read from either attribute name without warning."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert extract_dataset_scale(xr.Dataset(attrs={attr_name: 2.0})) == 2.0
+
+
+def test_extract_dataset_scale_missing():
+    """Missing scale attribute warns and falls back to 1."""
+    with pytest.warns(UserWarning, match="dataset scales"):
+        assert extract_dataset_scale(xr.Dataset()) == 1
