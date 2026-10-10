@@ -9,10 +9,14 @@ if TYPE_CHECKING:
     import xarray as xr
     from glotaran.model.experiment_model import ExperimentModel
 
-from glotaran.io import SavingOptions  # noqa: F401
 from glotaran.project.result import Result
 from glotaran.utils.ipython import MarkdownStr
 from tabulate import tabulate
+
+
+def _format_optional_float(value: float | None) -> str:
+    """Format a statistic in scientific notation, showing ``nan`` only for missing values."""
+    return f"{np.nan if value is None else value:.2e}"
 
 
 class CompatResult(Result):
@@ -96,14 +100,7 @@ class CompatResult(Result):
     @classmethod
     def from_result(cls, result: Result) -> CompatResult:
         """Create a CompatResult from a Result object."""
-        return cls(
-            saving_options=result.saving_options,
-            optimization_results=result.optimization_results,
-            scheme=result.scheme,
-            optimization_info=result.optimization_info,
-            initial_parameters=result.initial_parameters,
-            optimized_parameters=result.optimized_parameters,
-        )
+        return cls(**{field: getattr(result, field) for field in Result.model_fields})
 
     def markdown(
         self,
@@ -134,9 +131,9 @@ class CompatResult(Result):
             ["Number of free parameters", self.number_of_free_parameters],
             ["Number of conditionally linear parameters", self.number_of_clps],
             ["Degrees of freedom", self.degrees_of_freedom],
-            ["Chi Square", f"{self.chi_square or np.nan:.2e}"],
-            ["Reduced Chi Square", f"{self.reduced_chi_square or np.nan:.2e}"],
-            ["Root Mean Square Error (RMSE)", f"{self.root_mean_square_error or np.nan:.2e}"],
+            ["Chi Square", _format_optional_float(self.chi_square)],
+            ["Reduced Chi Square", _format_optional_float(self.reduced_chi_square)],
+            ["Root Mean Square Error (RMSE)", _format_optional_float(self.root_mean_square_error)],
         ]
         if self.additional_penalty is not None:
             general_table_rows.append(["RMSE additional penalty", self.additional_penalty])
