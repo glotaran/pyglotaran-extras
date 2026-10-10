@@ -12,6 +12,7 @@ config/project/subproject/config_docs
 notebooks/tips_and_tricks
 api_docs
 contributing
+result_compat
 changelog
 ```
 

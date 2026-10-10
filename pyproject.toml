@@ -101,6 +101,7 @@ allow-init-docstring = true
 fail-under = 100
 ignore-init-module = true
 exclude = [
+  "*/compat/*",
   "docs",
   "tests/*",
 ]

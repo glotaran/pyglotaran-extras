@@ -323,6 +323,8 @@ def extract_dataset_scale(res: xr.Dataset, divide_by_scale: bool = True) -> floa
     if divide_by_scale is True:
         if "dataset_scale" in res.attrs:
             scale = res.attrs["dataset_scale"]
+        elif "scale" in res.attrs:
+            scale = res.attrs["scale"]
         else:
             warn(
                 UserWarning(
@@ -400,7 +402,9 @@ def get_shifted_traces(
     ValueError
         If no known concentration was found in the result.
     """
-    if "species_concentration" in res:
+    if "concentrations" in res:
+        traces = res.concentrations
+    elif "species_concentration" in res:
         traces = res.species_concentration
     elif "species_associated_concentrations" in res:
         traces = res.species_associated_concentrations

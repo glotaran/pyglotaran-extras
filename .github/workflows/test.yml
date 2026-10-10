@@ -33,10 +33,10 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v7
-      - name: Set up Python 3.10
+      - name: Set up Python 3.13
         uses: actions/setup-python@v7
         with:
-          python-version: "3.10"
+          python-version: "3.13"
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Install just
@@ -45,10 +45,13 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --frozen --group docs
+          uv pip install git+https://github.com/glotaran/pyglotaran@staging
       - name: Show installed dependencies
         run: |
           uv pip list
       - name: Build docs
+        env:
+          UV_NO_SYNC: 1
         run: just docs/html
 
   docs-link:
@@ -57,10 +60,10 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v7
-      - name: Set up Python 3.10
+      - name: Set up Python 3.13
         uses: actions/setup-python@v7
         with:
-          python-version: "3.10"
+          python-version: "3.13"
       - name: Install uv
         uses: astral-sh/setup-uv@v7
       - name: Install just
@@ -69,11 +72,14 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --frozen --group docs
+          uv pip install git+https://github.com/glotaran/pyglotaran@staging
       - name: Show installed dependencies
         run: |
           uv pip list
 
       - name: Check links in docs
+        env:
+          UV_NO_SYNC: 1
         run: just docs/linkcheck
 
   test:
@@ -147,6 +153,46 @@ jobs:
         with:
           files: ./coverage.xml
           name: test-pyglotaran-dev
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test-pyglotaran-staging:
+    name: Test pyglotaran staging
+    runs-on: ubuntu-latest
+    needs: [pre-commit, docs]
+    strategy:
+      matrix:
+        python-version: ["3.13", "3.14"]
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v7
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        run: |
+          uv sync --frozen --group test
+          uv pip install git+https://github.com/glotaran/pyglotaran@staging
+
+      - name: Show installed dependencies
+        run: uv pip list
+
+      - name: Run tests
+        run: uv run --no-sync pytest --nbval --cov=pyglotaran_extras --cov-report term --cov-report xml --cov-config pyproject.toml tests
+
+      - name: Codecov Upload
+        continue-on-error: true
+        uses: codecov/codecov-action@v7
+        with:
+          files: ./coverage.xml
+          name: test-pyglotaran-staging-py${{ matrix.python-version }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
