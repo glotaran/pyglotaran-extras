@@ -1,5 +1,16 @@
 # Changelog
 
+(changes-0_7_5)=
+
+## 0.7.5 (2026-10-10)
+
+- 👌 Add `scale_factors` argument to `plot_sas` and 2 additional data color pairs (#394)
+- ✨ Add `inspect_cycler` to preview the properties of a cycler (#394)
+- 📚 Add "tips and tricks" notebook on data selection and working with cyclers (#394)
+- ⬆️ Raise minimum matplotlib version to 3.10 (#389)
+- 📦 Restrict supported Python versions to 3.10-3.14 (#452)
+- 🧰👌 Improve tooling using just and uv; the `dev`, `docs` and `test` extras are now dependency groups (#389)
+
 (changes-0_7_4)=
 
 ## 0.7.4 (2025-12-13)
