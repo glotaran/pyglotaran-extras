@@ -15,22 +15,27 @@ import numpy  # noqa: F401
 import netCDF4  # noqa: F401
 # isort: on
 
-from dataclasses import replace
-
 import matplotlib.pyplot as plt
 import pytest
-from glotaran.optimization.optimize import optimize
-from glotaran.testing.simulated_data.parallel_spectral_decay import SCHEME as SCHEME_PAR
-from glotaran.testing.simulated_data.sequential_spectral_decay import SCHEME as SCHEME_SEQ
+from glotaran.testing.simulated_data import parallel_spectral_decay
+from glotaran.testing.simulated_data import sequential_spectral_decay
+from glotaran.testing.simulated_data.shared_decay import PARAMETERS
 from ruamel.yaml import YAML
 
 from pyglotaran_extras.config.config import CONFIG_FILE_STEM
 from pyglotaran_extras.config.config import Config
 from pyglotaran_extras.io.setup_case_study import get_script_dir
+from tests import PYGLOTARAN_GE_0_8
 from tests import TEST_DATA
 
 if TYPE_CHECKING:
     from collections.abc import Generator
+    from types import ModuleType
+
+    from glotaran.project.result import Result
+
+# The compat module converts pyglotaran>=0.8 results and cannot be imported with older versions
+collect_ignore = [] if PYGLOTARAN_GE_0_8 else ["compat"]
 
 
 @contextmanager
@@ -70,18 +75,31 @@ def _close_matplotlib_figures():
     plt.close()
 
 
+def optimize_one_step(simulated_data: ModuleType, dataset_name: str) -> Result:
+    """Optimize a ``glotaran.testing.simulated_data`` scheme with one function evaluation."""
+    if PYGLOTARAN_GE_0_8:
+        return simulated_data.SCHEME.optimize(
+            PARAMETERS,
+            {dataset_name: simulated_data.DATASET},
+            maximum_number_function_evaluations=1,
+        )
+    from dataclasses import replace
+
+    from glotaran.optimization.optimize import optimize
+
+    return optimize(replace(simulated_data.SCHEME, maximum_number_function_evaluations=1))
+
+
 @pytest.fixture(scope="session")
 def result_parallel_spectral_decay():
     """Test result from ``glotaran.testing.simulated_data.parallel_spectral_decay``."""
-    scheme = replace(SCHEME_PAR, maximum_number_function_evaluations=1)
-    return optimize(scheme)
+    return optimize_one_step(parallel_spectral_decay, "parallel-decay")
 
 
 @pytest.fixture(scope="session")
 def result_sequential_spectral_decay():
     """Test result from ``glotaran.testing.simulated_data.sequential_spectral_decay``."""
-    scheme = replace(SCHEME_SEQ, maximum_number_function_evaluations=1)
-    return optimize(scheme)
+    return optimize_one_step(sequential_spectral_decay, "sequential-decay")
 
 
 @pytest.fixture

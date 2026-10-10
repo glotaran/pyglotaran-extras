@@ -10,10 +10,15 @@ import xarray as xr
 
 from pyglotaran_extras.inspect.a_matrix import a_matrix_to_html_table
 from pyglotaran_extras.inspect.a_matrix import show_a_matrixes
+from tests import PYGLOTARAN_GE_0_8
 from tests import TEST_DATA
 
 if TYPE_CHECKING:
     from glotaran.project import Result
+
+pytestmark = pytest.mark.skipif(
+    PYGLOTARAN_GE_0_8, reason="A-matrix inspection is not ported to pyglotaran>=0.8 results."
+)
 
 
 @pytest.mark.parametrize(

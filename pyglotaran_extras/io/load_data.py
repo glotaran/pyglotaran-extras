@@ -44,6 +44,11 @@ def load_data(
     if isinstance(result, xr.DataArray):
         return result.to_dataset(name="data")
     if isinstance(result, Result):
+        if not hasattr(result, "data"):
+            # pyglotaran>=0.8 result, the compat module can only be imported with pyglotaran>=0.8
+            from pyglotaran_extras.compat import convert
+
+            result = convert(result)
         if dataset_name is not None:
             return result.data[dataset_name]
         keys = list(result.data)
