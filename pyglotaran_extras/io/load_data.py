@@ -9,8 +9,6 @@ import xarray as xr
 from glotaran.io import load_dataset
 from glotaran.project.result import Result
 
-from pyglotaran_extras.compat import convert
-from pyglotaran_extras.compat.compat_result import CompatResult
 from pyglotaran_extras.types import DatasetConvertible
 
 
@@ -45,8 +43,12 @@ def load_data(
         return result
     if isinstance(result, xr.DataArray):
         return result.to_dataset(name="data")
-    if isinstance(result, CompatResult):
-        # Already converted, use the data property
+    if isinstance(result, Result):
+        if not hasattr(result, "data"):
+            # pyglotaran>=0.8 result, the compat module can only be imported with pyglotaran>=0.8
+            from pyglotaran_extras.compat import convert
+
+            result = convert(result)
         if dataset_name is not None:
             return result.data[dataset_name]
         keys = list(result.data)
@@ -60,22 +62,6 @@ def load_data(
                 stacklevel=_stacklevel,
             )
         return result.data[keys[0]]
-    if isinstance(result, Result):
-        # Convert to CompatResult first
-        compat_result = convert(result)
-        if dataset_name is not None:
-            return compat_result.data[dataset_name]
-        keys = list(compat_result.data)
-        if len(keys) > 1:
-            warn(
-                UserWarning(
-                    f"Result contains multiple datasets, auto selecting {keys[0]!r}.\n"
-                    f"Pass the dataset set you want to plot (e.g. result.data[{keys[0]!r}]) , "
-                    f"to deactivate this Warning.\nPossible dataset names are: {keys}"
-                ),
-                stacklevel=_stacklevel,
-            )
-        return compat_result.data[keys[0]]
     if isinstance(result, str | Path):
         return load_data(load_dataset(result))
     msg = f"Result needs to be of type {DatasetConvertible!r}, but was {result!r}.".replace(

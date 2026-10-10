@@ -10,10 +10,15 @@ import xarray as xr
 
 from pyglotaran_extras.inspect.a_matrix import a_matrix_to_html_table
 from pyglotaran_extras.inspect.a_matrix import show_a_matrixes
+from tests import PYGLOTARAN_GE_0_8
 from tests import TEST_DATA
 
 if TYPE_CHECKING:
     from glotaran.project import Result
+
+pytestmark = pytest.mark.skipif(
+    PYGLOTARAN_GE_0_8, reason="A-matrix inspection is not ported to pyglotaran>=0.8 results."
+)
 
 
 @pytest.mark.parametrize(
@@ -32,7 +37,7 @@ def test_a_matrix_to_html_table(
         encoding="utf8"
     )
     assert a_matrix_to_html_table(
-        result_parallel_spectral_decay.data["parallel-decay"].a_matrix_megacomplex_parallel_decay,
+        result_parallel_spectral_decay.data["dataset_1"].a_matrix_megacomplex_parallel_decay,
         "megacomplex_parallel_decay",
         **kwargs,
     ) == expected.rstrip("\n")
@@ -60,10 +65,10 @@ def test_show_a_matrixes(
     )
 
     result = result_parallel_spectral_decay
-    result.data["dataset_2"] = result_sequential_spectral_decay.data["sequential-decay"]
+    result.data["dataset_2"] = result_sequential_spectral_decay.data["dataset_1"]
     # dummy data for filtering based on a-matrix size
     single_entry_data = result_sequential_spectral_decay.data[
-        "sequential-decay"
+        "dataset_1"
     ].a_matrix_megacomplex_sequential_decay[:1, :1]
     single_entry_data = single_entry_data.rename(
         {
@@ -85,7 +90,7 @@ def test_show_a_matrixes_multiple_a_matrixes_in_dataset(
     ).read_text(encoding="utf8")
 
     single_entry_data = result_sequential_spectral_decay.data[
-        "sequential-decay"
+        "dataset_1"
     ].a_matrix_megacomplex_sequential_decay[:1, :1]
 
     a_matrix_one = single_entry_data.rename(

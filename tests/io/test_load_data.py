@@ -10,6 +10,7 @@ import xarray as xr
 from glotaran.io import load_result
 
 from pyglotaran_extras.io.load_data import load_data
+from tests import PYGLOTARAN_GE_0_8
 
 if TYPE_CHECKING:
     from warnings import WarningMessage
@@ -39,12 +40,12 @@ def run_load_data_test(result: xr.Dataset, compare: xr.Dataset | None = None):
         assert result.equals(compare)
 
 
+@pytest.mark.skipif(PYGLOTARAN_GE_0_8, reason="Uses the pyglotaran<0.8 result layout.")
 def test_load_data(
     result_sequential_spectral_decay: Result, tmp_path: Path, recwarn: WarningsRecorder
 ):
     """All input_type permutations result in a ``xr.Dataset``."""
-    compare_dataset = result_sequential_spectral_decay.data["sequential-decay"]
-    save_path = tmp_path / "result"
+    compare_dataset = result_sequential_spectral_decay.data["dataset_1"]
 
     from_result = load_data(result_sequential_spectral_decay)
 
@@ -54,9 +55,9 @@ def test_load_data(
 
     run_load_data_test(from_dataset, compare_dataset)
 
-    result_sequential_spectral_decay.save(save_path)
+    result_sequential_spectral_decay.save(tmp_path / "result.yml")
 
-    from_file = load_data(save_path / "data/sequential-decay.nc")
+    from_file = load_data(tmp_path / "dataset_1.nc")
 
     run_load_data_test(from_file, compare_dataset)
 
@@ -70,7 +71,7 @@ def test_load_data(
     assert len(filter_warnings(recwarn)) == 0
 
     # Ensure not to mutate original fixture
-    result_multi_dataset = load_result(save_path)
+    result_multi_dataset = load_result(tmp_path / "result.yml")
     result_multi_dataset.data["dataset_2"] = xr.Dataset({"foo": [1]})
 
     from_result_multi_dataset = load_data(result_multi_dataset)
@@ -107,3 +108,14 @@ def test_load_data(
         "xarray.core.dataset.Dataset | xarray.core.dataarray.DataArray | str | pathlib.Path, "
         "but was [1, 2]."
     )
+
+
+@pytest.mark.skipif(not PYGLOTARAN_GE_0_8, reason="Requires the pyglotaran>=0.8 result layout.")
+def test_load_data_converts_pyglotaran_0_8_result(result_sequential_spectral_decay: Result):
+    """A pyglotaran>=0.8 ``Result`` is converted to the flat v0.7 dataset layout."""
+    from pyglotaran_extras.compat import convert
+
+    expected = convert(result_sequential_spectral_decay).data["sequential-decay"]
+
+    run_load_data_test(load_data(result_sequential_spectral_decay), expected)
+    run_load_data_test(load_data(result_sequential_spectral_decay, "sequential-decay"), expected)
