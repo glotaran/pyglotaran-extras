@@ -91,7 +91,9 @@ Dimension rename: `derivative` → `coherent_artifact_order`
 | `attrs["width"]`    | `irf_width`           |
 | `attrs["scale"]`    | `irf_scale`           |
 | `"trace"` variable  | `irf`                 |
-| `"center"` variable | `center_dispersion_1` |
+| `"center"` variable | `irf_center_location` |
+
+Dimension rename for `irf_center_location`: `component_index` → `irf_nr`
 
 ### Dataset Attributes
 
@@ -101,6 +103,7 @@ Dimension rename: `derivative` → `coherent_artifact_order`
 | `weighted_root_mean_square_error` | `weighted_root_mean_square_error` |
 | `global_dimension`                | `global_dimension`                |
 | `model_dimension`                 | `model_dimension`                 |
+| `scale`                           | `scale`                           |
 
 ## CompatResult Properties
 

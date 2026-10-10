@@ -121,7 +121,9 @@ def add_damped_oscillation_data(
 
     # Copy oscillation-related coordinates
     if "oscillation" in element_ds.coords:
-        target_dataset.coords["damped_oscillation"] = element_ds.coords["oscillation"]
+        target_dataset.coords["damped_oscillation"] = element_ds.coords["oscillation"].rename(
+            {"oscillation": "damped_oscillation"}
+        )
     if "oscillation_frequency" in element_ds.coords:
         # Need to handle this as a coordinate on the damped_oscillation dimension
         freq_data = element_ds.coords["oscillation_frequency"]
@@ -299,6 +301,7 @@ def build_compat_dataset(optimization_result: OptimizationResult) -> xr.Dataset:
         target_ds.attrs["weighted_root_mean_square_error"] = meta.root_mean_square_error
     target_ds.attrs["global_dimension"] = meta.global_dimension
     target_ds.attrs["model_dimension"] = meta.model_dimension
+    target_ds.attrs["scale"] = meta.scale
 
     return target_ds
 
